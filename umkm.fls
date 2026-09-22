@@ -1,0 +1,287 @@
+PWD d:\E-Governance
+INPUT C:\Users\LENOVO\AppData\Local\MiKTeX\miktex\data\le\pdftex\pdflatex.fmt
+INPUT d:\E-Governance\umkm.tex
+OUTPUT umkm.log
+INPUT D:\MikTEX\tex\latex\ieeetran\IEEEtran.cls
+INPUT D:\MikTEX\tex\latex\ieeetran\IEEEtran.cls
+INPUT D:\MikTEX\tex\latex\psnfss\ot1ptm.fd
+INPUT D:\MikTEX\tex\latex\psnfss\ot1ptm.fd
+INPUT D:\MikTEX\tex\latex\psnfss\ot1ptm.fd
+INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmr7t.tfm
+INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmr7t.tfm
+INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmr7t.tfm
+INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmb7t.tfm
+INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmri7t.tfm
+INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmbi7t.tfm
+INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmr7t.tfm
+INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmb7t.tfm
+INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmri7t.tfm
+INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmbi7t.tfm
+INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmr7t.tfm
+INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmb7t.tfm
+INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmri7t.tfm
+INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmbi7t.tfm
+INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmb7t.tfm
+INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmri7t.tfm
+INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmbi7t.tfm
+INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmb7t.tfm
+INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmri7t.tfm
+INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmbi7t.tfm
+INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmr7t.tfm
+INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmb7t.tfm
+INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmri7t.tfm
+INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmbi7t.tfm
+INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmr7t.tfm
+INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmb7t.tfm
+INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmri7t.tfm
+INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmbi7t.tfm
+INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmr7t.tfm
+INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmb7t.tfm
+INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmri7t.tfm
+INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmbi7t.tfm
+INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmr7t.tfm
+INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmb7t.tfm
+INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmri7t.tfm
+INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmbi7t.tfm
+INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmr7t.tfm
+INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmb7t.tfm
+INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmri7t.tfm
+INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmbi7t.tfm
+INPUT D:\MikTEX\tex\latex\cite\cite.sty
+INPUT D:\MikTEX\tex\latex\cite\cite.sty
+INPUT D:\MikTEX\tex\latex\amsmath\amsmath.sty
+INPUT D:\MikTEX\tex\latex\amsmath\amsmath.sty
+INPUT D:\MikTEX\tex\latex\amsmath\amsopn.sty
+INPUT D:\MikTEX\tex\latex\amsmath\amstext.sty
+INPUT D:\MikTEX\tex\latex\amsmath\amstext.sty
+INPUT D:\MikTEX\tex\latex\amsmath\amsgen.sty
+INPUT D:\MikTEX\tex\latex\amsmath\amsgen.sty
+INPUT D:\MikTEX\tex\latex\amsmath\amsbsy.sty
+INPUT D:\MikTEX\tex\latex\amsmath\amsbsy.sty
+INPUT D:\MikTEX\tex\latex\amsmath\amsopn.sty
+INPUT D:\MikTEX\tex\latex\amsfonts\amssymb.sty
+INPUT D:\MikTEX\tex\latex\amsfonts\amssymb.sty
+INPUT D:\MikTEX\tex\latex\amsfonts\amsfonts.sty
+INPUT D:\MikTEX\tex\latex\amsfonts\amsfonts.sty
+INPUT D:\MikTEX\tex\latex\algorithms\algorithmic.sty
+INPUT D:\MikTEX\tex\latex\algorithms\algorithmic.sty
+INPUT D:\MikTEX\tex\latex\base\ifthen.sty
+INPUT D:\MikTEX\tex\latex\base\ifthen.sty
+INPUT D:\MikTEX\tex\latex\graphics\keyval.sty
+INPUT D:\MikTEX\tex\latex\graphics\keyval.sty
+INPUT D:\MikTEX\tex\latex\graphics\graphicx.sty
+INPUT D:\MikTEX\tex\latex\graphics\graphicx.sty
+INPUT D:\MikTEX\tex\latex\graphics\graphics.sty
+INPUT D:\MikTEX\tex\latex\graphics\graphics.sty
+INPUT D:\MikTEX\tex\latex\graphics\trig.sty
+INPUT D:\MikTEX\tex\latex\graphics\trig.sty
+INPUT D:\MikTEX\tex\latex\graphics-cfg\graphics.cfg
+INPUT D:\MikTEX\tex\latex\graphics-cfg\graphics.cfg
+INPUT D:\MikTEX\tex\latex\graphics-cfg\graphics.cfg
+INPUT D:\MikTEX\tex\latex\graphics-def\pdftex.def
+INPUT D:\MikTEX\tex\latex\graphics-def\pdftex.def
+INPUT D:\MikTEX\tex\latex\graphics-def\pdftex.def
+INPUT D:\MikTEX\tex\latex\grffile\grffile.sty
+INPUT D:\MikTEX\tex\latex\grffile\grffile.sty
+INPUT D:\MikTEX\tex\latex\base\textcomp.sty
+INPUT D:\MikTEX\tex\latex\base\textcomp.sty
+INPUT D:\MikTEX\tex\latex\xcolor\xcolor.sty
+INPUT D:\MikTEX\tex\latex\xcolor\xcolor.sty
+INPUT D:\MikTEX\tex\latex\graphics-cfg\color.cfg
+INPUT D:\MikTEX\tex\latex\graphics-cfg\color.cfg
+INPUT D:\MikTEX\tex\latex\graphics-cfg\color.cfg
+INPUT D:\MikTEX\tex\latex\graphics\mathcolor.ltx
+INPUT D:\MikTEX\tex\latex\graphics\mathcolor.ltx
+INPUT D:\MikTEX\tex\latex\graphics\mathcolor.ltx
+INPUT D:\MikTEX\tex\latex\float\float.sty
+INPUT D:\MikTEX\tex\latex\float\float.sty
+INPUT D:\MikTEX\tex\latex\listings\listings.sty
+INPUT D:\MikTEX\tex\latex\listings\listings.sty
+INPUT D:\MikTEX\tex\latex\listings\lstpatch.sty
+INPUT D:\MikTEX\tex\latex\listings\lstpatch.sty
+INPUT D:\MikTEX\tex\latex\listings\lstpatch.sty
+INPUT D:\MikTEX\tex\latex\listings\lstmisc.sty
+INPUT D:\MikTEX\tex\latex\listings\lstmisc.sty
+INPUT D:\MikTEX\tex\latex\listings\lstmisc.sty
+INPUT D:\MikTEX\tex\latex\listings\listings.cfg
+INPUT D:\MikTEX\tex\latex\listings\listings.cfg
+INPUT D:\MikTEX\tex\latex\listings\listings.cfg
+INPUT D:\MikTEX\tex\latex\l3backend\l3backend-pdftex.def
+INPUT D:\MikTEX\tex\latex\l3backend\l3backend-pdftex.def
+INPUT .\umkm.aux
+INPUT .\umkm.aux
+INPUT umkm.aux
+OUTPUT umkm.aux
+INPUT D:\MikTEX\tex\context\base\mkii\supp-pdf.mkii
+INPUT D:\MikTEX\tex\context\base\mkii\supp-pdf.mkii
+INPUT D:\MikTEX\tex\context\base\mkii\supp-pdf.mkii
+INPUT D:\MikTEX\tex\latex\epstopdf-pkg\epstopdf-base.sty
+INPUT D:\MikTEX\tex\latex\epstopdf-pkg\epstopdf-base.sty
+INPUT D:\MikTEX\tex\latex\00miktex\epstopdf-sys.cfg
+INPUT D:\MikTEX\tex\latex\00miktex\epstopdf-sys.cfg
+INPUT D:\MikTEX\tex\latex\00miktex\epstopdf-sys.cfg
+INPUT D:\MikTEX\fonts\tfm\public\cm\cmr10.tfm
+INPUT D:\MikTEX\fonts\tfm\public\cm\cmr8.tfm
+INPUT D:\MikTEX\fonts\tfm\public\cm\cmmi10.tfm
+INPUT D:\MikTEX\fonts\tfm\public\cm\cmmi8.tfm
+INPUT D:\MikTEX\fonts\tfm\public\cm\cmsy10.tfm
+INPUT D:\MikTEX\fonts\tfm\public\cm\cmsy8.tfm
+INPUT D:\MikTEX\fonts\tfm\public\cm\cmex10.tfm
+INPUT D:\MikTEX\fonts\tfm\public\amsfonts\cmextra\cmex8.tfm
+INPUT D:\MikTEX\fonts\tfm\public\amsfonts\cmextra\cmex7.tfm
+INPUT D:\MikTEX\tex\latex\amsfonts\umsa.fd
+INPUT D:\MikTEX\tex\latex\amsfonts\umsa.fd
+INPUT D:\MikTEX\tex\latex\amsfonts\umsa.fd
+INPUT D:\MikTEX\fonts\tfm\public\amsfonts\symbols\msam10.tfm
+INPUT D:\MikTEX\fonts\tfm\public\amsfonts\symbols\msam7.tfm
+INPUT D:\MikTEX\fonts\tfm\public\amsfonts\symbols\msam5.tfm
+INPUT D:\MikTEX\tex\latex\amsfonts\umsb.fd
+INPUT D:\MikTEX\tex\latex\amsfonts\umsb.fd
+INPUT D:\MikTEX\tex\latex\amsfonts\umsb.fd
+INPUT D:\MikTEX\fonts\tfm\public\amsfonts\symbols\msbm10.tfm
+INPUT D:\MikTEX\fonts\tfm\public\amsfonts\symbols\msbm7.tfm
+INPUT D:\MikTEX\fonts\tfm\public\amsfonts\symbols\msbm5.tfm
+INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmr7t.tfm
+INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmrc7t.tfm
+INPUT .\image_tex\gambar 1.png
+INPUT .\image_tex\gambar 1.png
+INPUT .\image_tex\gambar 1.png
+OUTPUT umkm.pdf
+INPUT .\image_tex\gambar 1.png
+INPUT .\image_tex\gambar 1.png
+INPUT .\image_tex\gambar 1.png
+INPUT D:\MikTEX\fonts\vf\adobe\times\ptmr7t.vf
+INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmr8r.tfm
+INPUT C:\Users\LENOVO\AppData\Local\MiKTeX\fonts\map\pdftex\pdftex.map
+INPUT D:\MikTEX\fonts\enc\dvips\base\8r.enc
+INPUT D:\MikTEX\fonts\vf\adobe\times\ptmr7t.vf
+INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmr8r.tfm
+INPUT D:\MikTEX\fonts\vf\adobe\times\ptmr7t.vf
+INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmr8r.tfm
+INPUT D:\MikTEX\fonts\vf\adobe\times\ptmri7t.vf
+INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmri8r.tfm
+INPUT D:\MikTEX\fonts\vf\adobe\times\ptmr7t.vf
+INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmr8r.tfm
+INPUT D:\MikTEX\fonts\vf\adobe\times\ptmrc7t.vf
+INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmr8r.tfm
+INPUT D:\MikTEX\fonts\vf\adobe\times\ptmr7t.vf
+INPUT D:\MikTEX\fonts\vf\adobe\times\ptmri7t.vf
+INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmri8r.tfm
+INPUT D:\MikTEX\tex\latex\listings\lstlang1.sty
+INPUT D:\MikTEX\tex\latex\listings\lstlang1.sty
+INPUT D:\MikTEX\tex\latex\listings\lstlang1.sty
+INPUT D:\MikTEX\tex\latex\listings\lstlang2.sty
+INPUT D:\MikTEX\tex\latex\listings\lstlang2.sty
+INPUT D:\MikTEX\tex\latex\listings\lstlang2.sty
+INPUT D:\MikTEX\tex\latex\listings\lstlang3.sty
+INPUT D:\MikTEX\tex\latex\listings\lstlang3.sty
+INPUT D:\MikTEX\tex\latex\listings\lstlang3.sty
+INPUT D:\MikTEX\tex\latex\listings\lstlang1.sty
+INPUT D:\MikTEX\tex\latex\listings\lstlang1.sty
+INPUT D:\MikTEX\tex\latex\listings\lstlang1.sty
+INPUT D:\MikTEX\tex\latex\listings\lstlang2.sty
+INPUT D:\MikTEX\tex\latex\listings\lstlang2.sty
+INPUT D:\MikTEX\tex\latex\listings\lstlang2.sty
+INPUT D:\MikTEX\tex\latex\listings\lstlang3.sty
+INPUT D:\MikTEX\tex\latex\listings\lstlang3.sty
+INPUT D:\MikTEX\tex\latex\listings\lstlang3.sty
+INPUT D:\MikTEX\tex\latex\listings\lstlang1.sty
+INPUT D:\MikTEX\tex\latex\listings\lstlang1.sty
+INPUT D:\MikTEX\tex\latex\listings\lstlang1.sty
+INPUT D:\MikTEX\tex\latex\listings\lstlang2.sty
+INPUT D:\MikTEX\tex\latex\listings\lstlang2.sty
+INPUT D:\MikTEX\tex\latex\listings\lstlang2.sty
+INPUT D:\MikTEX\tex\latex\listings\lstlang3.sty
+INPUT D:\MikTEX\tex\latex\listings\lstlang3.sty
+INPUT D:\MikTEX\tex\latex\listings\lstlang3.sty
+INPUT D:\MikTEX\tex\latex\listings\lstmisc.sty
+INPUT D:\MikTEX\tex\latex\listings\lstmisc.sty
+INPUT D:\MikTEX\tex\latex\listings\lstmisc.sty
+INPUT D:\MikTEX\tex\latex\psnfss\ot1pcr.fd
+INPUT D:\MikTEX\tex\latex\psnfss\ot1pcr.fd
+INPUT D:\MikTEX\tex\latex\psnfss\ot1pcr.fd
+INPUT D:\MikTEX\fonts\tfm\adobe\courier\pcrr7t.tfm
+INPUT D:\MikTEX\fonts\tfm\adobe\courier\pcrr7t.tfm
+INPUT D:\MikTEX\fonts\vf\adobe\courier\pcrr7t.vf
+INPUT D:\MikTEX\fonts\tfm\adobe\courier\pcrr8r.tfm
+INPUT .\image_tex\gambar 2.png
+INPUT .\image_tex\gambar 2.png
+INPUT .\image_tex\gambar 2.png
+INPUT .\image_tex\gambar 2.png
+INPUT .\image_tex\gambar 2.png
+INPUT .\image_tex\gambar 2.png
+INPUT .\image_tex\gambar 3.png
+INPUT .\image_tex\gambar 3.png
+INPUT .\image_tex\gambar 3.png
+INPUT .\image_tex\gambar 3.png
+INPUT .\image_tex\gambar 3.png
+INPUT .\image_tex\gambar 3.png
+INPUT .\image_tex\gambar 4.png
+INPUT .\image_tex\gambar 4.png
+INPUT .\image_tex\gambar 4.png
+INPUT .\image_tex\gambar 4.png
+INPUT .\image_tex\gambar 4.png
+INPUT .\image_tex\gambar 4.png
+INPUT .\image_tex\gambar 5.png
+INPUT .\image_tex\gambar 5.png
+INPUT .\image_tex\gambar 5.png
+INPUT .\image_tex\gambar 5.png
+INPUT .\image_tex\gambar 5.png
+INPUT .\image_tex\gambar 5.png
+INPUT .\image_tex\gambar 6.png
+INPUT .\image_tex\gambar 6.png
+INPUT .\image_tex\gambar 6.png
+INPUT .\image_tex\gambar 6.png
+INPUT .\image_tex\gambar 6.png
+INPUT .\image_tex\gambar 6.png
+INPUT .\image_tex\gambar 7.png
+INPUT .\image_tex\gambar 7.png
+INPUT .\image_tex\gambar 7.png
+INPUT .\image_tex\gambar 7.png
+INPUT .\image_tex\gambar 7.png
+INPUT .\image_tex\gambar 7.png
+INPUT .\image_tex\gambar 8.png
+INPUT .\image_tex\gambar 8.png
+INPUT .\image_tex\gambar 8.png
+INPUT .\image_tex\gambar 8.png
+INPUT .\image_tex\gambar 8.png
+INPUT .\image_tex\gambar 8.png
+INPUT .\image_tex\gambar 9.png
+INPUT .\image_tex\gambar 9.png
+INPUT .\image_tex\gambar 9.png
+INPUT .\image_tex\gambar 9.png
+INPUT .\image_tex\gambar 9.png
+INPUT .\image_tex\gambar 9.png
+INPUT .\image_tex\gambar 10.jpg
+INPUT .\image_tex\gambar 10.jpg
+INPUT .\image_tex\gambar 10.jpg
+INPUT .\image_tex\gambar 10.jpg
+INPUT .\image_tex\gambar 10.jpg
+INPUT .\image_tex\gambar 10.jpg
+INPUT D:\MikTEX\fonts\tfm\public\amsfonts\cmextra\cmex7.tfm
+INPUT D:\MikTEX\fonts\tfm\public\amsfonts\cmextra\cmex7.tfm
+INPUT D:\MikTEX\fonts\tfm\public\amsfonts\symbols\msam10.tfm
+INPUT D:\MikTEX\fonts\tfm\public\amsfonts\symbols\msam7.tfm
+INPUT D:\MikTEX\fonts\tfm\public\amsfonts\symbols\msam5.tfm
+INPUT D:\MikTEX\fonts\tfm\public\amsfonts\symbols\msbm10.tfm
+INPUT D:\MikTEX\fonts\tfm\public\amsfonts\symbols\msbm7.tfm
+INPUT D:\MikTEX\fonts\tfm\public\amsfonts\symbols\msbm5.tfm
+INPUT .\image_tex\gambar 11.jpg
+INPUT .\image_tex\gambar 11.jpg
+INPUT .\image_tex\gambar 11.jpg
+INPUT .\image_tex\gambar 11.jpg
+INPUT .\image_tex\gambar 11.jpg
+INPUT .\image_tex\gambar 11.jpg
+INPUT .\image_tex\gambar 12.png
+INPUT .\image_tex\gambar 12.png
+INPUT .\image_tex\gambar 12.png
+INPUT .\image_tex\gambar 12.png
+INPUT .\image_tex\gambar 12.png
+INPUT .\image_tex\gambar 12.png
+INPUT umkm.aux
+INPUT D:\MikTEX\fonts\type1\urw\courier\ucrr8a.pfb
+INPUT D:\MikTEX\fonts\type1\urw\courier\ucrr8a.pfb
+INPUT D:\MikTEX\fonts\type1\urw\times\utmr8a.pfb
+INPUT D:\MikTEX\fonts\type1\urw\times\utmr8a.pfb
+INPUT D:\MikTEX\fonts\type1\urw\times\utmri8a.pfb
+INPUT D:\MikTEX\fonts\type1\urw\times\utmri8a.pfb
