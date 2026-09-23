@@ -4,6 +4,7 @@ import Footer from './component/footer';
 import Dashboard from './pages/dashboard';
 import Pelatihan from './pages/pelatihan';
 import Bantuan from './pages/bantuan'; // 1. Tambahkan import ini
+import Sertifikasi from './pages/sertifikasi';
 import Login from './pages/login';
 
 export default function App() {
@@ -38,6 +39,11 @@ export default function App() {
         {/* 2. Tambahkan kondisi render Bantuan di sini */}
         {halaman === 'bantuan' && (
           <Bantuan onKembali={() => setHalaman('dashboard')} user={user} />
+        )}
+
+        {/* ← blok baru untuk Sertifikasi */}
+        {halaman === 'sertifikasi' && (
+          <Sertifikasi onKembali={() => setHalaman('dashboard')} user={user} />
         )}
 
         {halaman === 'login' && (
