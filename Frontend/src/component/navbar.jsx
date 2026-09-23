@@ -1,10 +1,17 @@
 import { useState, useRef, useEffect } from 'react';
-import { Menu, User, Bell, ChevronDown, LogOut, LogIn, UserCheck } from 'lucide-react';
+import { Menu, User, Bell, ChevronDown, LogOut, LogIn, UserCheck, X } from 'lucide-react';
+const notifikasiDummy = [ //ini data dummy ntar diubah
+  { id: 1, judul: 'Pengajuan Bantuan Modal Disetujui', pesan: 'Pengajuan bantuan modal Anda telah disetujui oleh admin.', waktu: '2 jam lalu', dibaca: false },
+  { id: 2, judul: 'Verifikasi Legalitas Diproses', pesan: 'Dokumen legalitas usaha Anda sedang diperiksa oleh admin.', waktu: '1 hari lalu', dibaca: false },
+  { id: 3, judul: 'Pelatihan Baru Tersedia', pesan: 'Ada pelatihan baru "Digital Marketing untuk UMKM" yang bisa Anda ikuti.', waktu: '3 hari lalu', dibaca: true }
+];
 
 export default function Navbar({ halamanAktif, setHalaman, user, onLogout }) {
   const [dropdownLayanan, setDropdownLayanan] = useState(false);
   const [dropdownUser, setDropdownUser] = useState(false);
   const userMenuRef = useRef(null);
+const [sidebarNotifOpen, setSidebarNotifOpen] = useState(false); //aku tambah ini
+const jumlahBelumDibaca = notifikasiDummy.filter((n) => !n.dibaca).length;
 
   // Tutup dropdown otomatis jika klik di luar elemen
   useEffect(() => {
@@ -18,6 +25,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout }) {
   }, []);
 
   return (
+    <>
     <nav style={{
       backgroundColor: '#164E43',
       color: '#FFFFFF',
@@ -107,19 +115,65 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout }) {
           )}
         </div>
 
-        <span style={{ cursor: 'pointer', opacity: 0.85 }}>
+               <span
+          onClick={() => {
+            setHalaman('dashboard');
+
+            let percobaan = 0;
+            const cobaScroll = () => {
+              const target = document.getElementById('komunitas');
+              if (target) {
+                target.scrollIntoView({ behavior: 'smooth' });
+              } else if (percobaan < 20) {
+                percobaan++;
+                setTimeout(cobaScroll, 100);
+              }
+            };
+            setTimeout(cobaScroll, 50);
+          }}
+          style={{ cursor: 'pointer', opacity: 0.85 }}
+        >
           Gabung Komunitas
         </span>
       </div>
-
+      
       {/* Bagian Kanan: Lonceng Notifikasi & Tombol User Pill */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }} ref={userMenuRef}>
         <button
-          type="button"
-          style={{ background: 'none', border: 'none', color: '#FFFFFF', cursor: 'pointer', display: 'flex' }}
-        >
-          <Bell size={18} />
-        </button>
+  type="button"
+  onClick={() => setSidebarNotifOpen(true)}
+  style={{
+    background: 'none',
+    border: 'none',
+    color: '#FFFFFF',
+    cursor: 'pointer',
+    display: 'flex',
+    position: 'relative'
+  }}
+>
+  <Bell size={18} />
+
+  {jumlahBelumDibaca > 0 && (
+    <span style={{
+      position: 'absolute',
+      top: '-4px',
+      right: '-6px',
+      backgroundColor: '#DC2626',
+      color: '#FFF',
+      borderRadius: '999px',
+      fontSize: '0.62rem',
+      fontWeight: '700',
+      minWidth: '15px',
+      height: '15px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '0 3px'
+    }}>
+      {jumlahBelumDibaca}
+    </span>
+  )}
+</button>
 
         {/* Tombol Kapsul Hamburger + User */}
         <div style={{ position: 'relative' }}>
@@ -264,7 +318,140 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout }) {
             </div>
           )}
         </div>
-      </div>
+            </div>
     </nav>
+
+    {/* ===== SIDEBAR NOTIFIKASI ===== */}
+    {sidebarNotifOpen && (
+      <>
+        {/* Overlay gelap di belakang sidebar */}
+        <div
+          onClick={() => setSidebarNotifOpen(false)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(0,0,0,0.4)',
+            zIndex: 200
+          }}
+        />
+
+        {/* Panel Sidebar */}
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          right: 0,
+          height: '100vh',
+          width: '340px',
+          backgroundColor: '#FFFFFF',
+          boxShadow: '-8px 0 24px rgba(0,0,0,0.15)',
+          zIndex: 201,
+          display: 'flex',
+          flexDirection: 'column',
+          fontFamily: 'Inter, system-ui, sans-serif'
+        }}>
+
+          {/* Header Sidebar */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            padding: '18px 20px',
+            borderBottom: '1px solid #E2E8F0'
+          }}>
+            <h3 style={{
+              margin: 0,
+              fontSize: '1.05rem',
+              fontWeight: '800',
+              color: '#0F172A'
+            }}>
+              Notifikasi
+            </h3>
+
+            <button
+              onClick={() => setSidebarNotifOpen(false)}
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                color: '#64748B',
+                display: 'flex'
+              }}
+            >
+              <X size={20} />
+            </button>
+          </div>
+
+          {/* Isi Notifikasi */}
+          <div style={{
+            flex: 1,
+            overflowY: 'auto',
+            padding: '8px 0'
+          }}>
+            {notifikasiDummy.length === 0 ? (
+              <p style={{
+                textAlign: 'center',
+                color: '#94A3B8',
+                fontSize: '0.85rem',
+                marginTop: '40px'
+              }}>
+                Belum ada notifikasi.
+              </p>
+            ) : (
+              notifikasiDummy.map((notif) => (
+                <div
+                  key={notif.id}
+                  style={{
+                    padding: '14px 20px',
+                    borderBottom: '1px solid #F1F5F9',
+                    backgroundColor: notif.dibaca ? '#FFFFFF' : '#F0FDF4',
+                    display: 'flex',
+                    gap: '10px'
+                  }}
+                >
+                  {!notif.dibaca && (
+                    <div style={{
+                      width: '8px',
+                      height: '8px',
+                      borderRadius: '50%',
+                      backgroundColor: '#16A34A',
+                      marginTop: '6px',
+                      flexShrink: 0
+                    }} />
+                  )}
+
+                  <div>
+                    <div style={{
+                      fontSize: '0.88rem',
+                      fontWeight: '700',
+                      color: '#0F172A',
+                      marginBottom: '3px'
+                    }}>
+                      {notif.judul}
+                    </div>
+
+                    <div style={{
+                      fontSize: '0.8rem',
+                      color: '#64748B',
+                      lineHeight: '1.4',
+                      marginBottom: '4px'
+                    }}>
+                      {notif.pesan}
+                    </div>
+
+                    <div style={{
+                      fontSize: '0.72rem',
+                      color: '#94A3B8'
+                    }}>
+                      {notif.waktu}
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      </>
+    )}
+  </>
   );
 }
