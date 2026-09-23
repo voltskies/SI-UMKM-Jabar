@@ -18,7 +18,7 @@ export default function Footer() {
         paddingBottom: '30px',
         borderBottom: '1px solid rgba(255,255,255,0.15)'
       }}>
-        {/* Kolom Profil */}
+        {/*profil*/}
         <div>
           <h3 style={{ fontSize: '1.2rem', fontWeight: '800', margin: '0 0 10px' }}>
             SI-UMKM JABAR
@@ -28,23 +28,22 @@ export default function Footer() {
           </p>
         </div>
 
-        {/* Kolom Layanan */}
+        {/*layanan*/}
         <div>
           <h4 style={{ fontSize: '0.92rem', fontWeight: '700', margin: '0 0 12px', color: '#D99B26' }}>
             Layanan Terpadu
           </h4>
           <ul style={{ listStyle: 'none', padding: 0, margin: 0, fontSize: '0.84rem', lineHeight: '2', color: 'rgba(255,255,255,0.85)' }}>
-            <li>Pemetaan Spasial Komoditas</li>
             <li>Pelatihan & Pembinaan</li>
             <li>Permohonan Bantuan Modal</li>
-            <li>Pendampingan Legalitas NIB & Halal</li>
+            <li>Pendampingan Sertifikasi Produk</li>
           </ul>
         </div>
 
-        {/* Kolom Kontak */}
+        {/*kontak*/}
         <div>
           <h4 style={{ fontSize: '0.92rem', fontWeight: '700', margin: '0 0 12px', color: '#D99B26' }}>
-            Kontak Dinas KUK Jabar
+            Kontak
           </h4>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.84rem', color: 'rgba(255,255,255,0.85)' }}>
             <div style={{ display: 'flex', gap: '8px' }}>
@@ -55,16 +54,12 @@ export default function Footer() {
               <Phone size={15} />
               <span>(022) 7302775</span>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Mail size={15} />
-              <span>diskuk@jabarprov.go.id</span>
-            </div>
           </div>
         </div>
       </div>
 
       <div style={{ textAlign: 'center', fontSize: '0.78rem', color: 'rgba(255,255,255,0.65)', marginTop: '20px' }}>
-        © 2026 Pemerintah Daerah Provinsi Jawa Barat.
+        © 2026 SI-UMKM JABAR.
       </div>
     </footer>
   );

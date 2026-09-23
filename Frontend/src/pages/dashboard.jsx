@@ -68,23 +68,22 @@ const KABUPATEN_KOTA_JABAR = [
   'Kota Cimahi', 'Kota Tasikmalaya', 'Kota Banjar'
 ];
 
-// Helper penentuan warna dinamis
 const getMarkerColor = (kategori) => {
   const kat = (kategori || '').toUpperCase();
   
   if (kat.includes('AKSESORIS') || kat.includes('CRAFT') || kat.includes('KRIYA') || kat.includes('KERAJINAN')) {
-    return '#EAB308'; // Kuning
+    return '#EAB308';
   }
   if (kat.includes('KULINER') || kat.includes('MAKANAN') || kat.includes('MINUMAN') || kat.includes('OBAT')) {
-    return '#16A34A'; // Hijau
+    return '#16A34A';
   }
   if (kat.includes('FASHION') || kat.includes('BATIK') || kat.includes('KONVEKSI') || kat.includes('BORDIR')) {
-    return '#9333EA'; // Ungu
+    return '#9333EA';
   }
   if (kat.includes('JASA') || kat.includes('AGRIBISNIS') || kat.includes('INDUSTRI') || kat.includes('MEBEL') || kat.includes('DEKORASI')) {
-    return '#0284C7'; // Biru
+    return '#0284C7';
   }
-  return '#164E43'; // Default hijau tua pemprov
+  return '#164E43';
 };
 
 const getKeunggulanText = (kategori, customUnggulan) => {
@@ -97,7 +96,7 @@ const getKeunggulanText = (kategori, customUnggulan) => {
   if (kat.includes('KULINER') || kat.includes('MAKANAN') || kat.includes('MINUMAN')) {
     return 'Cita rasa otentik khas Pasundan, higienis, dan tersertifikasi halal';
   }
-  if (kat.includes('FASHION') || kat.includes('BATIK') || kat.includes('KONVEKSI')) {
+  if (kat.includes('FASHION') || kat.includes('BATIK') || kat.includes('KONVEKSI') || kat.includes('BORDIR')) {
     return 'Motif pakem Parahyangan & jahitan garmen butik berstandar mutu tinggi';
   }
   if (kat.includes('AGRIBISNIS')) {
@@ -121,7 +120,6 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman }) {
   const [isPelatihanVisible, setIsPelatihanVisible] = useState(false);
   const pelatihanSectionRef = useRef(null);
 
-  // Fungsi navigasi langsung ke page pelatihan
   const handlePindahKePelatihan = () => {
     if (typeof setHalaman === 'function') {
       setHalaman('pelatihan');
@@ -170,7 +168,12 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman }) {
   const fetchUMKM = async () => {
     try {
       const res = await axios.get('http://127.0.0.1:8000/api/v1/umkm');
-      setUmkmList(res.data.data || res.data || []);
+      const responseData = res.data;
+      const dataArray = Array.isArray(responseData) 
+        ? responseData 
+        : (responseData.data || responseData.items || []);
+      
+      setUmkmList(dataArray);
     } catch (err) {
       console.error('Gagal mengambil data dari API FastAPI:', err);
     }
@@ -184,11 +187,21 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman }) {
     const nama = (item.nama_usaha || '').toLowerCase();
     const kat = (item.kategori || '').toLowerCase();
     const kab = (item.kabupaten_kota || '').toLowerCase();
-    const q = searchKeyword.toLowerCase();
+    const q = searchKeyword.toLowerCase().trim();
 
-    const matchesSearch = nama.includes(q) || kat.includes(q) || kab.includes(q);
-    const matchesCategory =
-      filterActive === 'Semua' || kat.includes(filterActive.toLowerCase());
+    const matchesSearch = q === '' || nama.includes(q) || kat.includes(q) || kab.includes(q);
+
+    let matchesCategory = true;
+    if (filterActive === 'Kuliner') {
+      matchesCategory = kat.includes('kuliner') || kat.includes('makanan') || kat.includes('minuman') || kat.includes('obat');
+    } else if (filterActive === 'Fashion') {
+      matchesCategory = kat.includes('fashion') || kat.includes('batik') || kat.includes('konveksi') || kat.includes('bordir');
+    } else if (filterActive === 'Kerajinan') {
+      matchesCategory = kat.includes('aksesoris') || kat.includes('craft') || kat.includes('kriya') || kat.includes('kerajinan');
+    } else if (filterActive === 'Jasa') {
+      matchesCategory = kat.includes('jasa') || kat.includes('agribisnis') || kat.includes('industri') || kat.includes('mebel') || kat.includes('dekorasi');
+    }
+
     const matchesKabKota =
       selectedKabKota === 'Semua Wilayah' ||
       kab.includes(selectedKabKota.toLowerCase());
@@ -196,12 +209,10 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman }) {
     return matchesSearch && matchesCategory && matchesKabKota;
   });
 
-  const isFilterActive = searchKeyword.trim() !== '' || selectedKabKota !== 'Semua Wilayah' || filterActive !== 'Semua';
-
   return (
     <div style={{ backgroundColor: '#F8FAFC', minHeight: '100vh', fontFamily: 'Inter, system-ui, sans-serif' }}>
       
-      {/* Carousel Hero Section */}
+      {/*Carousel*/}
       <section style={{
         position: 'relative',
         width: '100%',
@@ -388,10 +399,10 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman }) {
         </div>
       </section>
 
-      {/* Konten Utama */}
+      {/*Utama*/}
       <main style={{ maxWidth: '1200px', margin: 'auto', padding: '0 20px 50px' }}>
         
-        {/* Statistik Ringkas */}
+        {/*Stat*/}
         <section style={{ marginBottom: '45px', marginTop: '10px' }}>
           <div style={{ textAlign: 'center', marginBottom: '28px' }}>
             <span style={{
@@ -440,7 +451,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman }) {
                 Total UMKM Terdata
               </div>
               <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#0F172A', lineHeight: '1.2' }}>
-                {umkmList.length > 0 ? `${umkmList.length.toLocaleString('id-ID')} Unit` : '7.055.660 Unit'}
+                {umkmList.length > 0 ? `${umkmList.length.toLocaleString('id-ID')} Unit` : 'Memuat Data...'}
               </div>
             </div>
 
@@ -490,7 +501,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman }) {
           </div>
         </section>
 
-        {/* Filter & Pencarian */}
+        {/*filter & search*/}
         <div style={{
           backgroundColor: '#fff',
           border: '1px solid #E2E8F0',
@@ -565,7 +576,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman }) {
           </div>
         </div>
 
-        {/* Pemetaan Spasial & Hasil Pencarian */}
+        {/*peta peta*/}
         <div style={{
           display: 'grid',
           gridTemplateColumns: '1.7fr 1fr',
@@ -573,7 +584,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman }) {
           alignItems: 'start',
           marginBottom: '50px'
         }}>
-          {/* Peta Interaktif Leaflet */}
+          {/*leaflet*/}
           <div style={{ backgroundColor: '#fff', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '16px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
               <div style={{ fontWeight: '700', fontSize: '0.95rem', color: '#0F172A' }}>
@@ -584,7 +595,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman }) {
               </div>
             </div>
 
-            {/* Legenda Warna Sesuai Sektor */}
+            {/*kategori warna*/}
             <div style={{
               display: 'flex',
               flexWrap: 'wrap',
@@ -615,7 +626,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman }) {
               </div>
             </div>
 
-            <div style={{ height: '500px', borderRadius: '10px', overflow: 'hidden', border: '1px solid #E2E8F0' }}>
+            <div style={{ height: '520px', borderRadius: '10px', overflow: 'hidden', border: '1px solid #E2E8F0', position: 'relative' }}>
               <MapContainer 
                 center={[-6.9175, 107.6191]} 
                 zoom={8} 
@@ -627,112 +638,106 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman }) {
                   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
 
-                {/* Render Seluruh Titik Koordinat UMKM */}
-                {filteredUMKM
-                  .filter((item) => item.latitude && item.longitude)
-                  .map((item) => {
-                    const markerColor = getMarkerColor(item.kategori);
-                    const infoUnggulan = getKeunggulanText(item.kategori, item.produk_unggulan);
+                {/*render titik koordinat*/}
+                {filteredUMKM.map((item) => {
+                  const rawLat = item.latitude ?? item.lat;
+                  const rawLng = item.longitude ?? item.lng ?? item.long;
 
-                    const lat = parseFloat(item.latitude);
-                    const lng = parseFloat(item.longitude);
+                  if (rawLat === undefined || rawLat === null || rawLng === undefined || rawLng === null) {
+                    return null;
+                  }
 
-                    if (isNaN(lat) || isNaN(lng)) return null;
+                  const lat = parseFloat(String(rawLat).replace(',', '.').trim());
+                  const lng = parseFloat(String(rawLng).replace(',', '.').trim());
 
-                    return (
-                      <CircleMarker
-                        key={item.id}
-                        center={[lat, lng]}
-                        pathOptions={{
-                          color: markerColor,
-                          fillColor: markerColor,
-                          fillOpacity: 0.82,
-                          weight: 1.5
-                        }}
-                        radius={6}
-                      >
-                        {/* Hover Tooltip Ringkas & Menarik */}
-                        <Tooltip direction="top" offset={[0, -6]} opacity={0.96}>
-                          <div style={{ fontSize: '0.78rem', lineHeight: '1.4', maxWidth: '220px' }}>
-                            <div style={{ fontWeight: '800', color: '#0F172A', marginBottom: '2px' }}>
-                              {item.nama_usaha}
-                            </div>
-                            <div style={{ color: markerColor, fontWeight: '700', fontSize: '0.73rem' }}>
-                              ● Kategori: {item.kategori}
-                            </div>
-                            <div style={{ color: '#475569', marginTop: '3px', fontStyle: 'italic', fontSize: '0.72rem' }}>
-                              ★ {infoUnggulan}
-                            </div>
+                  if (isNaN(lat) || isNaN(lng)) return null;
+
+                  const markerColor = getMarkerColor(item.kategori);
+                  const infoUnggulan = getKeunggulanText(item.kategori, item.produk_unggulan);
+
+                  return (
+                    <CircleMarker
+                      key={item.id}
+                      center={[lat, lng]}
+                      pathOptions={{
+                        color: markerColor,
+                        fillColor: markerColor,
+                        fillOpacity: 0.85,
+                        weight: 2
+                      }}
+                      radius={7}
+                    >
+                      {/*hover*/}
+                      <Tooltip direction="top" offset={[0, -6]} opacity={1} sticky={true}>
+                        <div style={{ fontSize: '0.78rem', lineHeight: '1.4', maxWidth: '220px' }}>
+                          <div style={{ fontWeight: '800', color: '#0F172A', marginBottom: '2px' }}>
+                            {item.nama_usaha}
                           </div>
-                        </Tooltip>
-
-                        {/* Modal Pop-up Saat Titik Diklik */}
-                        <Popup>
-                          <div style={{ fontSize: '0.85rem' }}>
-                            <h4 style={{ margin: '0 0 4px 0', color: '#164E43', fontSize: '0.92rem' }}>
-                              {item.nama_usaha}
-                            </h4>
-                            <p style={{ margin: '0 0 6px 0', color: '#64748B', fontSize: '0.78rem' }}>
-                              {item.alamat}
-                            </p>
-                            <span style={{
-                              display: 'inline-block',
-                              backgroundColor: markerColor,
-                              color: '#fff',
-                              padding: '2px 8px',
-                              borderRadius: '4px',
-                              fontSize: '0.72rem',
-                              fontWeight: '700'
-                            }}>
-                              {item.kategori}
-                            </span>
+                          <div style={{ color: markerColor, fontWeight: '700', fontSize: '0.73rem' }}>
+                            ● {item.kategori}
                           </div>
-                        </Popup>
-                      </CircleMarker>
-                    );
-                  })}
+                          <div style={{ color: '#475569', marginTop: '2px', fontSize: '0.72rem' }}>
+                            📍 {item.kabupaten_kota}
+                          </div>
+                          <div style={{ color: '#64748B', marginTop: '3px', fontStyle: 'italic', fontSize: '0.7rem' }}>
+                            ★ {infoUnggulan}
+                          </div>
+                        </div>
+                      </Tooltip>
+
+                      {/*modal*/}
+                      <Popup>
+                        <div style={{ fontSize: '0.85rem' }}>
+                          <h4 style={{ margin: '0 0 4px 0', color: '#164E43', fontSize: '0.92rem' }}>
+                            {item.nama_usaha}
+                          </h4>
+                          <p style={{ margin: '0 0 6px 0', color: '#64748B', fontSize: '0.78rem' }}>
+                            {item.alamat || item.kabupaten_kota}
+                          </p>
+                          <span style={{
+                            display: 'inline-block',
+                            backgroundColor: markerColor,
+                            color: '#fff',
+                            padding: '2px 8px',
+                            borderRadius: '4px',
+                            fontSize: '0.72rem',
+                            fontWeight: '700'
+                          }}>
+                            {item.kategori}
+                          </span>
+                        </div>
+                      </Popup>
+                    </CircleMarker>
+                  );
+                })}
               </MapContainer>
             </div>
           </div>
 
-          {/* Kolom Hasil Pencarian */}
+          {/*kolom hasil search*/}
           <div style={{
             backgroundColor: '#fff',
             border: '1px solid #E2E8F0',
             borderRadius: '12px',
             padding: '16px',
-            height: '600px',
+            height: '630px',
             display: 'flex',
             flexDirection: 'column'
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
               <span style={{ fontWeight: '700', fontSize: '0.9rem' }}>
-                Hasil Pencarian ({isFilterActive ? filteredUMKM.length : 0})
+                Daftar UMKM ({filteredUMKM.length})
               </span>
               <span style={{ fontSize: '0.75rem', color: '#64748B' }}>Terverifikasi</span>
             </div>
 
             <div style={{ overflowY: 'auto', flex: 1, display: 'flex', flexDirection: 'column', gap: '10px', paddingRight: '4px' }}>
-              {!isFilterActive ? (
-                <div style={{ 
-                  textAlign: 'center', 
-                  padding: '60px 16px', 
-                  color: '#94A3B8', 
-                  fontSize: '0.85rem',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  gap: '8px'
-                }}>
-                  <Search size={28} color="#CBD5E1" />
-                  <span>Ketik nama usaha di kolom pencarian untuk menampilkan data UMKM.</span>
-                </div>
-              ) : filteredUMKM.length === 0 ? (
+              {filteredUMKM.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '60px 10px', color: '#94A3B8', fontSize: '0.85rem' }}>
-                  Tidak ada data UMKM yang cocok dengan pencarian.
+                  Tidak ada data UMKM yang cocok.
                 </div>
               ) : (
-                filteredUMKM.slice(0, 50).map((item) => (
+                filteredUMKM.map((item) => (
                   <div
                     key={item.id}
                     style={{
@@ -760,7 +765,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman }) {
                         color: '#008848',
                         fontSize: '0.76rem',
                         fontWeight: '600',
-                        padding: '4px 10px',
+                        padding: '5px 10px',
                         borderRadius: '6px',
                         cursor: 'pointer',
                         width: '100%'
@@ -775,7 +780,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman }) {
           </div>
         </div>
 
-        {/* Modal Detail UMKM */}
+        {/*modal detail umkm*/}
         {selectedUMKM && (
           <div style={{
             position: 'fixed',
@@ -852,7 +857,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman }) {
           </div>
         )}
 
-        {/* Bagian Pelatihan Interaktif */}
+        {/*pelatihan*/}
         <section
           ref={pelatihanSectionRef}
           style={{
@@ -876,7 +881,6 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman }) {
               </h2>
             </div>
 
-            {/* Tombol Lihat Selengkapnya di Header Pelatihan */}
             <button
               onClick={handlePindahKePelatihan}
               style={{
@@ -951,7 +955,6 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman }) {
                       </h3>
                     </div>
 
-                    {/* Tombol Selengkapnya di Tiap Kartu Pelatihan */}
                     <button
                       onClick={handlePindahKePelatihan}
                       style={{
@@ -984,7 +987,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman }) {
           </div>
         </section>
 
-        {/* Komunitas UMKM */}
+        {/*komunitas*/}
         <section style={{
           backgroundColor: '#D99B26',
           borderRadius: '20px',

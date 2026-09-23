@@ -5,3 +5,12 @@ __pycache__/
 venv/
 .venv/
 uploads/
+
+# Berkas sementara LaTeX
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.synctex.gz
+*.out
+*.toc
