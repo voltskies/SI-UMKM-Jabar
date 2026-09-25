@@ -1,64 +1,79 @@
 import { useState } from 'react';
-import Navbar from './component/navbar';
-import Footer from './component/footer';
 import Dashboard from './pages/dashboard';
 import Pelatihan from './pages/pelatihan';
-import Bantuan from './pages/bantuan'; // 1. Tambahkan import ini
-import Sertifikasi from './pages/sertifikasi';
+import DetailPelatihan from './pages/detailPelatihan';
 import Login from './pages/login';
+import Bantuan from './pages/bantuan';
+import Sertifikasi from './pages/sertifikasi'; // pastikan nama file sesuai: sertifikasi.jsx
 
 export default function App() {
   const [halaman, setHalaman] = useState('dashboard');
-  const [user, setUser] = useState(null);
-
-  const handleLogout = () => {
-    setUser(null);
-    setHalaman('dashboard');
-  };
+  const [pelatihanTerpilih, setPelatihanTerpilih] = useState(null);
+  const [currentUser, setCurrentUser] = useState(() => {
+    const simpanan = localStorage.getItem('user_umkm');
+    return simpanan ? JSON.parse(simpanan) : null;
+  });
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      {/* 1. Navbar */}
-      <Navbar 
-        halamanAktif={halaman} 
-        setHalaman={setHalaman} 
-        user={user} 
-        onLogout={handleLogout} 
-      />
+    <div>
+      {/* 1. Halaman Beranda (Dashboard) */}
+      {halaman === 'dashboard' && (
+        <Dashboard
+          user={currentUser}
+          setHalaman={setHalaman}
+          onNavigasiPelatihan={() => setHalaman('pelatihan')}
+        />
+      )}
 
-      {/* 2. Konten Halaman */}
-      <div style={{ flex: 1 }}>
-        {halaman === 'dashboard' && (
-          <Dashboard setHalaman={setHalaman} />
-        )}
+      {/* 2. Halaman Katalog Pelatihan */}
+      {halaman === 'pelatihan' && (
+        <Pelatihan
+          user={currentUser}
+          setHalaman={setHalaman}
+          onPilihPelatihan={(item) => {
+            setPelatihanTerpilih(item);
+            setHalaman('detailPelatihan');
+          }}
+        />
+      )}
 
-        {halaman === 'pelatihan' && (
-          <Pelatihan setHalaman={setHalaman} user={user} />
-        )}
+      {/* 3. Halaman Detail Pelatihan */}
+      {halaman === 'detailPelatihan' && (
+        <DetailPelatihan
+          pelatihan={pelatihanTerpilih}
+          user={currentUser}
+          setHalaman={setHalaman}
+          onKembali={() => setHalaman('pelatihan')}
+          onArahkanLogin={() => setHalaman('login')}
+        />
+      )}
 
-        {/* 2. Tambahkan kondisi render Bantuan di sini */}
-        {halaman === 'bantuan' && (
-          <Bantuan onKembali={() => setHalaman('dashboard')} user={user} />
-        )}
+      {/* 4. Halaman Pusat Bantuan */}
+      {halaman === 'bantuan' && (
+        <Bantuan
+          user={currentUser}
+          setHalaman={setHalaman}
+        />
+      )}
 
-        {/* ← blok baru untuk Sertifikasi */}
-        {halaman === 'sertifikasi' && (
-          <Sertifikasi onKembali={() => setHalaman('dashboard')} user={user} />
-        )}
+      {/* 5. Halaman Sertifikasi & Legalitas */}
+      {halaman === 'sertifikasi' && (
+        <Sertifikasi
+          user={currentUser}
+          setHalaman={setHalaman}
+        />
+      )}
 
-        {halaman === 'login' && (
-          <Login 
-            onKembali={() => setHalaman('dashboard')} 
-            onLoginSukses={(dataUser) => {
-              setUser(dataUser);
-              setHalaman('dashboard');
-            }} 
-          />
-        )}
-      </div>
-
-      {/* 3. Footer */}
-      <Footer />
+      {/* 6. Halaman Login */}
+      {halaman === 'login' && (
+        <Login
+          setHalaman={setHalaman}
+          onLoginSukses={(userData) => {
+            setCurrentUser(userData);
+            setHalaman('dashboard');
+          }}
+        />
+      )}
     </div>
   );
 }

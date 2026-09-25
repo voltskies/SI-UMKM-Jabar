@@ -7,6 +7,9 @@ import {
   X, Phone, FileText, ShieldCheck, Award,
   ChevronLeft, ChevronRight, Users, MessageSquare, Calendar, Radio
 } from 'lucide-react';
+
+import Navbar from '../component/navbar';
+import Footer from '../component/footer';
 import NotifikasiToast from '../component/notifikasiToast';
 
 const CAROUSEL_SLIDES = [
@@ -40,22 +43,22 @@ const DAFTAR_PELATIHAN = [
   {
     id: 1,
     title: 'Pelatihan Digitalisasi dan Pemasaran Online',
-    image: ''
+    image: '/src/assets/pelatihan1.jpeg'
   },
   {
     id: 2,
     title: 'Pelatihan Manajemen Keuangan Administrasi',
-    image: ''
+    image: '/src/assets/pelatihan2.jpg'
   },
   {
     id: 3,
     title: 'Pelatihan Legalitas dan Standarisasi Produk',
-    image: ''
+    image: '/src/assets/pelatihan3.jpg'
   },
   {
     id: 4,
     title: 'Pelatihan Inovasi dan Kualitas Produk',
-    image: ''
+    image: '/src/assets/pelatihan4.jpg'
   }
 ];
 
@@ -109,7 +112,7 @@ const getKeunggulanText = (kategori, customUnggulan) => {
   return 'Komoditas binaan terkurasi Dinas Koperasi & Usaha Kecil Jawa Barat';
 };
 
-export default function Dashboard({ onNavigasiPelatihan, setHalaman }) {
+export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
   const [umkmList, setUmkmList] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState('');
   const [filterActive, setFilterActive] = useState('Semua');
@@ -211,9 +214,12 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman }) {
   });
 
   return (
-    <div style={{ backgroundColor: '#F8FAFC', minHeight: '100vh', fontFamily: 'Inter, system-ui, sans-serif' }}>
+    <div style={{ backgroundColor: '#F8FAFC', minHeight: '100vh', display: 'flex', flexDirection: 'column', fontFamily: 'Inter, system-ui, sans-serif' }}>
       
-      {/*Carousel*/}
+      {/* 1. Header / Navbar */}
+      <Navbar setHalaman={setHalaman} user={user} />
+
+      {/* 2. Carousel Hero Section */}
       <section style={{
         position: 'relative',
         width: '100%',
@@ -400,10 +406,10 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman }) {
         </div>
       </section>
 
-      {/*Utama*/}
-      <main style={{ maxWidth: '1200px', margin: 'auto', padding: '0 20px 50px' }}>
+      {/* 3. Konten Utama Dashboard */}
+      <main style={{ flex: 1, maxWidth: '1200px', width: '100%', margin: 'auto', padding: '0 20px 50px', boxSizing: 'border-box' }}>
         
-        {/*Stat*/}
+        {/* Statistik Terkini */}
         <section style={{ marginBottom: '45px', marginTop: '10px' }}>
           <div style={{ textAlign: 'center', marginBottom: '28px' }}>
             <span style={{
@@ -502,7 +508,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman }) {
           </div>
         </section>
 
-        {/*filter & search*/}
+        {/* Filter & Pencarian */}
         <div style={{
           backgroundColor: '#fff',
           border: '1px solid #E2E8F0',
@@ -577,7 +583,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman }) {
           </div>
         </div>
 
-        {/*peta peta*/}
+        {/* Peta Interaktif & Daftar Samping */}
         <div style={{
           display: 'grid',
           gridTemplateColumns: '1.7fr 1fr',
@@ -585,7 +591,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman }) {
           alignItems: 'start',
           marginBottom: '50px'
         }}>
-          {/*leaflet*/}
+          {/* Leaflet Map */}
           <div style={{ backgroundColor: '#fff', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '16px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
               <div style={{ fontWeight: '700', fontSize: '0.95rem', color: '#0F172A' }}>
@@ -596,7 +602,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman }) {
               </div>
             </div>
 
-            {/*kategori warna*/}
+            {/* Kategori Warna Marker */}
             <div style={{
               display: 'flex',
               flexWrap: 'wrap',
@@ -639,7 +645,6 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman }) {
                   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
 
-                {/*render titik koordinat*/}
                 {filteredUMKM.map((item) => {
                   const rawLat = item.latitude ?? item.lat;
                   const rawLng = item.longitude ?? item.lng ?? item.long;
@@ -668,7 +673,6 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman }) {
                       }}
                       radius={7}
                     >
-                      {/*hover*/}
                       <Tooltip direction="top" offset={[0, -6]} opacity={1} sticky={true}>
                         <div style={{ fontSize: '0.78rem', lineHeight: '1.4', maxWidth: '220px' }}>
                           <div style={{ fontWeight: '800', color: '#0F172A', marginBottom: '2px' }}>
@@ -686,7 +690,6 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman }) {
                         </div>
                       </Tooltip>
 
-                      {/*modal*/}
                       <Popup>
                         <div style={{ fontSize: '0.85rem' }}>
                           <h4 style={{ margin: '0 0 4px 0', color: '#164E43', fontSize: '0.92rem' }}>
@@ -715,7 +718,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman }) {
             </div>
           </div>
 
-          {/*kolom hasil search*/}
+          {/* Kolom Hasil Pencarian & List UMKM */}
           <div style={{
             backgroundColor: '#fff',
             border: '1px solid #E2E8F0',
@@ -781,7 +784,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman }) {
           </div>
         </div>
 
-        {/*modal detail umkm*/}
+        {/* Modal Detail UMKM */}
         {selectedUMKM && (
           <div style={{
             position: 'fixed',
@@ -858,7 +861,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman }) {
           </div>
         )}
 
-        {/*pelatihan*/}
+        {/* Section Pelatihan */}
         <section
           ref={pelatihanSectionRef}
           style={{
@@ -988,7 +991,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman }) {
           </div>
         </section>
 
-        {/*komunitas*/}
+        {/* Section Komunitas */}
         <section style={{
           backgroundColor: '#D99B26',
           borderRadius: '20px',
@@ -1077,6 +1080,10 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman }) {
         </section>
 
       </main>
+
+      {/* 4. Footer Bawah */}
+      <Footer setHalaman={setHalaman} />
+
     </div>
   );
 }

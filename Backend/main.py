@@ -53,9 +53,7 @@ def simpan_dokumen(file: Optional[UploadFile]):
     return target_path
 
 
-# ==========================================
 # SKEMA REQUEST PYDANTIC
-# ==========================================
 
 class RegisterUserRequest(BaseModel):
     nik: str
@@ -79,10 +77,8 @@ class VerifikasiRequest(BaseModel):
     status: str
     catatan_admin: Optional[str] = None
 
-
-# ==========================================
 # 1. UMUM & AUTENTIKASI
-# ==========================================
+
 
 @app.get("/", tags=["Umum"], summary="Cek Kesiapan Server API")
 def read_root():
@@ -91,35 +87,35 @@ def read_root():
 
 @app.post("/api/v1/auth/register", tags=["Umum"], status_code=status.HTTP_201_CREATED, summary="Registrasi Akun Baru")
 def register_user(payload: RegisterUserRequest, db: Session = Depends(get_db)):
-    # 1. Validasi NIK (wajib 16 digit angka)
+    # 1. Validasi NIK
     if not re.fullmatch(r"^\d{16}$", payload.nik):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="NIK tidak valid. Harus tepat 16 digit angka."
         )
 
-    # 2. Validasi Nomor WhatsApp (hanya angka, panjang 10-13 digit)
+    # 2. Validasi Nomor WA
     if not re.fullmatch(r"^\d{10,13}$", payload.nomor_whatsapp):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Nomor WhatsApp tidak valid. Harus berupa angka dengan panjang 10 sampai 13 digit."
         )
 
-    # 3. Validasi Email (wajib domain @gmail.com)
+    # 3. Validasi Email
     if not re.fullmatch(r"^[a-zA-Z0-9_.+-]+@gmail\.com$", payload.email):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Format email tidak valid. Wajib menggunakan akun @gmail.com."
         )
 
-    # 4. Validasi Kata Sandi (minimal 6 karakter)
+    # 4. Validasi Kata Sandi
     if len(payload.password) < 6:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Kata sandi terlalu pendek. Minimal 6 karakter."
         )
 
-    # 5. Cek duplikasi NIK atau Email
+    # 5. Cek duplikasi NIK
     user_exist = db.query(models.User).filter(
         (models.User.nik == payload.nik) | (models.User.email == payload.email)
     ).first()
@@ -182,10 +178,7 @@ def login_user(payload: LoginUserRequest, db: Session = Depends(get_db)):
     }
 
 
-# ==========================================
 # 2. PELAKU UMKM
-# ==========================================
-
 @app.get("/api/v1/umkm", tags=["Pelaku UMKM"], summary="Ambil Direktori Data UMKM")
 def get_all_umkm(
     kategori: Optional[str] = Query(None),
@@ -330,9 +323,7 @@ async def ajukan_sertifikasi(
     return {"status": "success", "nomor_registrasi": no_reg}
 
 
-# ==========================================
 # 3. ADMIN DINAS
-# ==========================================
 
 @app.get("/api/v1/admin/pengajuan", tags=["Admin Dinas"])
 def get_semua_pengajuan(status_filter: Optional[str] = Query(None), db: Session = Depends(get_db)):

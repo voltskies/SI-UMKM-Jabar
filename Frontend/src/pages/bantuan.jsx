@@ -5,7 +5,10 @@ import {
   Building2, User, Phone, Mail, DollarSign, HelpCircle, FileCheck
 } from 'lucide-react';
 
-export default function Bantuan({ onKembali, user }) {
+import Navbar from '../component/navbar';
+import Footer from '../component/footer';
+
+export default function Bantuan({ onKembali, setHalaman, user }) {
   const [formData, setFormData] = useState({
     nik: user?.nik || '',
     nama_lengkap: user?.nama || user?.nama_lengkap || '',
@@ -28,6 +31,15 @@ export default function Bantuan({ onKembali, user }) {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [suksesNomor, setSuksesNomor] = useState(null);
+
+  const handleKembaliKeBeranda = () => {
+    if (typeof setHalaman === 'function') {
+      setHalaman('dashboard');
+    } else if (typeof onKembali === 'function') {
+      onKembali();
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -93,12 +105,18 @@ export default function Bantuan({ onKembali, user }) {
   };
 
   return (
-    <div style={{ backgroundColor: '#F8FAFC', minHeight: '100vh', padding: '40px 20px', fontFamily: 'Inter, system-ui, sans-serif' }}>
-      <div style={{ maxWidth: '850px', margin: '0 auto' }}>
+    <div style={{ backgroundColor: '#F8FAFC', minHeight: '100vh', display: 'flex', flexDirection: 'column', fontFamily: 'Inter, system-ui, sans-serif' }}>
+      
+      {/* 1. Header / Navbar */}
+      <Navbar setHalaman={setHalaman} user={user} />
+
+      {/* 2. Konten Utama Form Bantuan */}
+      <main style={{ flex: 1, width: '100%', maxWidth: '900px', margin: '0 auto', padding: '40px 20px 60px 20px', boxSizing: 'border-box' }}>
         
         {/* Tombol Navigasi Kembali */}
         <button
-          onClick={onKembali}
+          type="button"
+          onClick={handleKembaliKeBeranda}
           style={{
             display: 'inline-flex',
             alignItems: 'center',
@@ -109,8 +127,12 @@ export default function Bantuan({ onKembali, user }) {
             fontWeight: '700',
             fontSize: '0.9rem',
             cursor: 'pointer',
-            marginBottom: '24px'
+            marginBottom: '24px',
+            padding: 0,
+            transition: 'color 0.15s ease'
           }}
+          onMouseEnter={(e) => (e.currentTarget.style.color = '#008848')}
+          onMouseLeave={(e) => (e.currentTarget.style.color = '#164E43')}
         >
           <ArrowLeft size={18} /> Kembali ke Halaman Utama
         </button>
@@ -374,7 +396,10 @@ export default function Bantuan({ onKembali, user }) {
             </button>
           </form>
         </div>
-      </div>
+      </main>
+
+      {/* 3. Footer Bawah */}
+      <Footer setHalaman={setHalaman} />
 
       {/* Modal Sukses */}
       {suksesNomor && (
@@ -425,7 +450,7 @@ export default function Bantuan({ onKembali, user }) {
             <button
               onClick={() => {
                 setSuksesNomor(null);
-                onKembali();
+                handleKembaliKeBeranda();
               }}
               style={{
                 width: '100%',
