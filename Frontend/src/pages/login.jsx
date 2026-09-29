@@ -1,7 +1,8 @@
 import { useState } from 'react';
+import axios from 'axios';
 import { 
   ArrowLeft, Lock, Mail, User, Phone, Eye, EyeOff, 
-  Layers, GraduationCap, FileCheck, ShieldCheck, ArrowRight, CreditCard
+  ShieldCheck, ArrowRight, CreditCard
 } from 'lucide-react';
 
 export default function Login({ onKembali, onLoginSukses, setHalaman }) {
@@ -10,7 +11,7 @@ export default function Login({ onKembali, onLoginSukses, setHalaman }) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  // State data form
+  // State data formulir
   const [namaLengkap, setNamaLengkap] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -18,7 +19,9 @@ export default function Login({ onKembali, onLoginSukses, setHalaman }) {
   const [nomorWhatsapp, setNomorWhatsapp] = useState('');
   const [nik, setNik] = useState('');
 
-  // Navigasi kembali ke Dashboard
+  // Sinkronisasi otomatis base URL backend sesuai host browser aktif
+const API_BASE_URL = 'http://127.0.0.1:8000';
+
   const handleKembaliKeDashboard = () => {
     if (typeof setHalaman === 'function') {
       setHalaman('dashboard');
@@ -36,50 +39,74 @@ export default function Login({ onKembali, onLoginSukses, setHalaman }) {
       return;
     }
 
+    if (isRegister) {
+      if (!/^\d{16}$/.test(nik.trim())) {
+        alert('NIK tidak valid! Wajib tepat 16 digit angka.');
+        return;
+      }
+      if (!/^\d{10,13}$/.test(nomorWhatsapp.trim())) {
+        alert('Nomor WhatsApp tidak valid! Harus 10 sampai 13 digit angka.');
+        return;
+      }
+      if (!email.trim().toLowerCase().endsWith('@gmail.com')) {
+        alert('Format email wajib menggunakan akun @gmail.com!');
+        return;
+      }
+      if (password.length < 6) {
+        alert('Kata sandi minimal 6 karakter!');
+        return;
+      }
+    }
+
     setLoading(true);
 
     try {
       if (isRegister) {
-        // Pendaftaran Akun ke FastAPI
-        const response = await fetch('http://127.0.0.1:8000/api/v1/auth/register', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            nik,
-            nama_lengkap: namaLengkap,
-            email,
-            nomor_whatsapp: nomorWhatsapp,
-            password
-          })
+        // 1. Registrasi Akun (Password otomatis di-hash Bcrypt oleh FastAPI)
+        const res = await axios.post(`${API_BASE_URL}/api/v1/auth/register`, {
+          nik: nik.trim(),
+          nama_lengkap: namaLengkap.trim(),
+          email: email.trim().toLowerCase(),
+          nomor_whatsapp: nomorWhatsapp.trim(),
+          password: password
         });
 
-        const resData = await response.json();
-        if (!response.ok) {
-          throw new Error(resData.detail || 'Pendaftaran akun gagal');
-        }
-
-        alert('Pendaftaran berhasil! Silakan masuk menggunakan email dan kata sandi Anda.');
+        alert(res.data.message || 'Pendaftaran berhasil! Silakan masuk menggunakan akun Anda.');
         setIsRegister(false);
+        setPassword('');
+        setConfirmPassword('');
       } else {
-        // Masuk Akun
-        const response = await fetch('http://127.0.0.1:8000/api/v1/auth/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password })
+        // 2. Login Akun (FastAPI memvalidasi hash kata sandi)
+        const res = await axios.post(`${API_BASE_URL}/api/v1/auth/login`, { 
+          email: email.trim().toLowerCase(), 
+          password: password 
         });
 
-        const resData = await response.json();
-        if (!response.ok) {
-          throw new Error(resData.detail || 'Email atau kata sandi tidak cocok.');
-        }
+        localStorage.setItem('user_umkm', JSON.stringify(res.data.data));
+        localStorage.setItem('token', 'session-token-umkm-jabar');
 
-        alert(`Login berhasil! Selamat datang, ${resData.data.nama}`);
+        alert(`Login berhasil! Selamat datang, ${res.data.data.nama}`);
+
         if (typeof onLoginSukses === 'function') {
-          onLoginSukses(resData.data);
+          onLoginSukses(res.data.data);
+        } else if (typeof setHalaman === 'function') {
+          setHalaman('dashboard');
         }
       }
     } catch (err) {
-      alert(err.message);
+      console.error("Detail Error API:", err);
+      if (err.response) {
+        // Backend merespons dengan status error (400, 422, 500, dll)
+        const detailMsg = err.response.data?.detail || err.response.data?.message || `Error Server (${err.response.status})`;
+        const pesan = Array.isArray(detailMsg) 
+          ? detailMsg.map((d) => d.msg || JSON.stringify(d)).join(', ') 
+          : typeof detailMsg === 'object' ? JSON.stringify(detailMsg) : detailMsg;
+        alert(`Gagal: ${pesan}`);
+      } else if (err.request) {
+        alert(`Koneksi terputus ke ${API_BASE_URL}. Pastikan terminal uvicorn tidak error.`);
+      } else {
+        alert(`Gagal: ${err.message}`);
+      }
     } finally {
       setLoading(false);
     }
@@ -96,7 +123,6 @@ export default function Login({ onKembali, onLoginSukses, setHalaman }) {
       padding: '30px 16px',
       fontFamily: 'Inter, system-ui, sans-serif'
     }}>
-      {/* Tombol Navigasi Kembali */}
       <div style={{ maxWidth: '1020px', width: '100%', marginBottom: '14px' }}>
         <button
           type="button"
@@ -111,17 +137,13 @@ export default function Login({ onKembali, onLoginSukses, setHalaman }) {
             cursor: 'pointer',
             fontSize: '0.86rem',
             fontWeight: '700',
-            padding: '6px 0',
-            transition: 'color 0.15s ease'
+            padding: '6px 0'
           }}
-          onMouseEnter={(e) => (e.currentTarget.style.color = '#008848')}
-          onMouseLeave={(e) => (e.currentTarget.style.color = '#164E43')}
         >
           <ArrowLeft size={17} /> Kembali ke Beranda
         </button>
       </div>
 
-      {/* Kontainer Utama Layout 2 Kolom Mockup UI */}
       <div style={{
         maxWidth: '1020px',
         width: '100%',
@@ -131,7 +153,7 @@ export default function Login({ onKembali, onLoginSukses, setHalaman }) {
         alignItems: 'stretch'
       }}>
         
-        {/* Kolom Kiri: Informasi Layanan */}
+        {/* Kolom Kiri */}
         <div style={{
           background: 'linear-gradient(145deg, #164E43 0%, #0F352E 100%)',
           borderRadius: '24px',
@@ -140,9 +162,7 @@ export default function Login({ onKembali, onLoginSukses, setHalaman }) {
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          boxShadow: '0 18px 30px -10px rgba(22, 78, 67, 0.35)',
-          position: 'relative',
-          overflow: 'hidden'
+          boxShadow: '0 18px 30px -10px rgba(22, 78, 67, 0.35)'
         }}>
           <div>
             <div style={{
@@ -155,7 +175,6 @@ export default function Login({ onKembali, onLoginSukses, setHalaman }) {
               borderRadius: '999px',
               fontSize: '0.72rem',
               fontWeight: '700',
-              letterSpacing: '0.4px',
               marginBottom: '20px'
             }}>
               Portal Resmi SI-UMKM Jabar
@@ -170,71 +189,29 @@ export default function Login({ onKembali, onLoginSukses, setHalaman }) {
                 : 'Akses kembali pemantauan program bantuan, sertifikasi legalitas, dan kurasi pelatihan usaha.'}
             </p>
 
-            {/* Daftar Fitur / Nilai Tambah Platform */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-              <div style={{
-                backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                border: '1px solid rgba(255, 255, 255, 0.12)',
-                borderRadius: '14px',
-                padding: '14px 16px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '14px'
-              }}>
-                <div>
-                  <div style={{ fontWeight: '700', fontSize: '0.86rem' }}>1. Layanan UMKM Terintegrasi</div>
-                  <div style={{ fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.72)' }}>Akses berbagai fasilitas dalam satu platform</div>
-                </div>
+              <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.08)', borderRadius: '14px', padding: '14px 16px' }}>
+                <div style={{ fontWeight: '700', fontSize: '0.86rem' }}>1. Layanan UMKM Terintegrasi</div>
+                <div style={{ fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.72)' }}>Akses berbagai fasilitas dalam satu platform</div>
               </div>
-
-              <div style={{
-                backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                border: '1px solid rgba(255, 255, 255, 0.12)',
-                borderRadius: '14px',
-                padding: '14px 16px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '14px'
-              }}>
-                <div>
-                  <div style={{ fontWeight: '700', fontSize: '0.86rem' }}>2. Pelatihan & Pendampingan</div>
-                  <div style={{ fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.72)' }}>Tingkatkan kemampuan manajemen dan pemasaran</div>
-                </div>
+              <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.08)', borderRadius: '14px', padding: '14px 16px' }}>
+                <div style={{ fontWeight: '700', fontSize: '0.86rem' }}>2. Pelatihan & Pendampingan</div>
+                <div style={{ fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.72)' }}>Tingkatkan kemampuan manajemen dan pemasaran</div>
               </div>
-
-              <div style={{
-                backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                border: '1px solid rgba(255, 255, 255, 0.12)',
-                borderRadius: '14px',
-                padding: '14px 16px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '14px'
-              }}>
-                <div>
-                  <div style={{ fontWeight: '700', fontSize: '0.86rem' }}>3. Legalitas Lebih Mudah</div>
-                  <div style={{ fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.72)' }}>Ajukan dan pantau proses verifikasi perizinan</div>
-                </div>
+              <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.08)', borderRadius: '14px', padding: '14px 16px' }}>
+                <div style={{ fontWeight: '700', fontSize: '0.86rem' }}>3. Legalitas Lebih Mudah</div>
+                <div style={{ fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.72)' }}>Ajukan dan pantau proses verifikasi perizinan</div>
               </div>
             </div>
           </div>
 
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            fontSize: '0.72rem',
-            color: 'rgba(255, 255, 255, 0.65)',
-            marginTop: '32px',
-            borderTop: '1px solid rgba(255, 255, 255, 0.12)',
-            paddingTop: '16px'
-          }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: 'rgba(255, 255, 255, 0.65)', marginTop: '32px' }}>
             <span>Dinas KUK Provinsi Jawa Barat</span>
             <span>SI-UMKM v1.0</span>
           </div>
         </div>
 
-        {/* Kolom Kanan: Card Formulir */}
+        {/* Kolom Kanan */}
         <div style={{
           backgroundColor: '#FFFFFF',
           borderRadius: '24px',
@@ -251,7 +228,7 @@ export default function Login({ onKembali, onLoginSukses, setHalaman }) {
             </h3>
             <p style={{ fontSize: '0.82rem', color: '#64748B', margin: 0 }}>
               {isRegister 
-                ? 'Silakan lengkapi informasi identitas akun pemilik usaha di bawah ini.'
+                ? 'Lengkapi informasi identitas pemilik usaha di bawah ini.'
                 : 'Masukkan alamat email dan kata sandi yang telah terdaftar.'}
             </p>
           </div>
@@ -260,8 +237,8 @@ export default function Login({ onKembali, onLoginSukses, setHalaman }) {
             {isRegister && (
               <>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '700', color: '#334155', marginBottom: '6px', textTransform: 'uppercase' }}>
-                    NIK<span style={{ color: '#DC2626' }}>*</span>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '700', color: '#334155', marginBottom: '6px' }}>
+                    NIK <span style={{ color: '#DC2626' }}>*</span>
                   </label>
                   <div style={{ position: 'relative' }}>
                     <CreditCard size={16} color="#94A3B8" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
@@ -269,41 +246,27 @@ export default function Login({ onKembali, onLoginSukses, setHalaman }) {
                       type="text"
                       required
                       maxLength={16}
-                      placeholder="Masukkan 16 digit NIK sesuai KTP"
+                      placeholder="16 digit angka sesuai KTP"
                       value={nik}
-                      onChange={(e) => setNik(e.target.value)}
-                      style={{
-                        width: '100%',
-                        padding: '10px 12px 10px 38px',
-                        borderRadius: '8px',
-                        border: '1px solid #CBD5E1',
-                        fontSize: '0.84rem',
-                        boxSizing: 'border-box'
-                      }}
+                      onChange={(e) => setNik(e.target.value.replace(/\D/g, ''))}
+                      style={{ width: '100%', padding: '10px 12px 10px 38px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.84rem', boxSizing: 'border-box' }}
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '700', color: '#334155', marginBottom: '6px', textTransform: 'uppercase' }}>
-                    Nama Lengkap <span style={{ color: '#DC2626' }}>*</span>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '700', color: '#334155', marginBottom: '6px' }}>
+                    NAMA LENGKAP <span style={{ color: '#DC2626' }}>*</span>
                   </label>
                   <div style={{ position: 'relative' }}>
                     <User size={16} color="#94A3B8" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
                     <input
                       type="text"
                       required
-                      placeholder="Masukkan nama lengkap pemilik usaha"
+                      placeholder="Nama lengkap sesuai KTP"
                       value={namaLengkap}
                       onChange={(e) => setNamaLengkap(e.target.value)}
-                      style={{
-                        width: '100%',
-                        padding: '10px 12px 10px 38px',
-                        borderRadius: '8px',
-                        border: '1px solid #CBD5E1',
-                        fontSize: '0.84rem',
-                        boxSizing: 'border-box'
-                      }}
+                      style={{ width: '100%', padding: '10px 12px 10px 38px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.84rem', boxSizing: 'border-box' }}
                     />
                   </div>
                 </div>
@@ -311,70 +274,41 @@ export default function Login({ onKembali, onLoginSukses, setHalaman }) {
             )}
 
             <div>
-              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '700', color: '#334155', marginBottom: '6px', textTransform: 'uppercase' }}>
-                Email <span style={{ color: '#DC2626' }}>*</span>
+              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '700', color: '#334155', marginBottom: '6px' }}>
+                EMAIL <span style={{ color: '#DC2626' }}>*</span>
               </label>
               <div style={{ position: 'relative' }}>
                 <Mail size={16} color="#94A3B8" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
                 <input
                   type="email"
                   required
-                  placeholder="contoh: pemilik@umkmjabar.id"
+                  placeholder="contoh: nama@gmail.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '10px 12px 10px 38px',
-                    borderRadius: '8px',
-                    border: '1px solid #CBD5E1',
-                    fontSize: '0.84rem',
-                    boxSizing: 'border-box'
-                  }}
+                  style={{ width: '100%', padding: '10px 12px 10px 38px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.84rem', boxSizing: 'border-box' }}
                 />
               </div>
             </div>
 
-            {/* Input Password & Konfirmasi Password Berdampingan */}
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: isRegister ? '1fr 1fr' : '1fr',
-              gap: '12px'
-            }}>
+            <div style={{ display: 'grid', gridTemplateColumns: isRegister ? '1fr 1fr' : '1fr', gap: '12px' }}>
               <div>
-                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '700', color: '#334155', marginBottom: '6px', textTransform: 'uppercase' }}>
-                  Password <span style={{ color: '#DC2626' }}>*</span>
+                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '700', color: '#334155', marginBottom: '6px' }}>
+                  PASSWORD <span style={{ color: '#DC2626' }}>*</span>
                 </label>
                 <div style={{ position: 'relative' }}>
                   <Lock size={15} color="#94A3B8" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
                   <input
                     type={showPassword ? 'text' : 'password'}
                     required
-                    placeholder="Minimal 6 karakter"
+                    placeholder="Min. 6 karakter"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '10px 34px 10px 36px',
-                      borderRadius: '8px',
-                      border: '1px solid #CBD5E1',
-                      fontSize: '0.84rem',
-                      boxSizing: 'border-box'
-                    }}
+                    style={{ width: '100%', padding: '10px 34px 10px 36px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.84rem', boxSizing: 'border-box' }}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    style={{
-                      position: 'absolute',
-                      right: '10px',
-                      top: '50%',
-                      transform: 'translateY(-50%)',
-                      background: 'none',
-                      border: 'none',
-                      cursor: 'pointer',
-                      color: '#94A3B8',
-                      padding: 0
-                    }}
+                    style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#94A3B8', padding: 0 }}
                   >
                     {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
                   </button>
@@ -383,8 +317,8 @@ export default function Login({ onKembali, onLoginSukses, setHalaman }) {
 
               {isRegister && (
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '700', color: '#334155', marginBottom: '6px', textTransform: 'uppercase' }}>
-                    Konfirmasi Password <span style={{ color: '#DC2626' }}>*</span>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '700', color: '#334155', marginBottom: '6px' }}>
+                    KONFIRMASI PASSWORD <span style={{ color: '#DC2626' }}>*</span>
                   </label>
                   <div style={{ position: 'relative' }}>
                     <Lock size={15} color="#94A3B8" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
@@ -394,29 +328,12 @@ export default function Login({ onKembali, onLoginSukses, setHalaman }) {
                       placeholder="Ulangi kata sandi"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
-                      style={{
-                        width: '100%',
-                        padding: '10px 34px 10px 36px',
-                        borderRadius: '8px',
-                        border: '1px solid #CBD5E1',
-                        fontSize: '0.84rem',
-                        boxSizing: 'border-box'
-                      }}
+                      style={{ width: '100%', padding: '10px 34px 10px 36px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.84rem', boxSizing: 'border-box' }}
                     />
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      style={{
-                        position: 'absolute',
-                        right: '10px',
-                        top: '50%',
-                        transform: 'translateY(-50%)',
-                        background: 'none',
-                        border: 'none',
-                        cursor: 'pointer',
-                        color: '#94A3B8',
-                        padding: 0
-                      }}
+                      style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#94A3B8', padding: 0 }}
                     >
                       {showConfirmPassword ? <EyeOff size={15} /> : <Eye size={15} />}
                     </button>
@@ -427,46 +344,27 @@ export default function Login({ onKembali, onLoginSukses, setHalaman }) {
 
             {isRegister && (
               <div>
-                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '700', color: '#334155', marginBottom: '6px', textTransform: 'uppercase' }}>
-                  Nomor WhatsApp <span style={{ color: '#DC2626' }}>*</span>
+                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '700', color: '#334155', marginBottom: '6px' }}>
+                  NOMOR WHATSAPP <span style={{ color: '#DC2626' }}>*</span>
                 </label>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  <div style={{
-                    padding: '10px 14px',
-                    backgroundColor: '#F1F5F9',
-                    border: '1px solid #CBD5E1',
-                    borderRadius: '8px',
-                    fontSize: '0.84rem',
-                    fontWeight: '700',
-                    color: '#008848'
-                  }}>
-                    +62
-                  </div>
-                  <div style={{ position: 'relative', width: '100%' }}>
-                    <Phone size={16} color="#94A3B8" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
-                    <input
-                      type="text"
-                      required
-                      placeholder="8xxxxxxxxxx"
-                      value={nomorWhatsapp}
-                      onChange={(e) => setNomorWhatsapp(e.target.value)}
-                      style={{
-                        width: '100%',
-                        padding: '10px 12px 10px 38px',
-                        borderRadius: '8px',
-                        border: '1px solid #CBD5E1',
-                        fontSize: '0.84rem',
-                        boxSizing: 'border-box'
-                      }}
-                    />
-                  </div>
+                <div style={{ position: 'relative' }}>
+                  <Phone size={16} color="#94A3B8" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+                  <input
+                    type="text"
+                    required
+                    maxLength={13}
+                    placeholder="08xxxxxxxxxx (10 - 13 digit)"
+                    value={nomorWhatsapp}
+                    onChange={(e) => setNomorWhatsapp(e.target.value.replace(/\D/g, ''))}
+                    style={{ width: '100%', padding: '10px 12px 10px 38px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.84rem', boxSizing: 'border-box' }}
+                  />
                 </div>
               </div>
             )}
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.72rem', color: '#64748B', marginTop: '2px' }}>
               <ShieldCheck size={14} color="#008848" />
-              <span>Pastikan data akun aktif untuk menerima notifikasi status permohonan.</span>
+              <span>Kata sandi dienkripsi dengan standar hash Bcrypt sebelum disimpan.</span>
             </div>
 
             <button
@@ -486,18 +384,14 @@ export default function Login({ onKembali, onLoginSukses, setHalaman }) {
                 justifyContent: 'center',
                 gap: '8px',
                 marginTop: '10px',
-                boxShadow: '0 4px 12px rgba(22, 78, 67, 0.25)',
-                transition: 'background-color 0.2s ease'
+                boxShadow: '0 4px 12px rgba(22, 78, 67, 0.25)'
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#0F352E')}
-              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#164E43')}
             >
               {loading ? 'Memproses...' : isRegister ? 'Lanjutkan Pendaftaran' : 'Masuk Sekarang'}
               <ArrowRight size={16} />
             </button>
           </form>
 
-          {/* Opsi Beralih Antara Masuk dan Daftar */}
           <div style={{ textAlign: 'center', marginTop: '22px', fontSize: '0.82rem', color: '#64748B' }}>
             {isRegister ? 'Sudah memiliki akun terdaftar?' : 'Belum memiliki akun terdaftar?'}{' '}
             <span

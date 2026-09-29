@@ -4,6 +4,7 @@ import shutil
 import uuid
 from typing import List, Optional
 
+import bcrypt
 from fastapi import FastAPI, Depends, Query, Form, UploadFile, File, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -13,9 +14,22 @@ from sqlalchemy.orm import Session
 import models
 from database import engine, get_db
 
-# Membuat tabel otomatis
+# 1. Konfigurasi Hashing Password Langsung via pustaka bcrypt (Aman & Bebas Bug 72-Byte)
+def hash_password(password: str) -> str:
+    pwd_bytes = password.encode('utf-8')[:71]
+    salt = bcrypt.gensalt()
+    return bcrypt.hashpw(pwd_bytes, salt).decode('utf-8')
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    pwd_bytes = plain_password.encode('utf-8')[:71]
+    hash_bytes = hashed_password.encode('utf-8')
+    return bcrypt.checkpw(pwd_bytes, hash_bytes)
+
+
+# Membuat tabel database otomatis jika belum ada
 models.Base.metadata.create_all(bind=engine)
 
+# Metadata Kategori Swagger Docs
 tags_metadata = [
     {"name": "Umum", "description": "Endpoint autentikasi akun dan status server API SI-UMKM Jabar."},
     {"name": "Pelaku UMKM", "description": "Layanan direktori UMKM, pendaftaran pelatihan, permohonan bantuan, dan sertifikasi."},
@@ -29,6 +43,7 @@ app = FastAPI(
     openapi_tags=tags_metadata
 )
 
+# Konfigurasi CORS agar frontend React Vite bisa mengakses API tanpa kendala
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -54,7 +69,6 @@ def simpan_dokumen(file: Optional[UploadFile]):
 
 
 # SKEMA REQUEST PYDANTIC
-
 class RegisterUserRequest(BaseModel):
     nik: str
     nama_lengkap: str
@@ -77,8 +91,10 @@ class VerifikasiRequest(BaseModel):
     status: str
     catatan_admin: Optional[str] = None
 
-# 1. UMUM & AUTENTIKASI
 
+# ==============================================================================
+# 1. KELOMPOK: UMUM & AUTENTIKASI
+# ==============================================================================
 
 @app.get("/", tags=["Umum"], summary="Cek Kesiapan Server API")
 def read_root():
@@ -87,37 +103,41 @@ def read_root():
 
 @app.post("/api/v1/auth/register", tags=["Umum"], status_code=status.HTTP_201_CREATED, summary="Registrasi Akun Baru")
 def register_user(payload: RegisterUserRequest, db: Session = Depends(get_db)):
-    # 1. Validasi NIK
-    if not re.fullmatch(r"^\d{16}$", payload.nik):
+    nik_clean = payload.nik.strip()
+    email_clean = payload.email.strip().lower()
+    wa_clean = payload.nomor_whatsapp.strip()
+
+    # Validasi NIK (16 digit angka)
+    if not re.fullmatch(r"^\d{16}$", nik_clean):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="NIK tidak valid. Harus tepat 16 digit angka."
         )
 
-    # 2. Validasi Nomor WA
-    if not re.fullmatch(r"^\d{10,13}$", payload.nomor_whatsapp):
+    # Validasi Nomor WhatsApp (10-13 digit)
+    if not re.fullmatch(r"^\d{10,13}$", wa_clean):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Nomor WhatsApp tidak valid. Harus berupa angka dengan panjang 10 sampai 13 digit."
         )
 
-    # 3. Validasi Email
-    if not re.fullmatch(r"^[a-zA-Z0-9_.+-]+@gmail\.com$", payload.email):
+    # Validasi Email (wajib @gmail.com)
+    if not re.fullmatch(r"^[a-zA-Z0-9_.+-]+@gmail\.com$", email_clean):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Format email tidak valid. Wajib menggunakan akun @gmail.com."
         )
 
-    # 4. Validasi Kata Sandi
+    # Validasi Kata Sandi minimal 6 karakter
     if len(payload.password) < 6:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Kata sandi terlalu pendek. Minimal 6 karakter."
         )
 
-    # 5. Cek duplikasi NIK
+    # Cek duplikasi NIK atau Email
     user_exist = db.query(models.User).filter(
-        (models.User.nik == payload.nik) | (models.User.email == payload.email)
+        (models.User.nik == nik_clean) | (models.User.email == email_clean)
     ).first()
     if user_exist:
         raise HTTPException(
@@ -125,13 +145,15 @@ def register_user(payload: RegisterUserRequest, db: Session = Depends(get_db)):
             detail="NIK atau Email sudah terdaftar di sistem."
         )
 
-    # Simpan akun baru dengan role default 'umum'
+    # Enkripsi kata sandi menggunakan hash bcrypt
+    hashed_pwd = hash_password(payload.password)
+
     user_baru = models.User(
-        nik=payload.nik,
+        nik=nik_clean,
         nama_lengkap=payload.nama_lengkap.strip(),
-        email=payload.email.strip().lower(),
-        nomor_whatsapp=payload.nomor_whatsapp.strip(),
-        password=payload.password,
+        email=email_clean,
+        nomor_whatsapp=wa_clean,
+        password=hashed_pwd,
         role="umum"
     )
 
@@ -154,12 +176,13 @@ def register_user(payload: RegisterUserRequest, db: Session = Depends(get_db)):
 
 @app.post("/api/v1/auth/login", tags=["Umum"], summary="Masuk ke Akun")
 def login_user(payload: LoginUserRequest, db: Session = Depends(get_db)):
+    email_clean = payload.email.strip().lower()
+
     user = db.query(models.User).filter(
-        models.User.email == payload.email.strip().lower(),
-        models.User.password == payload.password
+        models.User.email == email_clean
     ).first()
 
-    if not user:
+    if not user or not verify_password(payload.password, user.password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Email atau kata sandi tidak cocok."
@@ -178,7 +201,10 @@ def login_user(payload: LoginUserRequest, db: Session = Depends(get_db)):
     }
 
 
-# 2. PELAKU UMKM
+# ==============================================================================
+# 2. KELOMPOK: PELAKU UMKM
+# ==============================================================================
+
 @app.get("/api/v1/umkm", tags=["Pelaku UMKM"], summary="Ambil Direktori Data UMKM")
 def get_all_umkm(
     kategori: Optional[str] = Query(None),
@@ -223,7 +249,7 @@ def daftar_pelatihan(payload: DaftarPelatihanRequest, db: Session = Depends(get_
     }
 
 
-@app.post("/api/v1/layanan/pengajuan-bantuan", tags=["Pelaku UMKM"], status_code=status.HTTP_201_CREATED)
+@app.post("/api/v1/layanan/pengajuan-bantuan", tags=["Pelaku UMKM"], status_code=status.HTTP_201_CREATED, summary="Ajukan Bantuan")
 async def ajukan_bantuan(
     nik: str = Form(...),
     nama_lengkap: str = Form(...),
@@ -246,8 +272,12 @@ async def ajukan_bantuan(
     user = db.query(models.User).filter(models.User.nik == nik).first()
     if not user:
         user = models.User(
-            nik=nik, nama_lengkap=nama_lengkap, email=email,
-            password="default_password", nomor_whatsapp=nomor_whatsapp, role="umum"
+            nik=nik,
+            nama_lengkap=nama_lengkap,
+            email=email,
+            password=hash_password("default12345"),
+            nomor_whatsapp=nomor_whatsapp,
+            role="umum"
         )
         db.add(user)
         db.commit()
@@ -274,7 +304,7 @@ async def ajukan_bantuan(
     return {"status": "success", "nomor_pengajuan": no_pengajuan}
 
 
-@app.post("/api/v1/layanan/pengajuan-sertifikasi", tags=["Pelaku UMKM"], status_code=status.HTTP_201_CREATED)
+@app.post("/api/v1/layanan/pengajuan-sertifikasi", tags=["Pelaku UMKM"], status_code=status.HTTP_201_CREATED, summary="Ajukan Sertifikasi")
 async def ajukan_sertifikasi(
     nik: str = Form(...),
     nama_lengkap: str = Form(...),
@@ -296,8 +326,12 @@ async def ajukan_sertifikasi(
     user = db.query(models.User).filter(models.User.nik == nik).first()
     if not user:
         user = models.User(
-            nik=nik, nama_lengkap=nama_lengkap, email=email,
-            password="default_password", nomor_whatsapp=nomor_whatsapp, role="umum"
+            nik=nik,
+            nama_lengkap=nama_lengkap,
+            email=email,
+            password=hash_password("default12345"),
+            nomor_whatsapp=nomor_whatsapp,
+            role="umum"
         )
         db.add(user)
         db.commit()
@@ -323,9 +357,11 @@ async def ajukan_sertifikasi(
     return {"status": "success", "nomor_registrasi": no_reg}
 
 
-# 3. ADMIN DINAS
+# ==============================================================================
+# 3. KELOMPOK: ADMIN DINAS
+# ==============================================================================
 
-@app.get("/api/v1/admin/pengajuan", tags=["Admin Dinas"])
+@app.get("/api/v1/admin/pengajuan", tags=["Admin Dinas"], summary="Get Semua Pengajuan")
 def get_semua_pengajuan(status_filter: Optional[str] = Query(None), db: Session = Depends(get_db)):
     q = db.query(models.PengajuanBantuan)
     if status_filter:
@@ -333,7 +369,7 @@ def get_semua_pengajuan(status_filter: Optional[str] = Query(None), db: Session 
     return {"status": "success", "data": q.order_by(models.PengajuanBantuan.created_at.desc()).all()}
 
 
-@app.patch("/api/v1/admin/pengajuan/{pengajuan_id}", tags=["Admin Dinas"])
+@app.patch("/api/v1/admin/pengajuan/{pengajuan_id}", tags=["Admin Dinas"], summary="Verifikasi Pengajuan")
 def verifikasi_pengajuan(pengajuan_id: int, payload: VerifikasiRequest, db: Session = Depends(get_db)):
     pengajuan = db.query(models.PengajuanBantuan).filter(models.PengajuanBantuan.id == pengajuan_id).first()
     if not pengajuan:
@@ -344,7 +380,7 @@ def verifikasi_pengajuan(pengajuan_id: int, payload: VerifikasiRequest, db: Sess
     return {"status": "success", "message": "Status berhasil diperbarui."}
 
 
-@app.get("/api/v1/admin/sertifikasi", tags=["Admin Dinas"])
+@app.get("/api/v1/admin/sertifikasi", tags=["Admin Dinas"], summary="Get Semua Sertifikasi")
 def get_semua_sertifikasi(status_filter: Optional[str] = Query(None), db: Session = Depends(get_db)):
     q = db.query(models.PengajuanSertifikasi)
     if status_filter:
@@ -352,7 +388,7 @@ def get_semua_sertifikasi(status_filter: Optional[str] = Query(None), db: Sessio
     return {"status": "success", "data": q.order_by(models.PengajuanSertifikasi.created_at.desc()).all()}
 
 
-@app.patch("/api/v1/admin/sertifikasi/{sertifikasi_id}", tags=["Admin Dinas"])
+@app.patch("/api/v1/admin/sertifikasi/{sertifikasi_id}", tags=["Admin Dinas"], summary="Verifikasi Sertifikasi")
 def verifikasi_sertifikasi(sertifikasi_id: int, payload: VerifikasiRequest, db: Session = Depends(get_db)):
     sertifikasi = db.query(models.PengajuanSertifikasi).filter(models.PengajuanSertifikasi.id == sertifikasi_id).first()
     if not sertifikasi:
