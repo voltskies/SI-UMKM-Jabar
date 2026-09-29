@@ -58,3 +58,37 @@ class PengajuanBantuan(Base):
 
     # Relasi balik ke User
     pemohon = relationship("User", back_populates="pengajuan")
+
+
+class PendaftaranPelatihan(Base):
+    __tablename__ = "pendaftaran_pelatihan"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, nullable=False)
+    id_pelatihan = Column(Integer, nullable=False)
+    judul_pelatihan = Column(String(255), nullable=False)
+    kategori = Column(String(100), nullable=True)
+    penyelenggara = Column(String(150), nullable=True)
+    metode_belajar = Column(String(100), default="Daring Terpadu & Mandiri")
+    status = Column(String(50), default="Terdaftar")
+    file_syarat = Column(String(500), nullable=True)
+    tanggal_daftar = Column(DateTime, default=datetime.utcnow)
+
+
+class PengajuanSertifikasi(Base):
+    __tablename__ = "pengajuan_sertifikasi"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    nomor_registrasi = Column(String(50), unique=True, index=True, nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    nama_usaha = Column(String(150), nullable=False)
+    nama_produk = Column(String(150), nullable=False)
+    jenis_sertifikasi = Column(String(100), nullable=False)
+    deskripsi_produk = Column(Text, nullable=True)
+    nib = Column(String(50), nullable=True)
+    file_ktp = Column(String(255), nullable=True)
+    file_foto_produk = Column(String(255), nullable=True)
+    file_dokumen_pendukung = Column(String(255), nullable=True)
+    status = Column(String(50), default="Menunggu Verifikasi")
+    catatan_admin = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)

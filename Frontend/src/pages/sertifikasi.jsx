@@ -1,7 +1,8 @@
 import { useState } from 'react';
+import axios from 'axios';
 import {
   Award, ArrowLeft, CheckCircle2, Circle, Clock,
-  FileText, XCircle, Mail, ShieldCheck
+  FileText, XCircle, Mail, ShieldCheck, Loader2
 } from 'lucide-react';
 
 import Navbar from '../component/navbar';
@@ -41,7 +42,10 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
   });
   const [fileTerupload, setFileTerupload] = useState({});
   const [errorForm, setErrorForm] = useState('');
+  const [loading, setLoading] = useState(false);
   const [nomorSukses, setNomorSukses] = useState(null);
+
+  const API_BASE_URL = `http://${window.location.hostname || '127.0.0.1'}:8000`;
 
   // Navigasi kembali ke Dashboard beranda
   const handleKembaliKeDashboard = () => {
@@ -68,7 +72,7 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
     setFileTerupload((prev) => ({ ...prev, [idDokumen]: file }));
   };
 
-  const handleSubmitForm = (e) => {
+  const handleSubmitForm = async (e) => {
     e.preventDefault();
     setErrorForm('');
 
@@ -86,9 +90,45 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
       return;
     }
 
-    const nomorBaru = generateNomorRegistrasi();
-    setDataLegalitas({ status: 'diajukan', nomorRegistrasi: nomorBaru, catatanAdmin: '' });
-    setNomorSukses(nomorBaru);
+    setLoading(true);
+
+    try {
+      // 1. Upload file persyaratan ke Supabase Storage via endpoint FastAPI
+      const urlDokumen = {};
+
+      for (const [idDokumen, file] of Object.entries(fileTerupload)) {
+        if (file) {
+          const formPayload = new FormData();
+          formPayload.append('file', file);
+
+          const uploadRes = await axios.post(`${API_BASE_URL}/api/sertifikasi/upload`, formPayload, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+          });
+
+          if (uploadRes.data && uploadRes.data.file_url) {
+            urlDokumen[idDokumen] = uploadRes.data.file_url;
+          }
+        }
+      }
+
+      // 2. Buat nomor registrasi baru dan simpan data pengajuan
+      const nomorBaru = generateNomorRegistrasi();
+      
+      setDataLegalitas({ 
+        status: 'diajukan', 
+        nomorRegistrasi: nomorBaru, 
+        catatanAdmin: '',
+        dokumen: urlDokumen 
+      });
+
+      setNomorSukses(nomorBaru);
+    } catch (err) {
+      console.error('Gagal mengunggah berkas sertifikasi:', err);
+      const pesan = err.response?.data?.detail || 'Terjadi kesalahan saat mengunggah berkas ke server.';
+      setErrorForm(typeof pesan === 'string' ? pesan : JSON.stringify(pesan));
+    } finally {
+      setLoading(false);
+    }
   };
 
   const tutupModalSukses = () => {
@@ -359,7 +399,7 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
                       </label>
                       <input
                         type="file"
-                        accept="image/*,application/pdf"
+                        accept="image/jpeg,image/png,application/pdf"
                         onChange={(e) => handleUploadDokumen(dok.id, e.target.files[0])}
                         style={{ fontSize: '0.78rem' }}
                       />
@@ -375,20 +415,21 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
 
               <button
                 type="submit"
+                disabled={loading}
                 style={{
                   width: '100%',
-                  backgroundColor: '#164E43',
+                  backgroundColor: loading ? '#94A3B8' : '#164E43',
                   color: '#FFFFFF',
                   border: 'none',
                   borderRadius: '10px',
                   padding: '14px',
                   fontWeight: '700',
                   fontSize: '0.95rem',
-                  cursor: 'pointer',
+                  cursor: loading ? 'not-allowed' : 'pointer',
                   boxShadow: '0 4px 14px rgba(22, 78, 67, 0.25)'
                 }}
               >
-                Kirim Pengajuan Legalitas
+                {loading ? 'Mengunggah Berkas ke Cloud...' : 'Kirim Pengajuan Legalitas'}
               </button>
             </form>
           </div>
@@ -427,7 +468,7 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
               Pengajuan Berhasil Dikirim!
             </h2>
             <p style={{ fontSize: '0.85rem', color: '#64748B', lineHeight: '1.5', margin: '0 0 20px' }}>
-              Dokumen Anda akan diverifikasi oleh admin Dinas KUK Jawa Barat. Simpan nomor registrasi ini:
+              Dokumen Anda telah diunggah ke cloud storage dan segera diverifikasi oleh admin Dinas KUK Jawa Barat. Simpan nomor registrasi ini:
             </p>
             <div style={{
               backgroundColor: '#F8FAFC',

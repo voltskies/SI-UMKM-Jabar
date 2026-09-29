@@ -1,20 +1,19 @@
 import os
 import re
-import shutil
 import uuid
-from typing import List, Optional
+from typing import Optional
 
 import bcrypt
 from fastapi import FastAPI, Depends, Query, Form, UploadFile, File, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 import models
 from database import engine, get_db
+from supabase_client import upload_file_to_supabase
 
-# 1. Konfigurasi Hashing Password Langsung via pustaka bcrypt (Aman & Bebas Bug 72-Byte)
+# 1. Konfigurasi Hashing Password Langsung via pustaka bcrypt
 def hash_password(password: str) -> str:
     pwd_bytes = password.encode('utf-8')[:71]
     salt = bcrypt.gensalt()
@@ -25,7 +24,6 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     hash_bytes = hashed_password.encode('utf-8')
     return bcrypt.checkpw(pwd_bytes, hash_bytes)
 
-
 # Membuat tabel database otomatis jika belum ada
 models.Base.metadata.create_all(bind=engine)
 
@@ -33,6 +31,8 @@ models.Base.metadata.create_all(bind=engine)
 tags_metadata = [
     {"name": "Umum", "description": "Endpoint autentikasi akun dan status server API SI-UMKM Jabar."},
     {"name": "Pelaku UMKM", "description": "Layanan direktori UMKM, pendaftaran pelatihan, permohonan bantuan, dan sertifikasi."},
+    {"name": "Pelatihan", "description": "Layanan khusus katalog dan pendaftaran pelatihan bersertifikat."},
+    {"name": "Sertifikasi", "description": "Layanan pengajuan dan upload berkas sertifikasi legalitas."},
     {"name": "Admin Dinas", "description": "Panel dinas untuk pemantauan dan verifikasi berkas."},
 ]
 
@@ -43,7 +43,7 @@ app = FastAPI(
     openapi_tags=tags_metadata
 )
 
-# CORS TERBUKA PENUH (Mengatasi semua masalah origin localhost vs 127.0.0.1)
+# CORS TERBUKA PENUH (Mengatasi masalah origin localhost vs 127.0.0.1)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -51,24 +51,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# 2. Direktori Penyimpanan Berkas Eksternal (Di luar folder project)
-UPLOAD_DIR = r"D:\E-Gov Berkas Upload"
-os.makedirs(UPLOAD_DIR, exist_ok=True)
-app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
-
-
-def simpan_dokumen(file: Optional[UploadFile]):
-    if not file or not file.filename:
-        return None
-    file_ext = os.path.splitext(file.filename)[1]
-    unique_name = f"{uuid.uuid4().hex}{file_ext}"
-    target_path = os.path.join(UPLOAD_DIR, unique_name)
-    with open(target_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
-    # Kembalikan relative path web agar dapat diakses melalui browser/frontend
-    return f"/uploads/{unique_name}"
-
 
 # SKEMA REQUEST PYDANTIC
 class RegisterUserRequest(BaseModel):
@@ -81,13 +63,6 @@ class RegisterUserRequest(BaseModel):
 class LoginUserRequest(BaseModel):
     email: str
     password: str
-
-class DaftarPelatihanRequest(BaseModel):
-    user_id: int
-    id_pelatihan: int
-    judul_pelatihan: str
-    kategori: Optional[str] = None
-    penyelenggara: Optional[str] = None
 
 class VerifikasiRequest(BaseModel):
     status: str
@@ -109,35 +84,30 @@ def register_user(payload: RegisterUserRequest, db: Session = Depends(get_db)):
     email_clean = payload.email.strip().lower()
     wa_clean = payload.nomor_whatsapp.strip()
 
-    # Validasi NIK (16 digit angka)
     if not re.fullmatch(r"^\d{16}$", nik_clean):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="NIK tidak valid. Harus tepat 16 digit angka."
         )
 
-    # Validasi Nomor WhatsApp (10-13 digit)
     if not re.fullmatch(r"^\d{10,13}$", wa_clean):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Nomor WhatsApp tidak valid. Harus berupa angka dengan panjang 10 sampai 13 digit."
         )
 
-    # Validasi Email (wajib @gmail.com)
     if not re.fullmatch(r"^[a-zA-Z0-9_.+-]+@gmail\.com$", email_clean):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Format email tidak valid. Wajib menggunakan akun @gmail.com."
         )
 
-    # Validasi Kata Sandi minimal 6 karakter
     if len(payload.password) < 6:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Kata sandi terlalu pendek. Minimal 6 karakter."
         )
 
-    # Cek duplikasi NIK atau Email
     user_exist = db.query(models.User).filter(
         (models.User.nik == nik_clean) | (models.User.email == email_clean)
     ).first()
@@ -147,7 +117,6 @@ def register_user(payload: RegisterUserRequest, db: Session = Depends(get_db)):
             detail="NIK atau Email sudah terdaftar di sistem."
         )
 
-    # Enkripsi kata sandi menggunakan hash bcrypt
     hashed_pwd = hash_password(payload.password)
 
     user_baru = models.User(
@@ -204,7 +173,7 @@ def login_user(payload: LoginUserRequest, db: Session = Depends(get_db)):
 
 
 # ==============================================================================
-# 2. KELOMPOK: PELAKU UMKM
+# 2. KELOMPOK: PELAKU UMKM & LAYANAN
 # ==============================================================================
 
 @app.get("/api/v1/umkm", tags=["Pelaku UMKM"], summary="Ambil Direktori Data UMKM")
@@ -223,22 +192,37 @@ def get_all_umkm(
 
 
 @app.post("/api/v1/layanan/pendaftaran-pelatihan", tags=["Pelaku UMKM"], status_code=status.HTTP_201_CREATED, summary="Daftar Pelatihan")
-def daftar_pelatihan(payload: DaftarPelatihanRequest, db: Session = Depends(get_db)):
+async def daftar_pelatihan(
+    user_id: int = Form(...),
+    id_pelatihan: int = Form(...),
+    judul_pelatihan: str = Form(...),
+    kategori: Optional[str] = Form(None),
+    penyelenggara: Optional[str] = Form(None),
+    file_syarat: Optional[UploadFile] = File(None),
+    db: Session = Depends(get_db)
+):
     sudah_daftar = db.query(models.PendaftaranPelatihan).filter(
-        models.PendaftaranPelatihan.user_id == payload.user_id,
-        models.PendaftaranPelatihan.id_pelatihan == payload.id_pelatihan
+        models.PendaftaranPelatihan.user_id == user_id,
+        models.PendaftaranPelatihan.id_pelatihan == id_pelatihan
     ).first()
 
     if sudah_daftar:
         raise HTTPException(status_code=400, detail="Anda sudah mendaftar di pelatihan ini.")
 
+    # Upload berkas ke folder 'pelatihan' di Supabase
+    url_berkas = None
+    if file_syarat:
+        url_berkas = await upload_file_to_supabase(file_syarat, folder="pelatihan")
+
     pendaftaran = models.PendaftaranPelatihan(
-        user_id=payload.user_id,
-        id_pelatihan=payload.id_pelatihan,
-        judul_pelatihan=payload.judul_pelatihan,
-        kategori=payload.kategori,
-        penyelenggara=payload.penyelenggara,
-        status="Terdaftar"
+        user_id=user_id,
+        id_pelatihan=id_pelatihan,
+        judul_pelatihan=judul_pelatihan,
+        kategori=kategori,
+        penyelenggara=penyelenggara,
+        metode_belajar="Daring Terpadu & Mandiri",
+        status="Terdaftar",
+        file_syarat=url_berkas
     )
     db.add(pendaftaran)
     db.commit()
@@ -247,6 +231,7 @@ def daftar_pelatihan(payload: DaftarPelatihanRequest, db: Session = Depends(get_
     return {
         "status": "success",
         "message": "Berhasil mendaftar pelatihan.",
+        "file_url": url_berkas,
         "data": pendaftaran
     }
 
@@ -285,6 +270,12 @@ async def ajukan_bantuan(
         db.commit()
         db.refresh(user)
 
+    # Upload langsung ke Supabase Storage (folder 'bantuan')
+    url_ktp = await upload_file_to_supabase(file_ktp, folder="bantuan")
+    url_kk = await upload_file_to_supabase(file_kk, folder="bantuan") if file_kk else None
+    url_nib = await upload_file_to_supabase(file_nib, folder="bantuan") if file_nib else None
+    url_proposal = await upload_file_to_supabase(file_proposal, folder="bantuan") if file_proposal else None
+
     no_pengajuan = f"ONT-2026-{uuid.uuid4().hex[:4].upper()}"
     pengajuan = models.PengajuanBantuan(
         nomor_pengajuan=no_pengajuan,
@@ -294,15 +285,16 @@ async def ajukan_bantuan(
         nib=nib,
         jumlah_dana=jumlah_dana,
         tujuan_penggunaan=tujuan_penggunaan,
-        file_ktp=simpan_dokumen(file_ktp),
-        file_kk=simpan_dokumen(file_kk),
-        file_nib=simpan_dokumen(file_nib),
-        file_proposal=simpan_dokumen(file_proposal),
+        file_ktp=url_ktp,
+        file_kk=url_kk,
+        file_nib=url_nib,
+        file_proposal=url_proposal,
         status="Menunggu Verifikasi"
     )
     db.add(pengajuan)
     db.commit()
     db.refresh(pengajuan)
+
     return {"status": "success", "nomor_pengajuan": no_pengajuan}
 
 
@@ -339,6 +331,11 @@ async def ajukan_sertifikasi(
         db.commit()
         db.refresh(user)
 
+    # Upload ke Supabase Storage (folder 'sertifikasi')
+    url_ktp = await upload_file_to_supabase(file_ktp, folder="sertifikasi")
+    url_foto_produk = await upload_file_to_supabase(file_foto_produk, folder="sertifikasi")
+    url_pendukung = await upload_file_to_supabase(file_dokumen_pendukung, folder="sertifikasi") if file_dokumen_pendukung else None
+
     no_reg = f"SRT-2026-{uuid.uuid4().hex[:4].upper()}"
     sertifikasi = models.PengajuanSertifikasi(
         nomor_registrasi=no_reg,
@@ -348,9 +345,9 @@ async def ajukan_sertifikasi(
         jenis_sertifikasi=jenis_sertifikasi,
         deskripsi_produk=deskripsi_produk,
         nib=nib,
-        file_ktp=simpan_dokumen(file_ktp),
-        file_foto_produk=simpan_dokumen(file_foto_produk),
-        file_dokumen_pendukung=simpan_dokumen(file_dokumen_pendukung),
+        file_ktp=url_ktp,
+        file_foto_produk=url_foto_produk,
+        file_dokumen_pendukung=url_pendukung,
         status="Menunggu Verifikasi"
     )
     db.add(sertifikasi)
@@ -360,7 +357,31 @@ async def ajukan_sertifikasi(
 
 
 # ==============================================================================
-# 3. KELOMPOK: ADMIN DINAS
+# 3. KELOMPOK: UPLOAD FILE STANDALONE
+# ==============================================================================
+
+@app.post("/api/pelatihan/upload", tags=["Pelatihan"], summary="Upload Mandiri Berkas Pelatihan")
+async def upload_berkas_pelatihan(file: UploadFile = File(...)):
+    file_url = await upload_file_to_supabase(file, folder="pelatihan")
+    return {
+        "status": "success",
+        "message": "Berkas pelatihan berhasil diunggah",
+        "file_url": file_url
+    }
+
+
+@app.post("/api/sertifikasi/upload", tags=["Sertifikasi"], summary="Upload Mandiri Berkas Sertifikasi")
+async def upload_berkas_sertifikasi(file: UploadFile = File(...)):
+    file_url = await upload_file_to_supabase(file, folder="sertifikasi")
+    return {
+        "status": "success",
+        "message": "Berkas sertifikasi berhasil diunggah",
+        "file_url": file_url
+    }
+
+
+# ==============================================================================
+# 4. KELOMPOK: ADMIN DINAS
 # ==============================================================================
 
 @app.get("/api/v1/admin/pengajuan", tags=["Admin Dinas"], summary="Get Semua Pengajuan")

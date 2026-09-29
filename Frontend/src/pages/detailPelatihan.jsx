@@ -1,15 +1,46 @@
 import { useState } from 'react';
-import { ArrowLeft, Users, GraduationCap, RefreshCw, Share2 } from 'lucide-react';
+import axios from 'axios';
+import { 
+  ArrowLeft, Users, GraduationCap, RefreshCw, Share2, 
+  Upload, CheckCircle2, AlertCircle, X, Copy, Check,
+  MessageCircle, Send, Globe
+} from 'lucide-react';
 import Navbar from '../component/navbar';
 import Footer from '../component/footer';
 
 export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user, onArahkanLogin }) {
   const [loading, setLoading] = useState(false);
+  const [berkasSyarat, setBerkasSyarat] = useState(null);
+  const [errorMsg, setErrorMsg] = useState('');
+  const [suksesMsg, setSuksesMsg] = useState('');
+
+  // State untuk modal share & status copy link
+  const [bukaModalShare, setBukaModalShare] = useState(false);
+  const [sudahDisalin, setSudahDisalin] = useState(false);
 
   if (!pelatihan) return null;
 
+  const API_BASE_URL = `http://${window.location.hostname || '127.0.0.1'}:8000`;
+  const shareUrl = window.location.href;
+  const shareTitle = `Ayo ikuti pelatihan UMKM Jabar: "${pelatihan.judul || pelatihan.title}" dari ${pelatihan.penyelenggara || 'Dinas KUK Jawa Barat'}!`;
+
+  // Fungsi Salin Link
+  const handleSalinLink = () => {
+    navigator.clipboard.writeText(shareUrl);
+    setSudahDisalin(true);
+    setTimeout(() => setSudahDisalin(false), 2500);
+  };
+
+  // Link Share ke Medsos
+  const linkWhatsApp = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareTitle + '\n' + shareUrl)}`;
+  const linkFacebook = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
+  const linkTwitter = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareTitle)}&url=${encodeURIComponent(shareUrl)}`;
+  const linkTelegram = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareTitle)}`;
+
   const handleKlikDaftar = async () => {
-    // 1. Ambil data sesi pengguna dari props atau localStorage
+    setErrorMsg('');
+    setSuksesMsg('');
+
     let currentUser = user;
     if (!currentUser) {
       const stored = localStorage.getItem('user_umkm');
@@ -35,40 +66,26 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
     setLoading(true);
 
     try {
-      // 2. Format payload data pendaftaran
-      const payload = {
-        user_id: parseInt(currentUser.id, 10),
-        id_pelatihan: parseInt(pelatihan.id, 10) || 1,
-        judul_pelatihan: String(pelatihan.judul || pelatihan.title || 'Pelatihan UMKM Jabar'),
-        kategori: String(pelatihan.kategori || 'Fasilitasi UMKM'),
-        penyelenggara: String(pelatihan.penyelenggara || 'Dinas KUK Provinsi Jawa Barat')
-      };
+      const formData = new FormData();
+      formData.append('user_id', currentUser.id);
+      formData.append('id_pelatihan', pelatihan.id || 1);
+      formData.append('judul_pelatihan', pelatihan.judul || pelatihan.title || 'Pelatihan UMKM Jabar');
+      formData.append('kategori', pelatihan.kategori || 'Fasilitasi UMKM');
+      formData.append('penyelenggara', pelatihan.penyelenggara || 'Dinas KUK Provinsi Jawa Barat');
 
-      // 3. Kirim ke endpoint FastAPI
-      const response = await fetch('http://127.0.0.1:8000/api/v1/layanan/pendaftaran-pelatihan', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify(payload)
-      });
-
-      const resData = await response.json().catch(() => null);
-
-      if (!response.ok) {
-        let pesan = 'Gagal mendaftar pelatihan.';
-        if (resData && resData.detail) {
-          pesan = Array.isArray(resData.detail)
-            ? resData.detail.map((err) => `${err.loc?.[1] || 'Input'}: ${err.msg}`).join(', ')
-            : resData.detail;
-        }
-        throw new Error(pesan);
+      if (berkasSyarat) {
+        formData.append('file_syarat', berkasSyarat);
       }
 
-      alert(resData.message || `Pendaftaran berhasil untuk akun: ${currentUser.nama || currentUser.nama_lengkap || 'Pelaku UMKM'}`);
+      const response = await axios.post(`${API_BASE_URL}/api/v1/layanan/pendaftaran-pelatihan`, formData);
+
+      if (response.data.status === 'success') {
+        setSuksesMsg(response.data.message || 'Pendaftaran pelatihan berhasil disimpan!');
+      }
     } catch (err) {
-      alert(err.message || 'Terjadi kesalahan jaringan.');
+      console.error('Pendaftaran gagal:', err);
+      const pesan = err.response?.data?.detail || 'Gagal menghubungi server backend. Pastikan server FastAPI aktif.';
+      setErrorMsg(typeof pesan === 'string' ? pesan : JSON.stringify(pesan));
     } finally {
       setLoading(false);
     }
@@ -85,11 +102,8 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
 
   return (
     <div style={{ backgroundColor: '#F8FAFC', minHeight: '100vh', display: 'flex', flexDirection: 'column', fontFamily: 'Inter, system-ui, sans-serif' }}>
-      
-      {/* 1. Header / Navbar */}
       <Navbar setHalaman={setHalaman} user={user} />
 
-      {/* 2. Banner Header */}
       <div style={{
         background: 'linear-gradient(135deg, #081E16 0%, #164E43 60%, #0F4D3A 100%)',
         color: '#FFFFFF',
@@ -111,11 +125,8 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
               fontWeight: '700',
               fontSize: '0.9rem',
               marginBottom: '22px',
-              padding: 0,
-              transition: 'color 0.2s ease'
+              padding: 0
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = '#A7F3D0')}
-            onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255,255,255,0.85)')}
           >
             <ArrowLeft size={18} /> Kembali ke Katalog
           </button>
@@ -166,11 +177,9 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
         </div>
       </div>
 
-      {/* 3. Konten Utama */}
       <main style={{ flex: 1, maxWidth: '1200px', width: '100%', margin: '-40px auto 50px auto', padding: '0 20px', boxSizing: 'border-box' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: '28px', alignItems: 'start' }}>
           
-          {/* Kolom Kiri */}
           <div style={{ backgroundColor: '#FFFFFF', borderRadius: '16px', overflow: 'hidden', border: '1px solid #E2E8F0', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.06)' }}>
             <div style={{ height: '360px', width: '100%', overflow: 'hidden', backgroundColor: '#F1F5F9' }}>
               <img
@@ -180,16 +189,14 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
               />
             </div>
             <div style={{ padding: '30px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                <span style={{ fontSize: '0.78rem', fontWeight: '800', color: '#008848', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                  {pelatihan.tag || 'Fasilitasi UMKM'}
-                </span>
-              </div>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: '800', color: '#0F172A', marginBottom: '14px' }}>
+              <span style={{ fontSize: '0.78rem', fontWeight: '800', color: '#008848', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                {pelatihan.tag || 'Fasilitasi UMKM'}
+              </span>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: '800', color: '#0F172A', margin: '10px 0 14px 0' }}>
                 Rincian Program Pelatihan
               </h3>
               <p style={{ color: '#475569', fontSize: '0.92rem', lineHeight: 1.7, margin: '0 0 20px 0' }}>
-                {pelatihan.deskripsi || 'Program pembinaan strategis dari Dinas KUK Jawa Barat untuk memperkuat kapabilitas manajemen usaha mikro, peningkatan mutu kemasan produk, kurasi pasar ritel modern, dan akselerasi omzet perdagangan digital.'}
+                {pelatihan.deskripsi || 'Program pembinaan strategis dari Dinas KUK Jawa Barat untuk memperkuat kapabilitas manajemen usaha mikro dan akselerasi omzet perdagangan digital.'}
               </p>
               
               <div style={{ borderTop: '1px solid #F1F5F9', paddingTop: '18px' }}>
@@ -203,7 +210,6 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
             </div>
           </div>
 
-          {/* Kolom Kanan */}
           <div>
             <div style={{
               backgroundColor: '#FFFFFF',
@@ -212,18 +218,36 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
               padding: '28px',
               boxShadow: '0 10px 25px -5px rgba(0,0,0,0.06)'
             }}>
-              <div style={{
-                backgroundColor: '#F8FAFC',
-                border: '1px solid #E2E8F0',
-                borderLeft: '4px solid #008848',
-                color: '#334155',
-                padding: '16px',
-                borderRadius: '8px',
-                fontSize: '0.84rem',
-                lineHeight: 1.5,
-                marginBottom: '24px'
-              }}>
-                Pelatihan diselenggarakan secara <b>Daring Terpadu & Mandiri</b>. Peserta yang menyelesaikan kurikulum berhak mendapatkan sertifikat kelulusan resmi.
+              {errorMsg && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: '#FEF2F2', border: '1px solid #F87171', color: '#991B1B', padding: '12px', borderRadius: '8px', marginBottom: '16px', fontSize: '0.82rem' }}>
+                  <AlertCircle size={16} />
+                  <span>{errorMsg}</span>
+                </div>
+              )}
+
+              {suksesMsg && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: '#DCFCE7', border: '1px solid #86EFAC', color: '#166534', padding: '12px', borderRadius: '8px', marginBottom: '16px', fontSize: '0.82rem' }}>
+                  <CheckCircle2 size={16} />
+                  <span>{suksesMsg}</span>
+                </div>
+              )}
+
+              {/* Upload Berkas Syarat Pelatihan */}
+              <div style={{ marginBottom: '20px', border: '1px dashed #CBD5E1', padding: '14px', borderRadius: '8px', backgroundColor: '#F8FAFC' }}>
+                <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#334155', marginBottom: '4px' }}>
+                  Unggah Dokumen Syarat / KTP (PDF, PNG, JPG)
+                </label>
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,application/pdf"
+                  onChange={(e) => setBerkasSyarat(e.target.files[0] || null)}
+                  style={{ fontSize: '0.78rem' }}
+                />
+                {berkasSyarat && (
+                  <div style={{ fontSize: '0.75rem', color: '#16A34A', marginTop: '6px' }}>
+                    ✓ Berkas terpilih: {berkasSyarat.name}
+                  </div>
+                )}
               </div>
 
               <button
@@ -243,19 +267,14 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
                   boxShadow: '0 4px 14px rgba(217, 119, 6, 0.35)',
                   transition: 'background-color 0.2s ease'
                 }}
-                onMouseEnter={(e) => {
-                  if (!loading) e.currentTarget.style.backgroundColor = '#b45309';
-                }}
-                onMouseLeave={(e) => {
-                  if (!loading) e.currentTarget.style.backgroundColor = '#D97706';
-                }}
               >
-                {loading ? 'MEMPROSES PENDAFTARAN...' : 'DAFTAR SEKARANG'}
+                {loading ? 'MEMPROSES & UPLOAD KE CLOUD...' : 'DAFTAR SEKARANG'}
               </button>
 
+              {/* Tombol Bagikan Pelatihan */}
               <button
                 type="button"
-                onClick={() => alert('Tautan pendaftaran disalin ke clipboard!')}
+                onClick={() => setBukaModalShare(true)}
                 style={{
                   width: '100%',
                   backgroundColor: '#FFFFFF',
@@ -290,9 +309,200 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
         </div>
       </main>
 
-      {/* 4. Footer */}
       <Footer setHalaman={setHalaman} />
 
+      {/* MODAL BAGIKAN KE SOSMED & SALIN LINK */}
+      {bukaModalShare && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          backgroundColor: 'rgba(15, 23, 42, 0.65)',
+          backdropFilter: 'blur(4px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 9999,
+          padding: '20px'
+        }}>
+          <div style={{
+            backgroundColor: '#FFFFFF',
+            borderRadius: '20px',
+            width: '100%',
+            maxWidth: '460px',
+            padding: '28px',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+            position: 'relative',
+            animation: 'fadeIn 0.2s ease-out'
+          }}>
+            {/* Header Modal */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div style={{ padding: '8px', backgroundColor: '#DCFCE7', borderRadius: '10px', color: '#16A34A' }}>
+                  <Share2 size={20} />
+                </div>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: '800', color: '#0F172A' }}>Bagikan Pelatihan</h3>
+                  <p style={{ margin: 0, fontSize: '0.78rem', color: '#64748B' }}>Ajak rekan UMKM lain untuk bergabung</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setBukaModalShare(false)}
+                style={{ background: 'none', border: 'none', color: '#94A3B8', cursor: 'pointer', padding: '4px' }}
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Tombol-tombol Medsos */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginBottom: '24px' }}>
+              <a
+                href={linkWhatsApp}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '6px',
+                  textDecoration: 'none',
+                  color: '#1E293B',
+                  fontSize: '0.74rem',
+                  fontWeight: '600'
+                }}
+              >
+                <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: '#25D366', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFF' }}>
+                  <MessageCircle size={24} />
+                </div>
+                WhatsApp
+              </a>
+
+              <a
+                href={linkTelegram}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '6px',
+                  textDecoration: 'none',
+                  color: '#1E293B',
+                  fontSize: '0.74rem',
+                  fontWeight: '600'
+                }}
+              >
+                <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: '#229ED9', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFF' }}>
+                  <Send size={22} />
+                </div>
+                Telegram
+              </a>
+
+              <a
+                href={linkFacebook}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '6px',
+                  textDecoration: 'none',
+                  color: '#1E293B',
+                  fontSize: '0.74rem',
+                  fontWeight: '600'
+                }}
+              >
+                <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: '#1877F2', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFF' }}>
+                  <Globe size={22} />
+                </div>
+                Facebook
+              </a>
+
+              <a
+                href={linkTwitter}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '6px',
+                  textDecoration: 'none',
+                  color: '#1E293B',
+                  fontSize: '0.74rem',
+                  fontWeight: '600'
+                }}
+              >
+                <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: '#0F172A', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFF' }}>
+                  <span style={{ fontSize: '18px', fontWeight: '800' }}>𝕏</span>
+                </div>
+                Twitter/X
+              </a>
+            </div>
+
+            {/* Salin Tautan */}
+            <div>
+              <label style={{ display: 'block', fontSize: '0.76rem', fontWeight: '700', color: '#475569', marginBottom: '8px' }}>
+                Atau salin tautan langsung:
+              </label>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                backgroundColor: '#F8FAFC',
+                border: '1px solid #E2E8F0',
+                borderRadius: '10px',
+                padding: '6px 8px 6px 14px'
+              }}>
+                <input
+                  type="text"
+                  readOnly
+                  value={shareUrl}
+                  style={{
+                    flex: 1,
+                    background: 'none',
+                    border: 'none',
+                    outline: 'none',
+                    fontSize: '0.82rem',
+                    color: '#64748B',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap'
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={handleSalinLink}
+                  style={{
+                    backgroundColor: sudahDisalin ? '#16A34A' : '#164E43',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    borderRadius: '8px',
+                    padding: '8px 14px',
+                    fontSize: '0.78rem',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    transition: 'background-color 0.2s ease'
+                  }}
+                >
+                  {sudahDisalin ? (
+                    <>
+                      <Check size={14} /> Tersalin!
+                    </>
+                  ) : (
+                    <>
+                      <Copy size={14} /> Salin
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
