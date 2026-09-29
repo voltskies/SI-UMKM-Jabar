@@ -81,8 +81,6 @@ INPUT D:\MikTEX\tex\latex\graphics-cfg\graphics.cfg
 INPUT D:\MikTEX\tex\latex\graphics-def\pdftex.def
 INPUT D:\MikTEX\tex\latex\graphics-def\pdftex.def
 INPUT D:\MikTEX\tex\latex\graphics-def\pdftex.def
-INPUT D:\MikTEX\tex\latex\grffile\grffile.sty
-INPUT D:\MikTEX\tex\latex\grffile\grffile.sty
 INPUT D:\MikTEX\tex\latex\base\textcomp.sty
 INPUT D:\MikTEX\tex\latex\base\textcomp.sty
 INPUT D:\MikTEX\tex\latex\xcolor\xcolor.sty
@@ -93,19 +91,18 @@ INPUT D:\MikTEX\tex\latex\graphics-cfg\color.cfg
 INPUT D:\MikTEX\tex\latex\graphics\mathcolor.ltx
 INPUT D:\MikTEX\tex\latex\graphics\mathcolor.ltx
 INPUT D:\MikTEX\tex\latex\graphics\mathcolor.ltx
-INPUT D:\MikTEX\tex\latex\float\float.sty
-INPUT D:\MikTEX\tex\latex\float\float.sty
-INPUT D:\MikTEX\tex\latex\listings\listings.sty
-INPUT D:\MikTEX\tex\latex\listings\listings.sty
-INPUT D:\MikTEX\tex\latex\listings\lstpatch.sty
-INPUT D:\MikTEX\tex\latex\listings\lstpatch.sty
-INPUT D:\MikTEX\tex\latex\listings\lstpatch.sty
-INPUT D:\MikTEX\tex\latex\listings\lstmisc.sty
-INPUT D:\MikTEX\tex\latex\listings\lstmisc.sty
-INPUT D:\MikTEX\tex\latex\listings\lstmisc.sty
-INPUT D:\MikTEX\tex\latex\listings\listings.cfg
-INPUT D:\MikTEX\tex\latex\listings\listings.cfg
-INPUT D:\MikTEX\tex\latex\listings\listings.cfg
+INPUT D:\MikTEX\tex\latex\booktabs\booktabs.sty
+INPUT D:\MikTEX\tex\latex\booktabs\booktabs.sty
+INPUT D:\MikTEX\tex\latex\caption\subcaption.sty
+INPUT D:\MikTEX\tex\latex\caption\subcaption.sty
+INPUT D:\MikTEX\tex\latex\caption\caption.sty
+INPUT D:\MikTEX\tex\latex\caption\caption.sty
+INPUT D:\MikTEX\tex\latex\caption\caption3.sty
+INPUT D:\MikTEX\tex\latex\caption\caption3.sty
+INPUT D:\MikTEX\tex\latex\url\url.sty
+INPUT D:\MikTEX\tex\latex\url\url.sty
+INPUT D:\MikTEX\tex\latex\grffile\grffile.sty
+INPUT D:\MikTEX\tex\latex\grffile\grffile.sty
 INPUT D:\MikTEX\tex\latex\l3backend\l3backend-pdftex.def
 INPUT D:\MikTEX\tex\latex\l3backend\l3backend-pdftex.def
 INPUT .\umkm.aux
@@ -117,6 +114,22 @@ INPUT D:\MikTEX\tex\context\base\mkii\supp-pdf.mkii
 INPUT D:\MikTEX\tex\context\base\mkii\supp-pdf.mkii
 INPUT D:\MikTEX\tex\latex\epstopdf-pkg\epstopdf-base.sty
 INPUT D:\MikTEX\tex\latex\epstopdf-pkg\epstopdf-base.sty
+INPUT D:\MikTEX\tex\generic\infwarerr\infwarerr.sty
+INPUT D:\MikTEX\tex\generic\infwarerr\infwarerr.sty
+INPUT D:\MikTEX\tex\latex\grfext\grfext.sty
+INPUT D:\MikTEX\tex\latex\grfext\grfext.sty
+INPUT D:\MikTEX\tex\generic\kvdefinekeys\kvdefinekeys.sty
+INPUT D:\MikTEX\tex\generic\kvdefinekeys\kvdefinekeys.sty
+INPUT D:\MikTEX\tex\latex\kvoptions\kvoptions.sty
+INPUT D:\MikTEX\tex\latex\kvoptions\kvoptions.sty
+INPUT D:\MikTEX\tex\generic\ltxcmds\ltxcmds.sty
+INPUT D:\MikTEX\tex\generic\ltxcmds\ltxcmds.sty
+INPUT D:\MikTEX\tex\latex\kvsetkeys\kvsetkeys.sty
+INPUT D:\MikTEX\tex\latex\kvsetkeys\kvsetkeys.sty
+INPUT D:\MikTEX\tex\generic\pdftexcmds\pdftexcmds.sty
+INPUT D:\MikTEX\tex\generic\pdftexcmds\pdftexcmds.sty
+INPUT D:\MikTEX\tex\generic\iftex\iftex.sty
+INPUT D:\MikTEX\tex\generic\iftex\iftex.sty
 INPUT D:\MikTEX\tex\latex\00miktex\epstopdf-sys.cfg
 INPUT D:\MikTEX\tex\latex\00miktex\epstopdf-sys.cfg
 INPUT D:\MikTEX\tex\latex\00miktex\epstopdf-sys.cfg
@@ -143,7 +156,13 @@ INPUT D:\MikTEX\fonts\tfm\public\amsfonts\symbols\msbm7.tfm
 INPUT D:\MikTEX\fonts\tfm\public\amsfonts\symbols\msbm5.tfm
 INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmr7t.tfm
 INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmrc7t.tfm
+INPUT .\image_tex\gambar 1..jpg
+INPUT .\image_tex\gambar 1..jpg
+INPUT .\image_tex\gambar 1..jpg
 OUTPUT umkm.pdf
+INPUT .\image_tex\gambar 1..jpg
+INPUT .\image_tex\gambar 1..jpg
+INPUT .\image_tex\gambar 1..jpg
 INPUT D:\MikTEX\fonts\vf\adobe\times\ptmr7t.vf
 INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmr8r.tfm
 INPUT C:\Users\LENOVO\AppData\Local\MiKTeX\fonts\map\pdftex\pdftex.map
@@ -165,18 +184,64 @@ INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmr8r.tfm
 INPUT D:\MikTEX\fonts\vf\adobe\times\ptmr7t.vf
 INPUT D:\MikTEX\fonts\vf\adobe\times\ptmri7t.vf
 INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmri8r.tfm
-INPUT D:\MikTEX\tex\latex\psnfss\ot1pcr.fd
-INPUT D:\MikTEX\tex\latex\psnfss\ot1pcr.fd
-INPUT D:\MikTEX\tex\latex\psnfss\ot1pcr.fd
-INPUT D:\MikTEX\fonts\tfm\adobe\courier\pcrr7t.tfm
-INPUT D:\MikTEX\fonts\vf\adobe\courier\pcrr7t.vf
-INPUT D:\MikTEX\fonts\tfm\adobe\courier\pcrr8r.tfm
+INPUT .\image_tex\gambar 2.jpg
+INPUT .\image_tex\gambar 2.jpg
+INPUT .\image_tex\gambar 2.jpg
+INPUT .\image_tex\gambar 2.jpg
+INPUT .\image_tex\gambar 2.jpg
+INPUT .\image_tex\gambar 2.jpg
 INPUT .\image_tex\gambar 3.png
 INPUT .\image_tex\gambar 3.png
 INPUT .\image_tex\gambar 3.png
 INPUT .\image_tex\gambar 3.png
 INPUT .\image_tex\gambar 3.png
 INPUT .\image_tex\gambar 3.png
+INPUT .\image_tex\gambar 4.jpg
+INPUT .\image_tex\gambar 4.jpg
+INPUT .\image_tex\gambar 4.jpg
+INPUT .\image_tex\gambar 4.jpg
+INPUT .\image_tex\gambar 4.jpg
+INPUT .\image_tex\gambar 4.jpg
+INPUT .\image_tex\gambar 5.jpg
+INPUT .\image_tex\gambar 5.jpg
+INPUT .\image_tex\gambar 5.jpg
+INPUT .\image_tex\gambar 5.jpg
+INPUT .\image_tex\gambar 5.jpg
+INPUT .\image_tex\gambar 5.jpg
+INPUT .\image_tex\vus50.png
+INPUT .\image_tex\vus50.png
+INPUT .\image_tex\vus50.png
+INPUT .\image_tex\vus50.png
+INPUT .\image_tex\vus50.png
+INPUT .\image_tex\vus50.png
+INPUT .\image_tex\vus100.png
+INPUT .\image_tex\vus100.png
+INPUT .\image_tex\vus100.png
+INPUT .\image_tex\vus100.png
+INPUT .\image_tex\vus100.png
+INPUT .\image_tex\vus100.png
+INPUT .\image_tex\vus200.png
+INPUT .\image_tex\vus200.png
+INPUT .\image_tex\vus200.png
+INPUT .\image_tex\vus200.png
+INPUT .\image_tex\vus200.png
+INPUT .\image_tex\vus200.png
+INPUT .\image_tex\vus300.png
+INPUT .\image_tex\vus300.png
+INPUT .\image_tex\vus300.png
+INPUT .\image_tex\vus300.png
+INPUT .\image_tex\vus300.png
+INPUT .\image_tex\vus300.png
+INPUT .\image_tex\vus500.png
+INPUT .\image_tex\vus500.png
+INPUT .\image_tex\vus500.png
+INPUT .\image_tex\vus500.png
+INPUT .\image_tex\vus500.png
+INPUT .\image_tex\vus500.png
+INPUT D:\MikTEX\fonts\tfm\public\cm\cmr6.tfm
+INPUT D:\MikTEX\fonts\tfm\public\cm\cmmi6.tfm
+INPUT D:\MikTEX\fonts\tfm\public\cm\cmsy6.tfm
+INPUT D:\MikTEX\fonts\tfm\public\amsfonts\cmextra\cmex8.tfm
 INPUT D:\MikTEX\fonts\tfm\public\amsfonts\cmextra\cmex7.tfm
 INPUT D:\MikTEX\fonts\tfm\public\amsfonts\cmextra\cmex7.tfm
 INPUT D:\MikTEX\fonts\tfm\public\amsfonts\symbols\msam10.tfm
@@ -185,9 +250,11 @@ INPUT D:\MikTEX\fonts\tfm\public\amsfonts\symbols\msam5.tfm
 INPUT D:\MikTEX\fonts\tfm\public\amsfonts\symbols\msbm10.tfm
 INPUT D:\MikTEX\fonts\tfm\public\amsfonts\symbols\msbm7.tfm
 INPUT D:\MikTEX\fonts\tfm\public\amsfonts\symbols\msbm5.tfm
+INPUT D:\MikTEX\fonts\vf\adobe\times\ptmr7t.vf
+INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmr8r.tfm
+INPUT D:\MikTEX\fonts\vf\adobe\times\ptmb7t.vf
+INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmb8r.tfm
 INPUT umkm.aux
-INPUT D:\MikTEX\fonts\type1\urw\courier\ucrr8a.pfb
-INPUT D:\MikTEX\fonts\type1\urw\courier\ucrr8a.pfb
 INPUT D:\MikTEX\fonts\type1\urw\times\utmb8a.pfb
 INPUT D:\MikTEX\fonts\type1\urw\times\utmb8a.pfb
 INPUT D:\MikTEX\fonts\type1\urw\times\utmbi8a.pfb
