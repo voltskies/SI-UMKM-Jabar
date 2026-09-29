@@ -2,52 +2,44 @@ import { useState } from 'react';
 import axios from 'axios';
 import {
   Award, ArrowLeft, CheckCircle2, Circle, Clock,
-  FileText, XCircle, Mail, ShieldCheck, Loader2
+  FileText, XCircle, Mail, ShieldCheck, Upload
 } from 'lucide-react';
 
 import Navbar from '../component/navbar';
 import Footer from '../component/footer';
 
-// Daftar dokumen legalitas yang dibutuhkan
-const syaratLegalitas = [
-  { id: 'ktp', nama: 'Foto KTP Pemilik Usaha', keterangan: 'Sesuai identitas pemilik/penanggung jawab usaha' },
-  { id: 'npwp', nama: 'NPWP', keterangan: 'NPWP pribadi atau usaha' },
-  { id: 'nib', nama: 'NIB (Nomor Induk Berusaha)', keterangan: 'Diperoleh melalui OSS (Online Single Submission)' },
-  { id: 'foto_usaha', nama: 'Foto Tempat/Produk Usaha', keterangan: 'Menunjukkan usaha benar-benar berjalan' },
-  { id: 'surat_izin', nama: 'Surat Izin Usaha (jika ada)', keterangan: 'Opsional, misal SIUP/izin dari kelurahan' }
-];
-
-const generateNomorRegistrasi = () => {
-  const rand = Math.floor(1000 + Math.random() * 9000);
-  const huruf = String.fromCharCode(65 + Math.floor(Math.random() * 26)) + String.fromCharCode(65 + Math.floor(Math.random() * 26));
-  return `LGL-2026-${huruf}${rand}`;
-};
-
-const statusAwalDummy = {
-  status: 'belum',
-  nomorRegistrasi: '',
-  catatanAdmin: ''
-};
-
 export default function Sertifikasi({ onKembali, setHalaman, user }) {
   const [view, setView] = useState('dashboard'); // 'dashboard' | 'form'
-  const [dataLegalitas, setDataLegalitas] = useState(statusAwalDummy);
+  const [dataLegalitas, setDataLegalitas] = useState({
+    status: 'belum',
+    nomorRegistrasi: '',
+    catatanAdmin: ''
+  });
 
   const [dataPemohon, setDataPemohon] = useState({
     nik: user?.nik || '',
     nama_lengkap: user?.nama || user?.nama_lengkap || '',
     email: user?.email || '',
     nomor_whatsapp: user?.nomor_whatsapp || '',
-    nama_usaha: ''
+    nama_usaha: '',
+    nama_produk: '',
+    jenis_sertifikasi: 'Sertifikasi Halal',
+    deskripsi_produk: '',
+    nib: ''
   });
-  const [fileTerupload, setFileTerupload] = useState({});
-  const [errorForm, setErrorForm] = useState('');
+
+  const [files, setFiles] = useState({
+    file_ktp: null,
+    file_foto_produk: null,
+    file_dokumen_pendukung: null
+  });
+
   const [loading, setLoading] = useState(false);
+  const [errorForm, setErrorForm] = useState('');
   const [nomorSukses, setNomorSukses] = useState(null);
 
   const API_BASE_URL = `http://${window.location.hostname || '127.0.0.1'}:8000`;
 
-  // Navigasi kembali ke Dashboard beranda
   const handleKembaliKeDashboard = () => {
     if (typeof setHalaman === 'function') {
       setHalaman('dashboard');
@@ -58,7 +50,7 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
   };
 
   const bukaForm = () => {
-    setFileTerupload({});
+    setFiles({ file_ktp: null, file_foto_produk: null, file_dokumen_pendukung: null });
     setErrorForm('');
     setView('form');
   };
@@ -68,63 +60,77 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
     setDataPemohon((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleUploadDokumen = (idDokumen, file) => {
-    setFileTerupload((prev) => ({ ...prev, [idDokumen]: file }));
+  const handleFileChange = (e) => {
+    const { name, files: selectedFiles } = e.target;
+    if (selectedFiles && selectedFiles[0]) {
+      setFiles((prev) => ({ ...prev, [name]: selectedFiles[0] }));
+    }
   };
 
   const handleSubmitForm = async (e) => {
     e.preventDefault();
     setErrorForm('');
 
-    if (dataPemohon.nik.length !== 16 || !/^\d+$/.test(dataPemohon.nik)) {
+    const cleanNik = dataPemohon.nik.trim();
+    if (!/^\d{16}$/.test(cleanNik)) {
       setErrorForm('NIK harus berupa 16 digit angka.');
       return;
     }
 
-    const wajibBelumLengkap = syaratLegalitas
-      .filter((d) => d.id !== 'surat_izin')
-      .filter((d) => !fileTerupload[d.id]);
+    if (!files.file_ktp) {
+      setErrorForm('Foto KTP wajib diunggah.');
+      return;
+    }
 
-    if (wajibBelumLengkap.length > 0) {
-      setErrorForm(`Dokumen belum lengkap: ${wajibBelumLengkap.map((d) => d.nama).join(', ')}`);
+    if (!files.file_foto_produk) {
+      setErrorForm('Foto Tempat atau Produk Usaha wajib diunggah.');
       return;
     }
 
     setLoading(true);
 
     try {
-      // 1. Upload file persyaratan ke Supabase Storage via endpoint FastAPI
-      const urlDokumen = {};
-
-      for (const [idDokumen, file] of Object.entries(fileTerupload)) {
-        if (file) {
-          const formPayload = new FormData();
-          formPayload.append('file', file);
-
-          const uploadRes = await axios.post(`${API_BASE_URL}/api/sertifikasi/upload`, formPayload, {
-            headers: { 'Content-Type': 'multipart/form-data' }
-          });
-
-          if (uploadRes.data && uploadRes.data.file_url) {
-            urlDokumen[idDokumen] = uploadRes.data.file_url;
-          }
-        }
+      // Susun ke FormData sesuai parameter FastAPI Form(...) dan File(...)
+      const formData = new FormData();
+      formData.append('nik', cleanNik);
+      formData.append('nama_lengkap', dataPemohon.nama_lengkap.trim());
+      formData.append('email', dataPemohon.email.trim());
+      formData.append('nomor_whatsapp', dataPemohon.nomor_whatsapp.trim());
+      formData.append('nama_usaha', dataPemohon.nama_usaha.trim());
+      formData.append('nama_produk', dataPemohon.nama_produk.trim());
+      formData.append('jenis_sertifikasi', dataPemohon.jenis_sertifikasi);
+      formData.append('deskripsi_produk', dataPemohon.deskripsi_produk.trim());
+      
+      if (dataPemohon.nib.trim()) {
+        formData.append('nib', dataPemohon.nib.trim());
       }
 
-      // 2. Buat nomor registrasi baru dan simpan data pengajuan
-      const nomorBaru = generateNomorRegistrasi();
-      
-      setDataLegalitas({ 
-        status: 'diajukan', 
-        nomorRegistrasi: nomorBaru, 
-        catatanAdmin: '',
-        dokumen: urlDokumen 
+      formData.append('file_ktp', files.file_ktp);
+      formData.append('file_foto_produk', files.file_foto_produk);
+      if (files.file_dokumen_pendukung) {
+        formData.append('file_dokumen_pendukung', files.file_dokumen_pendukung);
+      }
+
+      // Kirim langsung ke backend FastAPI
+      const res = await axios.post(`${API_BASE_URL}/api/v1/layanan/pengajuan-sertifikasi`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
       });
 
-      setNomorSukses(nomorBaru);
+      if (res.data.status === 'success') {
+        const noReg = res.data.nomor_registrasi;
+        setDataLegalitas({ 
+          status: 'diajukan', 
+          nomorRegistrasi: noReg, 
+          catatanAdmin: '' 
+        });
+        setNomorSukses(noReg);
+      }
     } catch (err) {
-      console.error('Gagal mengunggah berkas sertifikasi:', err);
-      const pesan = err.response?.data?.detail || 'Terjadi kesalahan saat mengunggah berkas ke server.';
+      console.error('Gagal mengajukan sertifikasi:', err);
+      const detailMsg = err.response?.data?.detail;
+      const pesan = Array.isArray(detailMsg)
+        ? detailMsg.map((d) => d.msg).join(', ')
+        : detailMsg || 'Terjadi kesalahan saat memproses pendaftaran sertifikasi.';
       setErrorForm(typeof pesan === 'string' ? pesan : JSON.stringify(pesan));
     } finally {
       setLoading(false);
@@ -133,20 +139,27 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
 
   const tutupModalSukses = () => {
     setNomorSukses(null);
-    setDataPemohon({ nik: '', nama_lengkap: '', email: '', nomor_whatsapp: '', nama_usaha: '' });
+    setDataPemohon({
+      nik: '',
+      nama_lengkap: '',
+      email: '',
+      nomor_whatsapp: '',
+      nama_usaha: '',
+      nama_produk: '',
+      jenis_sertifikasi: 'Sertifikasi Halal',
+      deskripsi_produk: '',
+      nib: ''
+    });
     setView('dashboard');
   };
 
   return (
     <div style={{ backgroundColor: '#F8FAFC', minHeight: '100vh', display: 'flex', flexDirection: 'column', fontFamily: 'Inter, system-ui, sans-serif' }}>
       
-      {/* 1. Header / Navbar */}
       <Navbar setHalaman={setHalaman} user={user} />
 
-      {/* 2. Main Content */}
-      <main style={{ flex: 1, width: '100%', maxWidth: '800px', margin: '0 auto', padding: '40px 20px 60px 20px', boxSizing: 'border-box' }}>
+      <main style={{ flex: 1, width: '100%', maxWidth: '840px', margin: '0 auto', padding: '40px 20px 60px 20px', boxSizing: 'border-box' }}>
         
-        {/* Tombol Navigasi Kembali */}
         <button
           type="button"
           onClick={view === 'form' ? () => setView('dashboard') : handleKembaliKeDashboard}
@@ -161,41 +174,38 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
             fontSize: '0.9rem',
             cursor: 'pointer',
             marginBottom: '20px',
-            padding: 0,
-            transition: 'color 0.15s ease'
+            padding: 0
           }}
-          onMouseEnter={(e) => (e.currentTarget.style.color = '#008848')}
-          onMouseLeave={(e) => (e.currentTarget.style.color = '#164E43')}
         >
           <ArrowLeft size={18} /> {view === 'form' ? 'Kembali ke Panel Legalitas' : 'Kembali ke Halaman Utama'}
         </button>
 
-        {/* ============== TAMPILAN 1: STATUS DASHBOARD ============== */}
+        {/* VIEW 1: STATUS DASHBOARD */}
         {view === 'dashboard' ? (
           <div>
             <div style={{ marginBottom: '28px' }}>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', backgroundColor: '#DCFCE7', color: '#166534', padding: '4px 12px', borderRadius: '999px', fontSize: '0.78rem', fontWeight: '700', marginBottom: '8px' }}>
-                <ShieldCheck size={14} /> Pendaftaran Legalitas Usaha
+                <ShieldCheck size={14} /> Pendaftaran Legalitas & Standardisasi Usaha
               </div>
               <h1 style={{ margin: '0 0 6px', fontSize: '1.75rem', fontWeight: '800', color: '#0F172A' }}>
-                Legalitas UMKM
+                Legalitas & Sertifikasi UMKM
               </h1>
               <p style={{ margin: 0, fontSize: '0.88rem', color: '#64748B' }}>
-                Lengkapi dokumen legalitas usaha Anda agar terdaftar resmi di SI-UMKM Jabar.
+                Pantau permohonan sertifikasi Halal, BPOM, NIB, dan izin edar resmi dari Dinas KUK Jawa Barat.
               </p>
             </div>
 
-            {/* STATUS: BELUM PERNAH DAFTAR */}
+            {/* STATUS: BELUM DAFTAR */}
             {dataLegalitas.status === 'belum' && (
               <div style={{ backgroundColor: '#FFFFFF', border: '1px dashed #CBD5E1', borderRadius: '16px', padding: '36px', textAlign: 'center', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.02)' }}>
                 <div style={{ display: 'inline-flex', padding: '14px', backgroundColor: '#F1F5F9', borderRadius: '50%', color: '#94A3B8', marginBottom: '14px' }}>
                   <FileText size={32} />
                 </div>
                 <h3 style={{ margin: '0 0 6px', fontSize: '1.05rem', fontWeight: '800', color: '#0F172A' }}>
-                  Usaha Anda belum terdaftar
+                  Belum Ada Pengajuan Sertifikasi Aktif
                 </h3>
                 <p style={{ margin: '0 0 20px', fontSize: '0.85rem', color: '#64748B' }}>
-                  Lengkapi dokumen legalitas untuk mendapatkan status terverifikasi di SI-UMKM Jabar.
+                  Lengkapi dokumen persyaratan untuk memperoleh nomor registrasi dan status verifikasi resmi dari dinas.
                 </p>
                 <button
                   type="button"
@@ -212,23 +222,17 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
                     boxShadow: '0 4px 14px rgba(22, 78, 67, 0.25)'
                   }}
                 >
-                  Daftarkan Legalitas Usaha
+                  Daftarkan Sertifikasi Baru
                 </button>
               </div>
             )}
 
-            {/* STATUS: SUDAH DIAJUKAN / DIPROSES */}
-            {(dataLegalitas.status === 'diajukan' || dataLegalitas.status === 'diverifikasi') && (
-              <div style={{
-                backgroundColor: '#FFFFFF',
-                borderRadius: '16px',
-                border: '1px solid #E2E8F0',
-                boxShadow: '0 4px 6px -1px rgba(0,0,0,0.03)',
-                padding: '28px'
-              }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px', flexWrap: 'wrap', gap: '8px' }}>
+            {/* STATUS: DIAJUKAN */}
+            {dataLegalitas.status === 'diajukan' && (
+              <div style={{ backgroundColor: '#FFFFFF', borderRadius: '16px', border: '1px solid #E2E8F0', padding: '28px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px', flexWrap: 'gap', gap: '8px' }}>
                   <div>
-                    <h4 style={{ margin: '0 0 4px', fontSize: '1.05rem', fontWeight: '800', color: '#0F172A' }}>Pengajuan Legalitas Usaha</h4>
+                    <h4 style={{ margin: '0 0 4px', fontSize: '1.05rem', fontWeight: '800', color: '#0F172A' }}>Pengajuan Legalitas Berhasil</h4>
                     <span style={{ fontSize: '0.78rem', color: '#64748B' }}>No. Registrasi: {dataLegalitas.nomorRegistrasi}</span>
                   </div>
                   <span style={{ backgroundColor: '#FEF3C7', color: '#B45309', padding: '4px 12px', borderRadius: '999px', fontSize: '0.75rem', fontWeight: '700' }}>
@@ -236,130 +240,40 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
                   </span>
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                  {['Diajukan', 'Diperiksa Admin', 'Keputusan'].map((label, idx) => {
-                    const tahapSekarang = dataLegalitas.status === 'diajukan' ? 0 : 1;
-                    return (
-                      <div key={label} style={{ display: 'flex', alignItems: 'center', flex: idx < 2 ? 1 : 'none' }}>
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: '80px' }}>
-                          {idx < tahapSekarang ? (
-                            <CheckCircle2 size={22} color="#16A34A" />
-                          ) : idx === tahapSekarang ? (
-                            <div style={{ width: 22, height: 22, borderRadius: '50%', border: '3px solid #164E43', backgroundColor: '#FFF' }} />
-                          ) : (
-                            <Circle size={22} color="#CBD5E1" />
-                          )}
-                          <span style={{ fontSize: '0.72rem', marginTop: '6px', color: idx <= tahapSekarang ? '#164E43' : '#94A3B8', fontWeight: idx === tahapSekarang ? '700' : '500', textAlign: 'center' }}>
-                            {label}
-                          </span>
-                        </div>
-                        {idx < 2 && (
-                          <div style={{ flex: 1, height: '2px', backgroundColor: idx < tahapSekarang ? '#16A34A' : '#E2E8F0', marginBottom: '18px' }} />
-                        )}
-                      </div>
-                    );
-                  })}
+                <div style={{ marginTop: '20px', backgroundColor: '#F8FAFC', border: '1px solid #F1F5F9', borderRadius: '10px', padding: '14px', fontSize: '0.82rem', color: '#64748B' }}>
+                  Dokumen persyaratan Anda telah terunggah ke Cloud Storage Supabase dan masuk ke antrean audit legalitas Dinas KUK Jawa Barat.
                 </div>
-
-                <div style={{ marginTop: '20px', backgroundColor: '#F8FAFC', border: '1px solid #F1F5F9', borderRadius: '10px', padding: '14px', fontSize: '0.8rem', color: '#64748B' }}>
-                  Dokumen Anda sedang diperiksa oleh admin Dinas KUK. Anda akan mendapat notifikasi setelah ada keputusan verifikasi.
-                </div>
-              </div>
-            )}
-
-            {/* STATUS: DISETUJUI */}
-            {dataLegalitas.status === 'disetujui' && (
-              <div style={{
-                backgroundColor: '#FFFFFF',
-                borderRadius: '16px',
-                border: '1px solid #BBF7D0',
-                padding: '28px',
-                textAlign: 'center'
-              }}>
-                <div style={{ display: 'inline-flex', padding: '14px', backgroundColor: '#DCFCE7', borderRadius: '50%', color: '#16A34A', marginBottom: '14px' }}>
-                  <ShieldCheck size={32} />
-                </div>
-                <h3 style={{ margin: '0 0 6px', fontSize: '1.1rem', fontWeight: '800', color: '#0F172A' }}>
-                  Usaha Anda telah terverifikasi
-                </h3>
-                <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748B' }}>
-                  No. Registrasi: {dataLegalitas.nomorRegistrasi} — Status legalitas aktif di SI-UMKM Jabar.
-                </p>
-              </div>
-            )}
-
-            {/* STATUS: DITOLAK */}
-            {dataLegalitas.status === 'ditolak' && (
-              <div style={{ backgroundColor: '#FFFFFF', borderRadius: '16px', border: '1px solid #FECACA', padding: '28px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
-                  <XCircle size={22} color="#DC2626" />
-                  <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: '800', color: '#0F172A' }}>Pengajuan Ditolak</h3>
-                </div>
-                <p style={{ fontSize: '0.85rem', color: '#64748B', marginBottom: '4px' }}>
-                  No. Registrasi: {dataLegalitas.nomorRegistrasi}
-                </p>
-                {dataLegalitas.catatanAdmin && (
-                  <div style={{ backgroundColor: '#FEF2F2', border: '1px solid #FECACA', borderRadius: '8px', padding: '12px', fontSize: '0.82rem', color: '#991B1B', margin: '12px 0' }}>
-                    Catatan admin: {dataLegalitas.catatanAdmin}
-                  </div>
-                )}
-                <button
-                  type="button"
-                  onClick={bukaForm}
-                  style={{
-                    marginTop: '10px',
-                    backgroundColor: '#164E43',
-                    color: '#FFFFFF',
-                    border: 'none',
-                    borderRadius: '10px',
-                    padding: '12px 24px',
-                    fontWeight: '700',
-                    fontSize: '0.88rem',
-                    cursor: 'pointer'
-                  }}
-                >
-                  Ajukan Ulang
-                </button>
               </div>
             )}
           </div>
         ) : (
-          /* ============== TAMPILAN 2: FORM PENDAFTARAN ============== */
+          /* VIEW 2: FORM PENDAFTARAN */
           <div style={{ backgroundColor: '#FFFFFF', borderRadius: '16px', border: '1px solid #E2E8F0', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.05)', padding: '36px' }}>
             <div style={{ borderBottom: '1px solid #E2E8F0', paddingBottom: '20px', marginBottom: '24px' }}>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', backgroundColor: '#DCFCE7', color: '#166534', padding: '4px 12px', borderRadius: '999px', fontSize: '0.78rem', fontWeight: '700', marginBottom: '8px' }}>
-                <Award size={14} /> Pendaftaran Legalitas Usaha
+                <Award size={14} /> Fasilitasi Sertifikasi & Jaminan Mutu Produk
               </div>
               <h1 style={{ margin: 0, fontSize: '1.5rem', fontWeight: '800', color: '#0F172A' }}>
-                Form Pendaftaran Legalitas UMKM
+                Form Permohonan Sertifikasi UMKM
               </h1>
               <p style={{ margin: '6px 0 0', fontSize: '0.85rem', color: '#64748B' }}>
-                Data ini akan diverifikasi oleh admin sebelum usaha Anda dinyatakan terdaftar resmi.
+                Lengkapi identitas penanggung jawab dan rincian produk yang akan diajukan standardisasi.
               </p>
             </div>
 
             {errorForm && (
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '10px',
-                backgroundColor: '#FEF2F2',
-                border: '1px solid #F87171',
-                color: '#991B1B',
-                padding: '12px 16px',
-                borderRadius: '8px',
-                marginBottom: '24px',
-                fontSize: '0.85rem'
-              }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', backgroundColor: '#FEF2F2', border: '1px solid #F87171', color: '#991B1B', padding: '12px 16px', borderRadius: '8px', marginBottom: '24px', fontSize: '0.85rem' }}>
                 <XCircle size={18} />
                 <span>{errorForm}</span>
               </div>
             )}
 
             <form onSubmit={handleSubmitForm}>
-              {/* Data Pemohon & Usaha */}
+              {/* Bagian 1: Data Pemohon */}
               <div style={{ marginBottom: '28px' }}>
-                <h3 style={{ fontSize: '1rem', fontWeight: '700', color: '#164E43', marginBottom: '14px' }}>1. Informasi Pemohon & Usaha</h3>
+                <h3 style={{ fontSize: '1rem', fontWeight: '700', color: '#164E43', marginBottom: '14px' }}>
+                  1. Informasi Pemilik Usaha
+                </h3>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
                   <div>
                     <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#334155', marginBottom: '6px' }}>NIK *</label>
@@ -370,46 +284,94 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
                     <input type="text" name="nama_lengkap" required value={dataPemohon.nama_lengkap} onChange={handleInputPemohon} placeholder="Nama sesuai KTP" style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.85rem', boxSizing: 'border-box' }} />
                   </div>
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                   <div>
-                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#334155', marginBottom: '6px' }}>Email *</label>
-                    <input type="email" name="email" required value={dataPemohon.email} onChange={handleInputPemohon} placeholder="nama@email.com" style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.85rem', boxSizing: 'border-box' }} />
+                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#334155', marginBottom: '6px' }}>Email Aktif *</label>
+                    <input type="email" name="email" required value={dataPemohon.email} onChange={handleInputPemohon} placeholder="nama@gmail.com" style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.85rem', boxSizing: 'border-box' }} />
                   </div>
                   <div>
                     <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#334155', marginBottom: '6px' }}>Nomor WhatsApp *</label>
                     <input type="text" name="nomor_whatsapp" required value={dataPemohon.nomor_whatsapp} onChange={handleInputPemohon} placeholder="08xxxxxxxxxx" style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.85rem', boxSizing: 'border-box' }} />
                   </div>
                 </div>
+              </div>
+
+              {/* Bagian 2: Data Usaha & Produk */}
+              <div style={{ marginBottom: '28px' }}>
+                <h3 style={{ fontSize: '1rem', fontWeight: '700', color: '#164E43', marginBottom: '14px' }}>
+                  2. Rincian Usaha & Produk
+                </h3>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#334155', marginBottom: '6px' }}>Nama Usaha / Merek Dagang *</label>
+                    <input type="text" name="nama_usaha" required value={dataPemohon.nama_usaha} onChange={handleInputPemohon} placeholder="Misal: Keripik Singkong Barokah" style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.85rem', boxSizing: 'border-box' }} />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#334155', marginBottom: '6px' }}>Nama Produk yang Diajukan *</label>
+                    <input type="text" name="nama_produk" required value={dataPemohon.nama_produk} onChange={handleInputPemohon} placeholder="Misal: Keripik Pedas Rasa Jeruk" style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.85rem', boxSizing: 'border-box' }} />
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#334155', marginBottom: '6px' }}>Jenis Sertifikasi yang Diajukan *</label>
+                    <select name="jenis_sertifikasi" value={dataPemohon.jenis_sertifikasi} onChange={handleInputPemohon} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.85rem', backgroundColor: '#FFF', boxSizing: 'border-box' }}>
+                      <option value="Sertifikasi Halal">Sertifikasi Halal (BPJPH)</option>
+                      <option value="Izin Edar BPOM">Izin Edar BPOM</option>
+                      <option value="SPP-PIRT">Sertifikat Produksi Pangan Industri Rumah Tangga (P-IRT)</option>
+                      <option value="Hak Kekayaan Intelektual (HKI)">Hak Kekayaan Intelektual (Merek Dagang / HKI)</option>
+                      <option value="Standardisasi SNI">Standardisasi Mutu SNI</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#334155', marginBottom: '6px' }}>Nomor Induk Berusaha (NIB)</label>
+                    <input type="text" name="nib" value={dataPemohon.nib} onChange={handleInputPemohon} placeholder="Opsional / jika ada" style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.85rem', boxSizing: 'border-box' }} />
+                  </div>
+                </div>
+
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#334155', marginBottom: '6px' }}>Nama Usaha *</label>
-                  <input type="text" name="nama_usaha" required value={dataPemohon.nama_usaha} onChange={handleInputPemohon} placeholder="Nama usaha/UMKM Anda" style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.85rem', boxSizing: 'border-box' }} />
+                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#334155', marginBottom: '6px' }}>Deskripsi Singkat Komposisi / Produk *</label>
+                  <textarea name="deskripsi_produk" required rows={3} value={dataPemohon.deskripsi_produk} onChange={handleInputPemohon} placeholder="Uraikan komposisi bahan baku, proses pengolahan, atau izin edar yang telah dimiliki sebelumnya..." style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.85rem', resize: 'vertical', boxSizing: 'border-box' }} />
                 </div>
               </div>
 
-              {/* Upload Dokumen Legalitas */}
+              {/* Bagian 3: Unggah Berkas */}
               <div style={{ marginBottom: '32px' }}>
                 <h3 style={{ fontSize: '1rem', fontWeight: '700', color: '#164E43', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <FileText size={17} /> 2. Berkas Persyaratan (PDF / JPG / PNG)
+                  <Upload size={17} /> 3. Berkas Persyaratan (PDF / JPG / PNG)
                 </h3>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                  {syaratLegalitas.map((dok) => (
-                    <div key={dok.id} style={{ border: '1px dashed #CBD5E1', borderRadius: '8px', padding: '14px', backgroundColor: '#F8FAFC' }}>
-                      <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#334155', marginBottom: '4px' }}>
-                        {dok.nama} {dok.id !== 'surat_izin' && '*'}
-                      </label>
-                      <input
-                        type="file"
-                        accept="image/jpeg,image/png,application/pdf"
-                        onChange={(e) => handleUploadDokumen(dok.id, e.target.files[0])}
-                        style={{ fontSize: '0.78rem' }}
-                      />
-                      {fileTerupload[dok.id] && (
-                        <div style={{ fontSize: '0.76rem', color: '#16A34A', marginTop: '6px' }}>
-                          ✓ {fileTerupload[dok.id].name}
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                  
+                  <div style={{ border: '1px dashed #CBD5E1', borderRadius: '8px', padding: '14px', backgroundColor: '#F8FAFC' }}>
+                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#334155', marginBottom: '4px' }}>
+                      Foto KTP Pemohon *
+                    </label>
+                    <input type="file" name="file_ktp" accept="image/jpeg,image/png,application/pdf" required onChange={handleFileChange} style={{ fontSize: '0.78rem' }} />
+                    {files.file_ktp && (
+                      <div style={{ fontSize: '0.76rem', color: '#16A34A', marginTop: '6px' }}>✓ {files.file_ktp.name}</div>
+                    )}
+                  </div>
+
+                  <div style={{ border: '1px dashed #CBD5E1', borderRadius: '8px', padding: '14px', backgroundColor: '#F8FAFC' }}>
+                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#334155', marginBottom: '4px' }}>
+                      Foto Tempat / Kemasan Produk *
+                    </label>
+                    <input type="file" name="file_foto_produk" accept="image/jpeg,image/png,application/pdf" required onChange={handleFileChange} style={{ fontSize: '0.78rem' }} />
+                    {files.file_foto_produk && (
+                      <div style={{ fontSize: '0.76rem', color: '#16A34A', marginTop: '6px' }}>✓ {files.file_foto_produk.name}</div>
+                    )}
+                  </div>
+
+                  <div style={{ border: '1px dashed #CBD5E1', borderRadius: '8px', padding: '14px', backgroundColor: '#F8FAFC', gridColumn: 'span 2' }}>
+                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#334155', marginBottom: '4px' }}>
+                      Dokumen Pendukung / NIB / Surat Keterangan Usaha (Opsional)
+                    </label>
+                    <input type="file" name="file_dokumen_pendukung" accept="image/jpeg,image/png,application/pdf" onChange={handleFileChange} style={{ fontSize: '0.78rem' }} />
+                    {files.file_dokumen_pendukung && (
+                      <div style={{ fontSize: '0.76rem', color: '#16A34A', marginTop: '6px' }}>✓ {files.file_dokumen_pendukung.name}</div>
+                    )}
+                  </div>
+
                 </div>
               </div>
 
@@ -429,7 +391,7 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
                   boxShadow: '0 4px 14px rgba(22, 78, 67, 0.25)'
                 }}
               >
-                {loading ? 'Mengunggah Berkas ke Cloud...' : 'Kirim Pengajuan Legalitas'}
+                {loading ? 'Mengunggah Berkas ke Supabase Storage...' : 'Kirim Permohonan Sertifikasi'}
               </button>
             </form>
           </div>
@@ -437,10 +399,9 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
 
       </main>
 
-      {/* 3. Footer Bawah */}
       <Footer setHalaman={setHalaman} />
 
-      {/* Modal Notifikasi Sukses */}
+      {/* MODAL SUKSES */}
       {nomorSukses && (
         <div style={{
           position: 'fixed',
@@ -468,7 +429,7 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
               Pengajuan Berhasil Dikirim!
             </h2>
             <p style={{ fontSize: '0.85rem', color: '#64748B', lineHeight: '1.5', margin: '0 0 20px' }}>
-              Dokumen Anda telah diunggah ke cloud storage dan segera diverifikasi oleh admin Dinas KUK Jawa Barat. Simpan nomor registrasi ini:
+              Berkas Anda telah tersimpan di cloud storage dan tercatat di database Dinas KUK Jawa Barat. Simpan nomor registrasi ini:
             </p>
             <div style={{
               backgroundColor: '#F8FAFC',
