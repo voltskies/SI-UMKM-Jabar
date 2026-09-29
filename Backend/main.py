@@ -43,29 +43,31 @@ app = FastAPI(
     openapi_tags=tags_metadata
 )
 
-# Konfigurasi CORS agar frontend React Vite bisa mengakses API tanpa kendala
+# CORS TERBUKA PENUH (Mengatasi semua masalah origin localhost vs 127.0.0.1)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-UPLOAD_DIR = "uploads"
+# 2. Direktori Penyimpanan Berkas Eksternal (Di luar folder project)
+UPLOAD_DIR = r"D:\E-Gov Berkas Upload"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
-app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
 
 def simpan_dokumen(file: Optional[UploadFile]):
-    if not file:
+    if not file or not file.filename:
         return None
     file_ext = os.path.splitext(file.filename)[1]
     unique_name = f"{uuid.uuid4().hex}{file_ext}"
     target_path = os.path.join(UPLOAD_DIR, unique_name)
     with open(target_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
-    return target_path
+    # Kembalikan relative path web agar dapat diakses melalui browser/frontend
+    return f"/uploads/{unique_name}"
 
 
 # SKEMA REQUEST PYDANTIC

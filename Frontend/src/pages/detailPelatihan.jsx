@@ -1,20 +1,76 @@
+import { useState } from 'react';
 import { ArrowLeft, Users, GraduationCap, RefreshCw, Share2 } from 'lucide-react';
 import Navbar from '../component/navbar';
 import Footer from '../component/footer';
 
 export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user, onArahkanLogin }) {
+  const [loading, setLoading] = useState(false);
+
   if (!pelatihan) return null;
 
-  const handleKlikDaftar = () => {
-    if (!user) {
+  const handleKlikDaftar = async () => {
+    // 1. Ambil data sesi pengguna dari props atau localStorage
+    let currentUser = user;
+    if (!currentUser) {
+      const stored = localStorage.getItem('user_umkm');
+      if (stored) {
+        try {
+          currentUser = JSON.parse(stored);
+        } catch (e) {
+          currentUser = null;
+        }
+      }
+    }
+
+    if (!currentUser || !currentUser.id) {
       alert('Silakan masuk ke akun Anda terlebih dahulu untuk mendaftar pelatihan ini.');
       if (typeof onArahkanLogin === 'function') {
         onArahkanLogin();
       } else if (typeof setHalaman === 'function') {
         setHalaman('login');
       }
-    } else {
-      alert(`Pendaftaran berhasil untuk akun: ${user.nama || 'Pelaku UMKM'}`);
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // 2. Format payload data pendaftaran
+      const payload = {
+        user_id: parseInt(currentUser.id, 10),
+        id_pelatihan: parseInt(pelatihan.id, 10) || 1,
+        judul_pelatihan: String(pelatihan.judul || pelatihan.title || 'Pelatihan UMKM Jabar'),
+        kategori: String(pelatihan.kategori || 'Fasilitasi UMKM'),
+        penyelenggara: String(pelatihan.penyelenggara || 'Dinas KUK Provinsi Jawa Barat')
+      };
+
+      // 3. Kirim ke endpoint FastAPI
+      const response = await fetch('http://127.0.0.1:8000/api/v1/layanan/pendaftaran-pelatihan', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const resData = await response.json().catch(() => null);
+
+      if (!response.ok) {
+        let pesan = 'Gagal mendaftar pelatihan.';
+        if (resData && resData.detail) {
+          pesan = Array.isArray(resData.detail)
+            ? resData.detail.map((err) => `${err.loc?.[1] || 'Input'}: ${err.msg}`).join(', ')
+            : resData.detail;
+        }
+        throw new Error(pesan);
+      }
+
+      alert(resData.message || `Pendaftaran berhasil untuk akun: ${currentUser.nama || currentUser.nama_lengkap || 'Pelaku UMKM'}`);
+    } catch (err) {
+      alert(err.message || 'Terjadi kesalahan jaringan.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -33,7 +89,7 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
       {/* 1. Header / Navbar */}
       <Navbar setHalaman={setHalaman} user={user} />
 
-      {/* 2. Banner Header - Hijau Tua Khas Pasundan */}
+      {/* 2. Banner Header */}
       <div style={{
         background: 'linear-gradient(135deg, #081E16 0%, #164E43 60%, #0F4D3A 100%)',
         color: '#FFFFFF',
@@ -81,7 +137,7 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
           </div>
 
           <h1 style={{ fontSize: '2.2rem', fontWeight: '800', margin: '0 0 10px 0', maxWidth: '850px', lineHeight: 1.3 }}>
-            {pelatihan.judul}
+            {pelatihan.judul || pelatihan.title}
           </h1>
           <p style={{ color: 'rgba(255,255,255,0.85)', fontSize: '0.96rem', margin: '0 0 28px 0' }}>
             Pelatihan & Standardisasi ({pelatihan.kategori})
@@ -110,16 +166,16 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
         </div>
       </div>
 
-      {/* 3. Konten Utama Dua Kolom */}
+      {/* 3. Konten Utama */}
       <main style={{ flex: 1, maxWidth: '1200px', width: '100%', margin: '-40px auto 50px auto', padding: '0 20px', boxSizing: 'border-box' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: '28px', alignItems: 'start' }}>
           
-          {/* Kolom Kiri: Banner & Deskripsi */}
+          {/* Kolom Kiri */}
           <div style={{ backgroundColor: '#FFFFFF', borderRadius: '16px', overflow: 'hidden', border: '1px solid #E2E8F0', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.06)' }}>
             <div style={{ height: '360px', width: '100%', overflow: 'hidden', backgroundColor: '#F1F5F9' }}>
               <img
-                src={pelatihan.banner}
-                alt={pelatihan.judul}
+                src={pelatihan.banner || pelatihan.image}
+                alt={pelatihan.judul || pelatihan.title}
                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
               />
             </div>
@@ -147,7 +203,7 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
             </div>
           </div>
 
-          {/* Kolom Kanan: Card Aksi Pendaftaran */}
+          {/* Kolom Kanan */}
           <div>
             <div style={{
               backgroundColor: '#FFFFFF',
@@ -156,7 +212,6 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
               padding: '28px',
               boxShadow: '0 10px 25px -5px rgba(0,0,0,0.06)'
             }}>
-              {/* Notifikasi Format Pembelajaran */}
               <div style={{
                 backgroundColor: '#F8FAFC',
                 border: '1px solid #E2E8F0',
@@ -171,30 +226,33 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
                 Pelatihan diselenggarakan secara <b>Daring Terpadu & Mandiri</b>. Peserta yang menyelesaikan kurikulum berhak mendapatkan sertifikat kelulusan resmi.
               </div>
 
-              {/* Tombol Utama - Amber/Oranye Dashboard (#D97706) */}
               <button
                 type="button"
+                disabled={loading}
                 onClick={handleKlikDaftar}
                 style={{
                   width: '100%',
-                  backgroundColor: '#D97706',
+                  backgroundColor: loading ? '#94A3B8' : '#D97706',
                   color: '#FFFFFF',
                   border: 'none',
                   padding: '14px',
                   borderRadius: '10px',
                   fontWeight: '700',
                   fontSize: '0.95rem',
-                  cursor: 'pointer',
+                  cursor: loading ? 'not-allowed' : 'pointer',
                   boxShadow: '0 4px 14px rgba(217, 119, 6, 0.35)',
                   transition: 'background-color 0.2s ease'
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#b45309')}
-                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#D97706')}
+                onMouseEnter={(e) => {
+                  if (!loading) e.currentTarget.style.backgroundColor = '#b45309';
+                }}
+                onMouseLeave={(e) => {
+                  if (!loading) e.currentTarget.style.backgroundColor = '#D97706';
+                }}
               >
-                DAFTAR SEKARANG
+                {loading ? 'MEMPROSES PENDAFTARAN...' : 'DAFTAR SEKARANG'}
               </button>
 
-              {/* Tombol Sekunder - Outline Hijau Tua (#164E43) */}
               <button
                 type="button"
                 onClick={() => alert('Tautan pendaftaran disalin ke clipboard!')}

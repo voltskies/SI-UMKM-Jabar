@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.9.9)  9 SEP 2026 21:06
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.9.9)  29 SEP 2026 18:54
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -313,145 +313,110 @@ Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 48
 File: epstopdf-sys.cfg 2021/03/18 v2.0 Configuration of epstopdf for MiKTeX
 ))
 \c@lstlisting=\count322
-LaTeX Font Info:    Calculating math sizes for size <11> on input line 49.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 49.
+LaTeX Font Info:    Calculating math sizes for size <11> on input line 47.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 47.
  (D:\MikTEX\tex/latex/amsfonts\umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 49.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 47.
  (D:\MikTEX\tex/latex/amsfonts\umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-<image_tex/gambar 1.png, id=1, 602.25pt x 361.35pt>
-File: image_tex/gambar 1.png Graphic file (type png)
-<use image_tex/gambar 1.png>
-Package pdftex.def Info: image_tex/gambar 1.png  used on input line 62.
-(pdftex.def)             Requested size: 214.20154pt x 128.51999pt.
-
-Underfull \vbox (badness 6526) has occurred while \output is active []
-
- [1{C:/Users/LENOVO/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}{D:/MikTEX/fonts/enc/dvips/base/8r.enc}
+Underfull \hbox (badness 6691) in paragraph at lines 49--51
+[]\OT1/ptm/b/it/9 Abstract\OT1/ptm/b/n/9 ---Sektor Us-aha Mikro, Ke-cil, dan Menen-gah
+ []
 
 
- <./image_tex/gambar 1.png>] (D:\MikTEX\tex/latex/listings\lstlang1.sty
-File: lstlang1.sty 2025/11/14 1.11b listings language file
-) (D:\MikTEX\tex/latex/listings\lstlang2.sty
-File: lstlang2.sty 2025/11/14 1.11b listings language file
-) (D:\MikTEX\tex/latex/listings\lstlang3.sty
-File: lstlang3.sty 2025/11/14 1.11b listings language file
-) (D:\MikTEX\tex/latex/listings\lstlang1.sty
-File: lstlang1.sty 2025/11/14 1.11b listings language file
-) (D:\MikTEX\tex/latex/listings\lstlang2.sty
-File: lstlang2.sty 2025/11/14 1.11b listings language file
-) (D:\MikTEX\tex/latex/listings\lstlang3.sty
-File: lstlang3.sty 2025/11/14 1.11b listings language file
-) (D:\MikTEX\tex/latex/listings\lstlang1.sty
-File: lstlang1.sty 2025/11/14 1.11b listings language file
-) (D:\MikTEX\tex/latex/listings\lstlang2.sty
-File: lstlang2.sty 2025/11/14 1.11b listings language file
-) (D:\MikTEX\tex/latex/listings\lstlang3.sty
-File: lstlang3.sty 2025/11/14 1.11b listings language file
-) (D:\MikTEX\tex/latex/listings\lstmisc.sty
-File: lstmisc.sty 2025/11/14 1.11b (Carsten Heinz)
-)
-LaTeX Font Info:    Trying to load font information for OT1+pcr on input line 85.
- (D:\MikTEX\tex/latex/psnfss\ot1pcr.fd
-File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
-) [2
+Underfull \hbox (badness 1975) in paragraph at lines 49--51
+\OT1/ptm/b/n/9 (UMKM) memegang per-anan kru-sial dalam per-tum-buhan
+ []
 
 
-] [3]
-<image_tex/gambar 2.png, id=17, 1552.80125pt x 1308.89pt>
+Underfull \hbox (badness 2368) in paragraph at lines 53--55
+[]\OT1/ptm/b/it/9 Index Terms\OT1/ptm/b/n/9 ---SI-UMKM Jabar, E-Governance, FastAPI,
+ []
+
+[1{C:/Users/LENOVO/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}{D:/MikTEX/fonts/enc/dvips/base/8r.enc}
+
+
+]
+<image_tex/gambar 2.png, id=9, 3001.2125pt x 2776.3725pt>
 File: image_tex/gambar 2.png Graphic file (type png)
 <use image_tex/gambar 2.png>
-Package pdftex.def Info: image_tex/gambar 2.png  used on input line 154.
-(pdftex.def)             Requested size: 474.71906pt x 400.13957pt.
-<image_tex/gambar 3.png, id=18, 1284.8pt x 995.72pt>
-File: image_tex/gambar 3.png Graphic file (type png)
-<use image_tex/gambar 3.png>
-Package pdftex.def Info: image_tex/gambar 3.png  used on input line 162.
-(pdftex.def)             Requested size: 474.71906pt x 367.90926pt.
+Package pdftex.def Info: image_tex/gambar 2.png  used on input line 86.
+(pdftex.def)             Requested size: 454.08252pt x 420.03885pt.
+ [2
 
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
- [4
 
  <./image_tex/gambar 2.png>]
-<image_tex/gambar 4.png, id=23, 1371.1225pt x 3881.50125pt>
+<image_tex/gambar 3.png, id=15, 1445.4pt x 813.0375pt>
+File: image_tex/gambar 3.png Graphic file (type png)
+<use image_tex/gambar 3.png>
+Package pdftex.def Info: image_tex/gambar 3.png  used on input line 96.
+(pdftex.def)             Requested size: 454.08252pt x 255.41344pt.
+ [3 <./image_tex/gambar 3.png (PNG copy)>]
+<image_tex/gambar 4.png, id=19, 1371.1225pt x 3881.50125pt>
 File: image_tex/gambar 4.png Graphic file (type png)
 <use image_tex/gambar 4.png>
-Package pdftex.def Info: image_tex/gambar 4.png  used on input line 170.
-(pdftex.def)             Requested size: 454.08252pt x 1285.45987pt.
+Package pdftex.def Info: image_tex/gambar 4.png  used on input line 106.
+(pdftex.def)             Requested size: 438.60315pt x 1241.63199pt.
 
-Underfull \vbox (badness 10000) has occurred while \output is active []
+Overfull \vbox (616.03897pt too high) has occurred while \output is active []
 
- [5 <./image_tex/gambar 3.png>]
-Overfull \vbox (659.86685pt too high) has occurred while \output is active []
-
- [6 <./image_tex/gambar 4.png>]
-<image_tex/gambar 5.png, id=32, 1371.1225pt x 961.5925pt>
+ [4 <./image_tex/gambar 4.png>]
+<image_tex/gambar 5.png, id=24, 1371.1225pt x 961.5925pt>
 File: image_tex/gambar 5.png Graphic file (type png)
 <use image_tex/gambar 5.png>
-Package pdftex.def Info: image_tex/gambar 5.png  used on input line 177.
-(pdftex.def)             Requested size: 454.08252pt x 318.4563pt.
-<image_tex/gambar 6.png, id=33, 1371.1225pt x 1958.31625pt>
+Package pdftex.def Info: image_tex/gambar 5.png  used on input line 116.
+(pdftex.def)             Requested size: 438.60315pt x 307.5985pt.
+ [5 <./image_tex/gambar 5.png>]
+<image_tex/gambar 6.png, id=29, 1371.1225pt x 1958.31625pt>
 File: image_tex/gambar 6.png Graphic file (type png)
 <use image_tex/gambar 6.png>
-Package pdftex.def Info: image_tex/gambar 6.png  used on input line 184.
-(pdftex.def)             Requested size: 454.08252pt x 648.54724pt.
+Package pdftex.def Info: image_tex/gambar 6.png  used on input line 126.
+(pdftex.def)             Requested size: 438.60315pt x 626.43497pt.
 
-Underfull \vbox (badness 10000) has occurred while \output is active []
+Overfull \vbox (0.84195pt too high) has occurred while \output is active []
 
- [7 <./image_tex/gambar 5.png>]
-<image_tex/gambar 7.png, id=39, 1375.1375pt x 876.27374pt>
+ [6 <./image_tex/gambar 6.png>]
+<image_tex/gambar 7.png, id=34, 1375.1375pt x 876.27374pt>
 File: image_tex/gambar 7.png Graphic file (type png)
 <use image_tex/gambar 7.png>
-Package pdftex.def Info: image_tex/gambar 7.png  used on input line 191.
-(pdftex.def)             Requested size: 454.08252pt x 289.34505pt.
-
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
- [8 <./image_tex/gambar 6.png>]
-<image_tex/gambar 8.png, id=44, 1292.83pt x 1638.12pt>
+Package pdftex.def Info: image_tex/gambar 7.png  used on input line 136.
+(pdftex.def)             Requested size: 438.60315pt x 279.49074pt.
+ [7 <./image_tex/gambar 7.png>]
+<image_tex/gambar 8.png, id=40, 1292.83pt x 1638.12pt>
 File: image_tex/gambar 8.png Graphic file (type png)
 <use image_tex/gambar 8.png>
-Package pdftex.def Info: image_tex/gambar 8.png  used on input line 198.
-(pdftex.def)             Requested size: 454.08252pt x 575.35025pt.
-
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
- [9 <./image_tex/gambar 7.png>]
-<image_tex/gambar 9.png, id=49, 1292.83pt x 2111.89pt>
+Package pdftex.def Info: image_tex/gambar 8.png  used on input line 146.
+(pdftex.def)             Requested size: 438.60315pt x 555.72865pt.
+ [8 <./image_tex/gambar 8.png>]
+<image_tex/gambar 9.png, id=45, 1292.83pt x 2111.89pt>
 File: image_tex/gambar 9.png Graphic file (type png)
 <use image_tex/gambar 9.png>
-Package pdftex.def Info: image_tex/gambar 9.png  used on input line 205.
-(pdftex.def)             Requested size: 454.08252pt x 741.75056pt.
+Package pdftex.def Info: image_tex/gambar 9.png  used on input line 156.
+(pdftex.def)             Requested size: 438.60315pt x 716.4541pt.
 
-Underfull \vbox (badness 10000) has occurred while \output is active []
+Overfull \vbox (90.86108pt too high) has occurred while \output is active []
 
- [10 <./image_tex/gambar 8.png>]
-Overfull \vbox (93.08253pt too high) has occurred while \output is active []
-
- [11 <./image_tex/gambar 9.png>]
-<image_tex/gambar 10.jpg, id=58, 503.8825pt x 1421.31pt>
+ [9 <./image_tex/gambar 9.png>]
+<image_tex/gambar 10.jpg, id=50, 503.8825pt x 1421.31pt>
 File: image_tex/gambar 10.jpg Graphic file (type jpg)
 <use image_tex/gambar 10.jpg>
-Package pdftex.def Info: image_tex/gambar 10.jpg  used on input line 215.
-(pdftex.def)             Requested size: 131.12938pt x 369.88582pt.
-<image_tex/gambar 11.jpg, id=59, 362.35374pt x 915.42pt>
+Package pdftex.def Info: image_tex/gambar 10.jpg  used on input line 168.
+(pdftex.def)             Requested size: 181.56671pt x 512.1496pt.
+<image_tex/gambar 11.jpg, id=51, 362.35374pt x 915.42pt>
 File: image_tex/gambar 11.jpg Graphic file (type jpg)
 <use image_tex/gambar 11.jpg>
-Package pdftex.def Info: image_tex/gambar 11.jpg  used on input line 221.
-(pdftex.def)             Requested size: 146.40965pt x 369.88582pt.
-<image_tex/gambar 12.png, id=60, 979.2585pt x 648.62325pt>
+Package pdftex.def Info: image_tex/gambar 11.jpg  used on input line 174.
+(pdftex.def)             Requested size: 202.73425pt x 512.1496pt.
+ [10 <./image_tex/gambar 10.jpg> <./image_tex/gambar 11.jpg>]
+<image_tex/gambar 12.png, id=55, 979.2585pt x 648.62325pt>
 File: image_tex/gambar 12.png Graphic file (type png)
 <use image_tex/gambar 12.png>
-Package pdftex.def Info: image_tex/gambar 12.png  used on input line 230.
-(pdftex.def)             Requested size: 474.71906pt x 314.43344pt.
+Package pdftex.def Info: image_tex/gambar 12.png  used on input line 185.
+(pdftex.def)             Requested size: 454.08252pt x 300.76543pt.
 
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
- [12 <./image_tex/gambar 10.jpg> <./image_tex/gambar 11.jpg>]
 
 ** Conference Paper **
 Before submitting the final camera ready copy, remember to:
@@ -463,24 +428,24 @@ Before submitting the final camera ready copy, remember to:
  uses only Type 1 fonts and that every step in the generation
  process uses the appropriate paper size.
 
-[13 <./image_tex/gambar 12.png>] (umkm.aux)
+[11 <./image_tex/gambar 12.png>] (umkm.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-12-24>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 7283 strings out of 467871
- 106902 string characters out of 5435209
- 1463113 words of memory out of 5000000
- 36083 multiletter control sequences out of 15000+600000
- 663783 words of font info for 115 fonts, out of 8000000 for 9000
+ 5744 strings out of 467871
+ 87332 string characters out of 5435209
+ 507889 words of memory out of 5000000
+ 34570 multiletter control sequences out of 15000+600000
+ 665255 words of font info for 114 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 57i,11n,73p,825b,2517s stack positions out of 10000i,1000n,20000p,200000b,200000s
-<D:/MikTEX/fonts/type1/urw/courier/ucrr8a.pfb><D:/MikTEX/fonts/type1/urw/times/utmr8a.pfb><D:/MikTEX/fonts/type1/urw/times/utmri8a.pfb>
-Output written on umkm.pdf (13 pages, 1931380 bytes).
+ 57i,11n,65p,1074b,350s stack positions out of 10000i,1000n,20000p,200000b,200000s
+<D:/MikTEX/fonts/type1/urw/times/utmb8a.pfb><D:/MikTEX/fonts/type1/urw/times/utmbi8a.pfb><D:/MikTEX/fonts/type1/urw/times/utmr8a.pfb><D:/MikTEX/fonts/type1/urw/times/utmri8a.pfb>
+Output written on umkm.pdf (11 pages, 2220114 bytes).
 PDF statistics:
- 84 PDF objects out of 1000 (max. 8388607)
+ 79 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
- 61 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 56 words of extra memory for PDF output out of 10000 (max. 10000000)
 

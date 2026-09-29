@@ -32,6 +32,9 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
   const [errorMsg, setErrorMsg] = useState('');
   const [suksesNomor, setSuksesNomor] = useState(null);
 
+  // Basis URL backend dinamis mengikuti host browser aktif
+  const API_BASE_URL = `http://${window.location.hostname || '127.0.0.1'}:8000`;
+
   const handleKembaliKeBeranda = () => {
     if (typeof setHalaman === 'function') {
       setHalaman('dashboard');
@@ -57,48 +60,57 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
     e.preventDefault();
     setErrorMsg('');
 
-    // Validasi dasar
-    if (formData.nik.length !== 16 || !/^\d+$/.test(formData.nik)) {
-      setErrorMsg('NIK harus berupa 16 digit angka.');
+    // Validasi NIK wajib 16 digit angka
+    const cleanNik = formData.nik.trim();
+    if (!/^\d{16}$/.test(cleanNik)) {
+      setErrorMsg('NIK harus berupa tepat 16 digit angka.');
       return;
     }
 
+    // Validasi file KTP wajib diunggah
     if (!files.file_ktp) {
-      setErrorMsg('File KTP wajib diunggah.');
+      setErrorMsg('Berkas Foto KTP wajib diunggah.');
       return;
     }
 
     try {
       setLoading(true);
       const dataPayload = new FormData();
-      dataPayload.append('nik', formData.nik);
-      dataPayload.append('nama_lengkap', formData.nama_lengkap);
-      dataPayload.append('email', formData.email);
-      dataPayload.append('nomor_whatsapp', formData.nomor_whatsapp);
-      dataPayload.append('nama_usaha', formData.nama_usaha);
+      dataPayload.append('nik', cleanNik);
+      dataPayload.append('nama_lengkap', formData.nama_lengkap.trim());
+      dataPayload.append('email', formData.email.trim());
+      dataPayload.append('nomor_whatsapp', formData.nomor_whatsapp.trim());
+      dataPayload.append('nama_usaha', formData.nama_usaha.trim());
       dataPayload.append('kategori_usaha', formData.kategori_usaha);
-      dataPayload.append('jumlah_dana', formData.jumlah_dana);
-      dataPayload.append('tujuan_penggunaan', formData.tujuan_penggunaan);
-      if (formData.nib) dataPayload.append('nib', formData.nib);
+      dataPayload.append('jumlah_dana', formData.jumlah_dana.trim());
+      dataPayload.append('tujuan_penggunaan', formData.tujuan_penggunaan.trim());
+      if (formData.nib.trim()) {
+        dataPayload.append('nib', formData.nib.trim());
+      }
 
-      // File Lampiran
+      // Lampiran berkas fisik
       dataPayload.append('file_ktp', files.file_ktp);
       if (files.file_kk) dataPayload.append('file_kk', files.file_kk);
       if (files.file_nib) dataPayload.append('file_nib', files.file_nib);
       if (files.file_proposal) dataPayload.append('file_proposal', files.file_proposal);
 
-      const res = await axios.post('http://127.0.0.1:8000/api/v1/layanan/pengajuan-bantuan', dataPayload, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
+      // Kirim tanpa manual Content-Type header agar browser menyematkan multipart boundary otomatis
+      const res = await axios.post(`${API_BASE_URL}/api/v1/layanan/pengajuan-bantuan`, dataPayload);
 
       if (res.data.status === 'success') {
         setSuksesNomor(res.data.nomor_pengajuan);
       }
     } catch (err) {
-      console.error(err);
-      setErrorMsg(err.response?.data?.detail || 'Terjadi kesalahan saat mengirim pengajuan.');
+      console.error("Gagal mengirim bantuan:", err);
+      if (err.response && err.response.data) {
+        const detail = err.response.data.detail;
+        const pesan = Array.isArray(detail)
+          ? detail.map((d) => d.msg).join(', ')
+          : detail;
+        setErrorMsg(pesan || 'Gagal memproses permohonan bantuan.');
+      } else {
+        setErrorMsg('Gagal terhubung ke server backend. Pastikan server Uvicorn menyala.');
+      }
     } finally {
       setLoading(false);
     }
@@ -348,28 +360,53 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
                   <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#334155', marginBottom: '4px' }}>
                     Foto KTP Pemohon *
                   </label>
-                  <input type="file" name="file_ktp" accept="image/*,application/pdf" required onChange={handleFileChange} style={{ fontSize: '0.78rem' }} />
+                  <input 
+                    type="file" 
+                    name="file_ktp" 
+                    accept="image/*,application/pdf" 
+                    required 
+                    onChange={handleFileChange} 
+                    style={{ fontSize: '0.78rem' }} 
+                  />
                 </div>
 
                 <div style={{ border: '1px dashed #CBD5E1', borderRadius: '8px', padding: '14px', backgroundColor: '#F8FAFC' }}>
                   <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#334155', marginBottom: '4px' }}>
                     Kartu Keluarga (KK)
                   </label>
-                  <input type="file" name="file_kk" accept="image/*,application/pdf" onChange={handleFileChange} style={{ fontSize: '0.78rem' }} />
+                  <input 
+                    type="file" 
+                    name="file_kk" 
+                    accept="image/*,application/pdf" 
+                    onChange={handleFileChange} 
+                    style={{ fontSize: '0.78rem' }} 
+                  />
                 </div>
 
                 <div style={{ border: '1px dashed #CBD5E1', borderRadius: '8px', padding: '14px', backgroundColor: '#F8FAFC' }}>
                   <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#334155', marginBottom: '4px' }}>
                     Dokumen NIB (Jika ada)
                   </label>
-                  <input type="file" name="file_nib" accept="application/pdf,image/*" onChange={handleFileChange} style={{ fontSize: '0.78rem' }} />
+                  <input 
+                    type="file" 
+                    name="file_nib" 
+                    accept="application/pdf,image/*" 
+                    onChange={handleFileChange} 
+                    style={{ fontSize: '0.78rem' }} 
+                  />
                 </div>
 
                 <div style={{ border: '1px dashed #CBD5E1', borderRadius: '8px', padding: '14px', backgroundColor: '#F8FAFC' }}>
                   <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#334155', marginBottom: '4px' }}>
                     Proposal Usaha / Rencana Anggaran
                   </label>
-                  <input type="file" name="file_proposal" accept="application/pdf" onChange={handleFileChange} style={{ fontSize: '0.78rem' }} />
+                  <input 
+                    type="file" 
+                    name="file_proposal" 
+                    accept="application/pdf" 
+                    onChange={handleFileChange} 
+                    style={{ fontSize: '0.78rem' }} 
+                  />
                 </div>
               </div>
             </div>
