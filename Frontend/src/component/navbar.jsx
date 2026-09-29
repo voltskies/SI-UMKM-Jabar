@@ -252,31 +252,38 @@ const jumlahBelumDibaca = notifikasiDummy.filter((n) => !n.dibaca).length;
                   </div>
 
                   <button
-                    type="button"
-                    onClick={() => {
-                      setDropdownUser(false);
+                  type="button"
+                  onClick={() => {
+                    setDropdownUser(false);
+                    localStorage.removeItem('user_umkm');
+                    localStorage.removeItem('token');
+                    sessionStorage.clear();
+                    if (onLogout) {
                       onLogout();
-                    }}
-                    style={{
-                      width: '100%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      background: 'none',
-                      border: 'none',
-                      color: '#DC2626',
-                      padding: '8px 10px',
-                      borderRadius: '6px',
-                      cursor: 'pointer',
-                      fontSize: '0.85rem',
-                      fontWeight: '600',
-                      marginTop: '4px'
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FEF2F2'}
-                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                  >
-                    <LogOut size={15} /> Keluar Akun
-                  </button>
+                    } else {
+                      window.location.reload();
+                    }
+                  }}
+                  style={{
+                    width: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    background: 'none',
+                    border: 'none',
+                    color: '#DC2626',
+                    padding: '8px 10px',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                    fontSize: '0.85rem',
+                    fontWeight: '600',
+                    marginTop: '4px'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#FEF2F2'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                >
+                  <LogOut size={15} /> Keluar Akun
+                </button>
                 </>
               ) : (
                 <>
