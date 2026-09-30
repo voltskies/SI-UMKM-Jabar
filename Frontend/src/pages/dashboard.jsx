@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef, useMemo } from 'react';
 import axios from 'axios';
-import { MapContainer, TileLayer, GeoJSON, CircleMarker, Tooltip, Popup, useMapEvents } from 'react-leaflet';
+import { MapContainer, TileLayer, GeoJSON, CircleMarker, Tooltip, Popup, Pane, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { 
   Search, CheckCircle, ArrowRight, X, MapPin, Tag,
@@ -70,39 +70,109 @@ const KABUPATEN_KOTA_JABAR = [
   'Kota Cimahi', 'Kota Tasikmalaya', 'Kota Banjar'
 ];
 
-// Pemetaan Warna Poligon Wilayah Sesuai Konfigurasi MapChart
-const getWilayahMapChartColor = (rawName = '') => {
-  const w = rawName.toLowerCase();
+// =====================================================================
+// ✅ [BARU] Fungsi bantu untuk mewarnai peta dari DATA (menggantikan
+//    getWilayahMapChartColor yang warnanya hardcode per nama wilayah)
+// =====================================================================
 
-  // 1. #cc3333 -> Bandung Barat, Kota Bandung, Bandung
-  if (w.includes('bandung')) return '#cc3333';
+// Nama wilayah dari GeoJSON -> "Kabupaten X" / "Kota X"
+const namaWilayah = (f) => {
+  const { NAME_2: n, TYPE_2: t } = f.properties;
+  if (t === 'Kota' && !n.startsWith('Kota ')) return `Kota ${n}`;
+  return t === 'Kabupaten' ? `Kabupaten ${n}` : n;
+};
 
-  // 2. #762a83 -> Bogor, Subang, Cirebon, Pangandaran
-  if (w.includes('bogor') || w.includes('subang') || w.includes('cirebon') || w.includes('pangandaran')) {
-    return '#762a83';
-  }
+// Kunci pencocokan: "Kabupaten Bandung" / "Kab. Bandung" / "Bandung" -> "bandung"
+// ("Kota Bandung" tetap "kota bandung", jadi tidak tertukar)
+const kunciWilayah = (s = '') =>
+  s.toLowerCase().trim().replace(/^kabupaten\s+|^kab\.\s*/, '');
 
-  // 3. #74add1 -> Karawang, Sumedang
-  if (w.includes('karawang') || w.includes('sumedang')) return '#74add1';
+// Kelompok kategori (aturannya sama dengan getMarkerColor di bawah)
+const getKelompok = (kategori) => {
+  const kat = (kategori || '').toUpperCase();
+  if (kat.includes('AKSESORIS') || kat.includes('CRAFT') || kat.includes('KRIYA') || kat.includes('KERAJINAN')) return 'Kerajinan & Kriya';
+  if (kat.includes('KULINER') || kat.includes('MAKANAN') || kat.includes('MINUMAN') || kat.includes('OBAT')) return 'Kuliner';
+  if (kat.includes('FASHION') || kat.includes('BATIK') || kat.includes('KONVEKSI') || kat.includes('BORDIR')) return 'Fashion';
+  if (kat.includes('JASA') || kat.includes('AGRIBISNIS') || kat.includes('INDUSTRI') || kat.includes('MEBEL') || kat.includes('DEKORASI')) return 'Jasa & Lainnya';
+  return 'Lainnya';
+};
 
-  // 4. #00441b -> Indramayu, Garut, Bekasi
-  if (w.includes('indramayu') || w.includes('garut') || w.includes('bekasi')) return '#00441b';
+const WARNA_KELOMPOK = {
+  'Kerajinan & Kriya': '#EAB308',
+  'Kuliner': '#16A34A',
+  'Fashion': '#9333EA',
+  'Jasa & Lainnya': '#0284C7',
+  'Lainnya': '#164E43',
+};
 
-  // 5. #b2df8a -> Purwakarta, Ciamis
-  if (w.includes('purwakarta') || w.includes('ciamis')) return '#b2df8a';
+// LAYER 1: warna poligon = warna MapChart buatan sendiri (dikelompokkan per wilayah).
+const KELOMPOK_MAPCHART = [
+  { warna: '#cc3333', wilayah: ['bandung'] },                                   // Bandung, Bandung Barat, Kota Bandung
+  { warna: '#762a83', wilayah: ['bogor', 'subang', 'cirebon', 'pangandaran'] },
+  { warna: '#74add1', wilayah: ['karawang', 'sumedang'] },
+  { warna: '#00441b', wilayah: ['indramayu', 'garut', 'bekasi'] },
+  { warna: '#b2df8a', wilayah: ['purwakarta', 'ciamis'] },
+  { warna: '#800026', wilayah: ['cianjur', 'majalengka', 'banjar'] },
+  { warna: '#ffffb3', wilayah: ['sukabumi', 'cimahi', 'tasikmalaya', 'depok'] },
+  { warna: '#ffff33', wilayah: ['kuningan'] },
+];
+// Ringkasan UMKM per wilayah (jumlah UMKM dari data-kategori_UMKM.csv, semua tahun digabung)
+const DATA_WILAYAH = {"bandung": {"total": 940, "dominan": "Kuliner", "rincian": {"Kuliner": 558, "Fashion": 258, "Kerajinan & Kriya": 70, "Jasa & Lainnya": 54}}, "bandung barat": {"total": 821, "dominan": "Kuliner", "rincian": {"Kuliner": 408, "Fashion": 205, "Jasa & Lainnya": 115, "Kerajinan & Kriya": 93}}, "bekasi": {"total": 709, "dominan": "Kuliner", "rincian": {"Kuliner": 420, "Fashion": 156, "Kerajinan & Kriya": 88, "Jasa & Lainnya": 45}}, "bogor": {"total": 928, "dominan": "Kuliner", "rincian": {"Kuliner": 484, "Fashion": 232, "Jasa & Lainnya": 110, "Kerajinan & Kriya": 102}}, "ciamis": {"total": 745, "dominan": "Kuliner", "rincian": {"Kuliner": 515, "Fashion": 160, "Kerajinan & Kriya": 46, "Jasa & Lainnya": 24}}, "cianjur": {"total": 735, "dominan": "Kuliner", "rincian": {"Kuliner": 424, "Fashion": 163, "Kerajinan & Kriya": 79, "Jasa & Lainnya": 69}}, "cirebon": {"total": 846, "dominan": "Kuliner", "rincian": {"Kuliner": 477, "Fashion": 200, "Jasa & Lainnya": 87, "Kerajinan & Kriya": 82}}, "garut": {"total": 835, "dominan": "Kuliner", "rincian": {"Kuliner": 410, "Fashion": 252, "Jasa & Lainnya": 101, "Kerajinan & Kriya": 72}}, "indramayu": {"total": 592, "dominan": "Kuliner", "rincian": {"Kuliner": 328, "Fashion": 115, "Kerajinan & Kriya": 79, "Jasa & Lainnya": 70}}, "karawang": {"total": 723, "dominan": "Kuliner", "rincian": {"Kuliner": 445, "Fashion": 149, "Kerajinan & Kriya": 68, "Jasa & Lainnya": 61}}, "kuningan": {"total": 681, "dominan": "Kuliner", "rincian": {"Kuliner": 469, "Fashion": 150, "Kerajinan & Kriya": 32, "Jasa & Lainnya": 30}}, "majalengka": {"total": 815, "dominan": "Kuliner", "rincian": {"Kuliner": 493, "Fashion": 171, "Kerajinan & Kriya": 76, "Jasa & Lainnya": 75}}, "pangandaran": {"total": 615, "dominan": "Kuliner", "rincian": {"Kuliner": 357, "Fashion": 150, "Kerajinan & Kriya": 73, "Jasa & Lainnya": 35}}, "purwakarta": {"total": 497, "dominan": "Kuliner", "rincian": {"Kuliner": 243, "Jasa & Lainnya": 105, "Fashion": 103, "Kerajinan & Kriya": 46}}, "subang": {"total": 661, "dominan": "Kuliner", "rincian": {"Kuliner": 335, "Fashion": 142, "Kerajinan & Kriya": 93, "Jasa & Lainnya": 91}}, "sukabumi": {"total": 780, "dominan": "Kuliner", "rincian": {"Kuliner": 377, "Fashion": 212, "Kerajinan & Kriya": 106, "Jasa & Lainnya": 85}}, "sumedang": {"total": 758, "dominan": "Kuliner", "rincian": {"Kuliner": 451, "Fashion": 180, "Kerajinan & Kriya": 75, "Jasa & Lainnya": 52}}, "tasikmalaya": {"total": 706, "dominan": "Kuliner", "rincian": {"Kuliner": 406, "Fashion": 177, "Kerajinan & Kriya": 84, "Jasa & Lainnya": 39}}, "kota bandung": {"total": 1154, "dominan": "Kuliner", "rincian": {"Kuliner": 519, "Fashion": 423, "Kerajinan & Kriya": 135, "Jasa & Lainnya": 77}}, "kota banjar": {"total": 556, "dominan": "Kuliner", "rincian": {"Kuliner": 292, "Fashion": 113, "Jasa & Lainnya": 93, "Kerajinan & Kriya": 58}}, "kota bekasi": {"total": 517, "dominan": "Kuliner", "rincian": {"Kuliner": 231, "Fashion": 144, "Jasa & Lainnya": 90, "Kerajinan & Kriya": 52}}, "kota bogor": {"total": 554, "dominan": "Kuliner", "rincian": {"Kuliner": 267, "Fashion": 181, "Jasa & Lainnya": 57, "Kerajinan & Kriya": 49}}, "kota cimahi": {"total": 637, "dominan": "Kuliner", "rincian": {"Kuliner": 351, "Fashion": 199, "Kerajinan & Kriya": 61, "Jasa & Lainnya": 26}}, "kota cirebon": {"total": 635, "dominan": "Kuliner", "rincian": {"Kuliner": 413, "Fashion": 112, "Kerajinan & Kriya": 68, "Jasa & Lainnya": 42}}, "kota depok": {"total": 540, "dominan": "Kuliner", "rincian": {"Kuliner": 367, "Fashion": 98, "Kerajinan & Kriya": 39, "Jasa & Lainnya": 36}}, "kota sukabumi": {"total": 604, "dominan": "Kuliner", "rincian": {"Kuliner": 347, "Fashion": 119, "Jasa & Lainnya": 75, "Kerajinan & Kriya": 63}}, "kota tasikmalaya": {"total": 658, "dominan": "Kuliner", "rincian": {"Kuliner": 296, "Fashion": 269, "Kerajinan & Kriya": 71, "Jasa & Lainnya": 22}}};
 
-  // 6. #800026 -> Cianjur, Majalengka, Banjar
-  if (w.includes('cianjur') || w.includes('majalengka') || w.includes('banjar')) return '#800026';
+const getWarnaMapChart = (nama = '') => {
+  const w = nama.toLowerCase();
+  const g = KELOMPOK_MAPCHART.find((k) => k.wilayah.some((x) => w.includes(x)));
+  return g ? g.warna : '#CFD8DC';
+};
 
-  // 7. #ffffb3 -> Sukabumi, Waduk Cirata, Cimahi, Tasikmalaya, Depok
-  if (w.includes('sukabumi') || w.includes('cirata') || w.includes('cimahi') || w.includes('tasikmalaya') || w.includes('depok')) {
-    return '#ffffb3';
-  }
+// ✅ [BARU] Style & handler poligon dibuat di LUAR komponen supaya referensinya tetap sama.
+//    Kalau ditulis inline, tiap zoom (setZoomLevel -> re-render) react-leaflet menganggap
+//    prop `style` berubah lalu memanggil layer.setStyle() ulang ke semua poligon.
+const STYLE_WILAYAH_NORMAL = { weight: 0.7, opacity: 0.75, color: '#1E293B', fillOpacity: 0.45 };
 
-  // 8. #ffff33 -> Kuningan
-  if (w.includes('kuningan')) return '#ffff33';
+const styleWilayah = (feature) => ({
+  ...STYLE_WILAYAH_NORMAL,
+  fillColor: getWarnaMapChart(namaWilayah(feature)),
+});
 
-  return '#E2E8F0';
+// Saat zoom >= 9 warna wilayah dihilangkan (digantikan titik UMKM), hanya garis batas tipis yang tersisa.
+const STYLE_BATAS_SAJA = { fill: false, weight: 0.7, opacity: 0.5, color: '#1E293B' };
+
+const onEachWilayah = (feature, layer) => {
+  const nama = namaWilayah(feature);
+  const d = DATA_WILAYAH[kunciWilayah(nama)];
+  const rincian = d
+    ? Object.entries(d.rincian)
+        .sort((a, b) => b[1] - a[1])
+        .map(([k, n]) => `${k}: ${n}`)
+        .join('<br/>')
+    : '';
+
+  layer.bindTooltip(
+    d
+      ? `<div style="max-width:230px;">
+           <strong>${nama}</strong><br/>
+           <span style="color:${WARNA_KELOMPOK[d.dominan]};font-weight:700;">● Dominan: ${d.dominan}</span><br/>
+           <span style="font-weight:700;">${d.total.toLocaleString('id-ID')} UMKM terdata</span><br/>
+           <span style="font-size:11px;color:#64748B;">${rincian}</span><br/>
+           <span style="font-size:11px;font-style:italic;">${getKeunggulanText(d.dominan)}</span>
+         </div>`
+      : `<strong>${nama}</strong><br/>Belum ada data UMKM`,
+    { sticky: true, direction: 'top' }
+  );
+
+  layer.on('tooltipopen', () => {
+    if (layer._map && layer._map.getZoom() >= 9) layer.closeTooltip();
+  });
+
+  layer.on({
+    mouseover: (e) => {
+      e.target.setStyle({ weight: 1.8, fillOpacity: 0.7 });
+      e.target.bringToFront();
+    },
+    // kembali ke style normal poligon ITU (warnanya ikut di-set ulang, bukan cuma weight/opacity)
+    mouseout: (e) => e.target.setStyle({ ...styleWilayah(feature) }),
+  });
 };
 
 function MapZoomListener({ onZoomChanged }) {
@@ -174,14 +244,17 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
   }, []);
 
   // 1. Mengambil Batas Wilayah Poligon GeoJSON Jawa Barat
+  // ✅ [DIUBAH] Sumber sekarang file lokal public/geo/jabar.json (bukan URL superpikar).
+  //    Waduk Cirata dibuang supaya tidak ikut sebagai wilayah.
   useEffect(() => {
-    axios.get('https://raw.githubusercontent.com/superpikar/indonesia-geojson/master/indonesia-province-simple/32-jawa-barat.geojson')
+    axios.get('/geo/jabar.json')
       .then((res) => {
-        setGeoData(res.data);
+        setGeoData({
+          ...res.data,
+          features: res.data.features.filter((f) => f.properties.TYPE_2 !== 'Water Body'),
+        });
       })
-      .catch((err) => {
-        console.error('Gagal memuat batas wilayah Jawa Barat:', err);
-      });
+      .catch((err) => console.error('Gagal memuat GeoJSON Jawa Barat:', err));
   }, []);
 
   // 2. Mengambil Titik Data UMKM dari Database FastAPI
@@ -193,6 +266,10 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
         ? responseData
         : (responseData.data || responseData.items || []);
       setUmkmList(dataArray);
+
+      // 🔍 [OPSIONAL, UNTUK CEK NAMA] Hapus tanda // di baris bawah kalau ada wilayah
+      //    yang tetap abu-abu, lalu lihat hasilnya di Console (F12).
+      // console.log('Nama wilayah di database:', [...new Set(dataArray.map((u) => u.kabupaten_kota))]);
     } catch (err) {
       console.error('Gagal mengambil data dari API FastAPI:', err);
     }
@@ -227,6 +304,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
   }, [umkmList, searchKeyword, filterActive, selectedKabKota]);
 
   // Agregasi Jumlah UMKM Per Kabupaten/Kota dari Database
+  // (dibiarkan apa adanya; sekarang tidak dipakai lagi oleh peta, itu tidak apa-apa)
   const totalUMKMPerDaerah = useMemo(() => {
     const counts = {};
     umkmList.forEach((item) => {
@@ -237,6 +315,9 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
     });
     return counts;
   }, [umkmList]);
+
+  // Tooltip wilayah memakai data tertanam (DATA_WILAYAH), tidak perlu file/API.
+  const dataWilayah = DATA_WILAYAH;
 
   return (
     <div style={{ backgroundColor: '#F8FAFC', minHeight: '100vh', display: 'flex', flexDirection: 'column', fontFamily: 'Inter, system-ui, sans-serif' }}>
@@ -392,68 +473,64 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
               </div>
             </div>
 
-            {/* Legenda MapChart & Kategori Titik */}
+            {/* Legenda */}
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', padding: '8px 12px', backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '8px', marginBottom: '12px', fontSize: '0.75rem', color: '#334155' }}>
-              {zoomLevel < 9 ? (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                  <span style={{ fontWeight: '700', color: '#0F172A' }}>Zonasi MapChart:</span>
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><span style={{ width: '9px', height: '9px', borderRadius: '50%', backgroundColor: '#cc3333' }}></span> Bandung Raya</span>
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><span style={{ width: '9px', height: '9px', borderRadius: '50%', backgroundColor: '#762a83' }}></span> Bogor & Cirebon</span>
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><span style={{ width: '9px', height: '9px', borderRadius: '50%', backgroundColor: '#00441b' }}></span> Bekasi & Indramayu</span>
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><span style={{ width: '9px', height: '9px', borderRadius: '50%', backgroundColor: '#ffffb3', border: '1px solid #CBD5E1' }}></span> Sukabumi & Tasik</span>
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}><span style={{ width: '9px', height: '9px', borderRadius: '50%', backgroundColor: '#800026' }}></span> Cianjur & Majalengka</span>
+              {/* ✅ [DIUBAH] Legenda lama "Zonasi MapChart" (yang pakai kondisi zoomLevel < 9)
+                  diganti satu legenda saja, karena warna wilayah dan warna titik sekarang sama
+                  (sama-sama mengikuti kategori). */}
+              {zoomLevel < 9 && KELOMPOK_MAPCHART.map((k) => (
+                <div key={k.warna} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span style={{ width: '12px', height: '12px', borderRadius: '3px', backgroundColor: k.warna, border: '1px solid #1E293B' }}></span>
+                  <span style={{ textTransform: 'capitalize' }}>{k.wilayah.join(', ')}</span>
                 </div>
-              ) : (
-                <>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#EAB308' }}></span><span><strong>Kuning:</strong> Aksesoris & Kriya</span></div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#16A34A' }}></span><span><strong>Hijau:</strong> Makanan & Minuman</span></div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#9333EA' }}></span><span><strong>Ungu:</strong> Fashion & Batik</span></div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#0284C7' }}></span><span><strong>Biru:</strong> Jasa, Mebel & Lainnya</span></div>
-                </>
-              )}
+              ))}
+              {zoomLevel >= 9 && <>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#EAB308' }}></span><span><strong>Kuning:</strong> Aksesoris & Kriya</span></div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#16A34A' }}></span><span><strong>Hijau:</strong> Makanan & Minuman</span></div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#9333EA' }}></span><span><strong>Ungu:</strong> Fashion & Batik</span></div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#0284C7' }}></span><span><strong>Biru:</strong> Jasa, Mebel & Lainnya</span></div>
+              </>}
             </div>
 
             <div style={{ height: '520px', borderRadius: '10px', overflow: 'hidden', border: '1px solid #E2E8F0', position: 'relative' }}>
+              {/* ✅ [DIUBAH] Ditambah background putih saat mode poligon (zoom < 9), biar mirip MapChart */}
               <MapContainer center={[-6.9175, 107.6191]} zoom={8} scrollWheelZoom={true} style={{ height: '100%', width: '100%' }}>
                 <MapZoomListener onZoomChanged={(z) => setZoomLevel(z)} />
 
+                {/* ✅ [DIUBAH] Peta dasar OSM selalu tampil (layer paling bawah).
+                    */}
                 <TileLayer
                   attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
 
-                {/* 1. SEBELUM ZOOM (zoom < 9): Poligon batas wilayah berlekuk asli sesuai MapChart */}
-                {zoomLevel < 9 && geoData && (
-                  <GeoJSON
-                    key="jabar-geojson-polygons"
-                    data={geoData}
-                    style={(feature) => {
-                      const nama = feature?.properties?.shapeName || feature?.properties?.KABKOT || feature?.properties?.name || '';
-                      return {
-                        fillColor: getWilayahMapChartColor(nama),
-                        weight: 1.5,
-                        opacity: 1,
-                        color: '#1E293B',
-                        fillOpacity: 0.82
-                      };
-                    }}
-                    onEachFeature={(feature, layer) => {
-                      const namaDaerah = (feature?.properties?.shapeName || feature?.properties?.KABKOT || feature?.properties?.name || 'Daerah Jawa Barat').toUpperCase();
-                      const jumlahTerdata = totalUMKMPerDaerah[namaDaerah] || 0;
-
-                      layer.bindTooltip(
-                        `<div style="text-align: center; padding: 2px;">
-                          <strong>${namaDaerah}</strong><br/>
-                          <span style="color: #008848; font-weight: bold;">${jumlahTerdata} UMKM Terdata</span><br/>
-                          <span style="font-size: 11px; color: #64748B;">Perbesar peta untuk melihat sebaran unit</span>
-                        </div>`,
-                        { sticky: true, direction: 'center' }
-                      );
-                    }}
-                  />
+                {/* 1. SEBELUM ZOOM (zoom < 9): Poligon batas wilayah */}
+                {/* ✅ [DIUBAH] Seluruh blok GeoJSON ini: warna sekarang dari kategori dominan data,
+                    tooltip berisi dominan + total + rincian, dan ada efek hover. */}
+                {geoData && (
+                  <Pane name="wilayah" style={{ zIndex: 350 }}>
+                  {zoomLevel < 9 ? (
+                    <GeoJSON
+                      key="wilayah-berwarna"
+                      pane="wilayah"
+                      data={geoData}
+                      style={styleWilayah}
+                      onEachFeature={onEachWilayah}
+                    />
+                  ) : (
+                    <GeoJSON
+                      key="wilayah-batas"
+                      pane="wilayah"
+                      data={geoData}
+                      style={STYLE_BATAS_SAJA}
+                      interactive={false}
+                    />
+                  )}
+                  </Pane>
                 )}
 
                 {/* 2. SETELAH ZOOM (zoom >= 9): Titik Komoditas dari database (Latitude & Longitude) */}
+                {/* (bagian ini TIDAK diubah) */}
                 {zoomLevel >= 9 && filteredUMKM.map((item) => {
                   const rawLat = item.latitude;
                   const rawLng = item.longitude;
