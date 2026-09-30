@@ -4,7 +4,10 @@ import Pelatihan from './pages/pelatihan';
 import DetailPelatihan from './pages/detailPelatihan';
 import Login from './pages/login';
 import Bantuan from './pages/bantuan';
-import Sertifikasi from './pages/sertifikasi'; // pastikan nama file sesuai: sertifikasi.jsx
+import Sertifikasi from './pages/sertifikasi';
+
+// Import Admin App dari folder adminpanel
+import AdminApp from './adminpanel/AdminApp';
 
 export default function App() {
   const [halaman, setHalaman] = useState('dashboard');
@@ -14,9 +17,40 @@ export default function App() {
     return simpanan ? JSON.parse(simpanan) : null;
   });
 
+  const handleLogout = () => {
+    localStorage.removeItem('user_umkm');
+    localStorage.removeItem('token');
+    sessionStorage.clear();
+    setCurrentUser(null);
+    setHalaman('dashboard');
+  };
+
+  // LOGIKA 1: Jika user yang login di sistem memiliki role 'admin'
+  if (currentUser && currentUser.role === 'admin') {
+    return (
+      <AdminApp 
+        user={currentUser} 
+        onKeluar={handleLogout}
+        setHalaman={setHalaman} 
+      />
+    );
+  }
+
+  // LOGIKA 2: Jika halaman diarahkan manual ke 'admin' via menu/tombol navbar
+  if (halaman === 'admin') {
+    return (
+      <AdminApp 
+        user={currentUser} 
+        onKeluar={() => setHalaman('dashboard')} 
+        setHalaman={setHalaman} 
+      />
+    );
+  }
+
+  // LOGIKA 3: Alur Standar untuk Publik / Pelaku UMKM
   return (
     <div>
-      {/* 1. Halaman Beranda (Dashboard) */}
+      {/* 1. Halaman Beranda (Dashboard Publik) */}
       {halaman === 'dashboard' && (
         <Dashboard
           user={currentUser}
@@ -48,7 +82,7 @@ export default function App() {
         />
       )}
 
-      {/* 4. Halaman Pusat Bantuan */}
+      {/* 4. Halaman Bantuan Usaha */}
       {halaman === 'bantuan' && (
         <Bantuan
           user={currentUser}
@@ -70,7 +104,11 @@ export default function App() {
           setHalaman={setHalaman}
           onLoginSukses={(userData) => {
             setCurrentUser(userData);
-            setHalaman('dashboard');
+            if (userData?.role === 'admin') {
+              setHalaman('admin');
+            } else {
+              setHalaman('dashboard');
+            }
           }}
         />
       )}
