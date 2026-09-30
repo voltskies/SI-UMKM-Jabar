@@ -420,3 +420,21 @@ def verifikasi_sertifikasi(sertifikasi_id: int, payload: VerifikasiRequest, db: 
     sertifikasi.catatan_admin = payload.catatan_admin
     db.commit()
     return {"status": "success", "message": "Status sertifikasi berhasil diperbarui."}
+
+# Tambahkan di Backend/main.py pada bagian route Admin Dinas
+@app.get("/api/v1/admin/users", tags=["Admin Dinas"], summary="Get Semua Akun Pengguna")
+def get_semua_user(db: Session = Depends(get_db)):
+    users = db.query(models.User).order_by(models.User.id.desc()).all()
+    # Format data agar cocok dan aman dikonsumsi frontend
+    data = []
+    for u in users:
+        data.append({
+            "id": u.id,
+            "nik": u.nik,
+            "nama": u.nama_lengkap,
+            "email": u.email,
+            "telp": u.nomor_whatsapp,
+            "role": u.role or "umum",
+            "instansi": "Pelaku UMKM Jawa Barat" if u.role == "umum" else "Dinas KUK Jawa Barat"
+        })
+    return {"status": "success", "data": data}

@@ -20,7 +20,6 @@ export default function AdminLayout({ page, go, user, onKeluar, children }) {
     <div style={{ display: 'grid', gridTemplateColumns: '240px 1fr', minHeight: '100vh', background: C.bg, fontFamily: font }}>
       <aside style={{ background: C.dark, padding: 16, display: 'flex', flexDirection: 'column', position: 'sticky', top: 0, height: '100vh', boxSizing: 'border-box' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 28 }}>
-          <span style={{ background: 'rgba(255,255,255,0.15)', color: '#fff', borderRadius: 8, padding: 7, display: 'flex' }}><Landmark size={18} /></span>
           <div><div style={{ fontWeight: 800, color: '#fff' }}>SI-UMKM</div><div style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.65)' }}>PROVINSI JAWA BARAT</div></div>
         </div>
         <nav style={{ display: 'grid', gap: 4 }}>
