@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Header, Card, Chips, SearchBox, DataTable, Badge, Btn, C, rp } from '../components/common';
-import BantuanDetail from '../components/BantuanDetail';
+import BantuanDetail from '../components/Bantuandetail';
 
 const FILTER = ['Semua', 'Menunggu Verifikasi', 'Diproses', 'Perlu Perbaikan', 'Disetujui', 'Ditolak'];
 const API_BASE_URL = `http://${window.location.hostname || '127.0.0.1'}:8000`;

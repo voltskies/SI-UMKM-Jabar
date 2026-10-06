@@ -1,9 +1,9 @@
-import { LayoutDashboard, HandCoins, ShieldCheck, Users, Settings, LogOut, Bell, Landmark } from 'lucide-react';
+import { LayoutDashboard, HandCoins, ShieldCheck, Users, Settings, LogOut, Landmark } from 'lucide-react';
 import { C, font } from './common';
 
 const MENU = [
   [null, [['dashboard', 'Dashboard', LayoutDashboard]]],
-  ['Layanan', [['bantuan', 'Bantuan Modal', HandCoins], ['legalitas', 'Legalitas Usaha', ShieldCheck]]],
+  ['Layanan', [['bantuan', 'Bantuan Modal', HandCoins], ['legalitas', 'Sertifikasi Usaha', ShieldCheck]]],
   ['Manajemen', [['akun', 'Data Akun UMKM', Users]]],
 ];
 
@@ -38,7 +38,6 @@ export default function AdminLayout({ page, go, user, onKeluar, children }) {
 
       <div style={{ minWidth: 0 }}>
         <header style={{ background: '#fff', borderBottom: `1px solid ${C.line}`, padding: '12px 32px', display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 16 }}>
-          <Bell size={20} color={C.ink} />
           <span style={{ display: 'flex', alignItems: 'center', gap: 8, border: `1px solid ${C.line}`, borderRadius: 999, padding: '4px 12px 4px 4px', fontSize: '0.85rem', fontWeight: 600, color: C.ink }}>
             <span style={{ width: 28, height: 28, borderRadius: '50%', background: C.dark, color: '#fff', display: 'grid', placeItems: 'center', fontSize: '0.75rem' }}>{(user?.nama || 'A')[0]}</span>
             {user?.nama || 'Admin'}

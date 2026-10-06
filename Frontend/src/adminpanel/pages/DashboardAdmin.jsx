@@ -77,7 +77,7 @@ export default function DashboardAdmin({ go }) {
             <BellRing size={18} /> Antrean Verifikasi Berkas Masuk
           </span>
         }
-        right={<Badge tone="amber">{totalAntrean} Antrean Aktif</Badge>}
+        right={<Badge>{totalAntrean} Antrean Aktif</Badge>}
       >
         <p style={{ margin: '-6px 0 14px', color: C.mute, fontSize: '0.85rem' }}>
           Pengajuan berkas dari masyarakat yang memerlukan pengecekan dokumen.

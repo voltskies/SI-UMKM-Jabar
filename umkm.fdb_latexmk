@@ -1,6 +1,6 @@
 # Fdb version 4
-["pdflatex"] 1790708733.97474 "d:/E-Governance/umkm.tex" "umkm.pdf" "umkm" 1790708735.42223 0
-  "C:/Users/LENOVO/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1790708378 82507 a9eef8696c92627b87e9975edea03b2a ""
+["pdflatex"] 1790776383.6277 "d:/E-Governance/umkm.tex" "umkm.pdf" "umkm" 1790776385.3498 0
+  "C:/Users/LENOVO/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1790776069 82507 a9eef8696c92627b87e9975edea03b2a ""
   "C:/Users/LENOVO/AppData/Local/MiKTeX/miktex/data/le/pdftex/pdflatex.fmt" 1790703788 13316655 b22ac5993fc6ca9f9f34420d96370ed6 ""
   "D:/MikTEX/fonts/enc/dvips/base/8r.enc" 1458473887 4993 80dc9bab7f31fb78a000ccfed0e27cab ""
   "D:/MikTEX/fonts/tfm/adobe/times/ptmb7t.tfm" 1136747054 2172 fd0c924230362ff848a33632ed45dc23 ""
@@ -59,9 +59,7 @@
   "D:/MikTEX/tex/latex/base/ifthen.sty" 1761900684 5525 1593ca62a2554dd7423fc8a4e5a82125 ""
   "D:/MikTEX/tex/latex/base/textcomp.sty" 1761900684 2846 e26604d3d895e65d874c07f30c291f3f ""
   "D:/MikTEX/tex/latex/booktabs/booktabs.sty" 1579093635 6253 f1cb470c9199e7110a27851508ed7a5c ""
-  "D:/MikTEX/tex/latex/caption/caption.sty" 1696169587 56128 c2ccf1a29d78c33bc553880402e4fb9a ""
   "D:/MikTEX/tex/latex/caption/caption3.sty" 1696169587 72619 ee90b6612147680fd73c3b1406a74245 ""
-  "D:/MikTEX/tex/latex/caption/subcaption.sty" 1696169587 12494 0c0cdb824278a4d51cefeb2e79901315 ""
   "D:/MikTEX/tex/latex/cite/cite.sty" 1425353482 26218 19edeff8cdc2bcb704e8051dc55eb5a7 ""
   "D:/MikTEX/tex/latex/epstopdf-pkg/epstopdf-base.sty" 1623003186 13886 d1306dcf79a944f6988e688c1785f9ce ""
   "D:/MikTEX/tex/latex/graphics-cfg/color.cfg" 1465894292 1213 620bba36b25224fa9b7e1ccb4ecb76fd ""
@@ -79,9 +77,10 @@
   "D:/MikTEX/tex/latex/kvsetkeys/kvsetkeys.sty" 1665066333 13815 760b0c02f691ea230f5359c4e1de23a7 ""
   "D:/MikTEX/tex/latex/l3backend/l3backend-pdftex.def" 1761202581 30662 bfd6e864f4ffc5018b0e2b6260c3181c ""
   "D:/MikTEX/tex/latex/psnfss/ot1ptm.fd" 1585253778 1007 15056f4a61917ceed3a44e4ac11fcc52 ""
+  "D:/MikTEX/tex/latex/subfig/subfig.sty" 1121259410 22049 9ef165ca6df8815c92e693146a376c92 ""
   "D:/MikTEX/tex/latex/url/url.sty" 1388490452 12796 8edb7d69a20b857904dd0ea757c14ec9 ""
   "D:/MikTEX/tex/latex/xcolor/xcolor.sty" 1729265222 55384 b454dec21c2d9f45ec0b793f0995b992 ""
-  "d:/E-Governance/umkm.tex" 1790708735 9683 2130acd71085e6b9fb67b96f8310e55a ""
+  "d:/E-Governance/umkm.tex" 1790776383 11569 ba2b8fdf4940fdf6ee7fc4c36f493923 ""
   "image_tex/gambar 1..jpg" 1790706790 370951 60441d83cb2e7bb1b092f5bc2132f736 ""
   "image_tex/gambar 2.jpg" 1790701782 108574 db6e6da18a02e6e26d66c015795e676d ""
   "image_tex/gambar 3.png" 1790701853 218062 5fa1a32e39a67639d589422804ad198c ""
@@ -92,8 +91,8 @@
   "image_tex/vus300.png" 1790701002 147444 d930d58e5e8e04e13790431dc6073887 ""
   "image_tex/vus50.png" 1790700811 143033 861b04fd93979bd3d310b5a5e508a269 ""
   "image_tex/vus500.png" 1790701114 109510 a328840895cb5034dab3d0b605780a9f ""
-  "umkm.aux" 1790708735 3146 555615376becfd8a8d8964cbd1d426ed "pdflatex"
-  "umkm.tex" 1790708735 9683 2130acd71085e6b9fb67b96f8310e55a ""
+  "umkm.aux" 1790776385 3581 20bc0b8048a37bc5fb515a475b63e777 "pdflatex"
+  "umkm.tex" 1790776383 11569 ba2b8fdf4940fdf6ee7fc4c36f493923 ""
   (generated)
   "umkm.aux"
   "umkm.log"
