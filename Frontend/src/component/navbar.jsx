@@ -422,7 +422,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout }) {
                     >
                       <Shield size={14} /> Panel Admin Dinas
                     </div>
-
+                    
                     <button
                       type="button"
                       onClick={() => {
@@ -493,31 +493,6 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout }) {
                       <LogIn size={15} /> Masuk / Daftar
                     </button>
 
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setDropdownUser(false);
-                        setHalaman('admin');
-                      }}
-                      style={{
-                        width: '100%',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '6px',
-                        backgroundColor: '#F8FAFC',
-                        color: '#475569',
-                        border: '1px solid #E2E8F0',
-                        borderRadius: '8px',
-                        padding: '7px 10px',
-                        fontSize: '0.78rem',
-                        fontWeight: '600',
-                        cursor: 'pointer',
-                        marginTop: '8px'
-                      }}
-                    >
-                      <Shield size={13} /> Masuk Panel Admin Dinas
-                    </button>
                   </>
                 )}
               </div>

@@ -401,6 +401,16 @@ const API_BASE_URL = 'http://127.0.0.1:8000';
               {isRegister ? 'Masuk di sini' : 'Daftar sekarang'}
             </span>
           </div>
+
+          {/* Tulisan masuk admin */}
+          <div style={{ textAlign: 'center', marginTop: '10px', fontSize: '0.82rem', color: '#64748B' }}>
+            <span
+              onClick={() => setHalaman('admin')}
+              style={{ color: '#008848', fontWeight: '700', cursor: 'pointer', textDecoration: 'underline' }}
+            >
+              Masuk Sebagai Admin Dinas
+            </span>
+          </div>
         </div>
 
       </div>
