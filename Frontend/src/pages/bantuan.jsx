@@ -35,6 +35,8 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
   // Basis URL backend dinamis mengikuti host browser aktif
   const API_BASE_URL = `http://${window.location.hostname || '127.0.0.1'}:8000`;
 
+  const MAX_FILE_SIZE = 7 * 1024 * 1024; // 7 MB dalam satuan bytes
+
   const handleKembaliKeBeranda = () => {
     if (typeof setHalaman === 'function') {
       setHalaman('dashboard');
@@ -51,9 +53,46 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
 
   const handleFileChange = (e) => {
     const { name, files: selectedFiles } = e.target;
-    if (selectedFiles && selectedFiles[0]) {
-      setFiles((prev) => ({ ...prev, [name]: selectedFiles[0] }));
+    if (!selectedFiles || !selectedFiles[0]) return;
+
+    const file = selectedFiles[0];
+
+    // Validasi batas ukuran file (7 MB)
+    if (file.size > MAX_FILE_SIZE) {
+      setErrorMsg(`Ukuran file "${file.name}" melebihi batas maksimal 7 MB.`);
+      e.target.value = '';
+      setFiles((prev) => ({ ...prev, [name]: null }));
+      return;
     }
+
+    // Validasi tipe format file
+    if (name === 'file_ktp') {
+      const validKtpTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+      const fileExt = file.name.split('.').pop()?.toLowerCase();
+      if (!validKtpTypes.includes(file.type) && !['jpg', 'jpeg', 'png', 'pdf'].includes(fileExt)) {
+        setErrorMsg('Foto KTP harus berformat PDF, JPG, atau PNG.');
+        e.target.value = '';
+        setFiles((prev) => ({ ...prev, [name]: null }));
+        return;
+      }
+    } else {
+      // file_kk, file_nib, file_proposal wajib PDF
+      const fileExt = file.name.split('.').pop()?.toLowerCase();
+      if (file.type !== 'application/pdf' && fileExt !== 'pdf') {
+        const labelMap = {
+          file_kk: 'Kartu Keluarga (KK)',
+          file_nib: 'Dokumen NIB',
+          file_proposal: 'Proposal Usaha'
+        };
+        setErrorMsg(`${labelMap[name] || 'Dokumen'} wajib berformat PDF.`);
+        e.target.value = '';
+        setFiles((prev) => ({ ...prev, [name]: null }));
+        return;
+      }
+    }
+
+    setErrorMsg('');
+    setFiles((prev) => ({ ...prev, [name]: file }));
   };
 
   const handleSubmit = async (e) => {
@@ -376,21 +415,21 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
             {/* Bagian 3: Dokumen Pendukung */}
             <div style={{ marginBottom: '32px' }}>
               <h3 style={{ fontSize: '1.05rem', fontWeight: '700', color: '#164E43', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Upload size={18} /> 3. Berkas Persyaratan (PDF / JPG / PNG)
+                <Upload size={18} /> 3. Berkas Persyaratan (Maks. 7 MB)
               </h3>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                 <div style={{ border: '1px dashed #CBD5E1', borderRadius: '8px', padding: '14px', backgroundColor: '#F8FAFC' }}>
                   <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#334155', marginBottom: '4px' }}>
-                    Foto KTP Pemohon *
+                    Foto KTP Pemohon * <span style={{ fontSize: '0.74rem', color: '#64748B', fontWeight: '400' }}>(PDF/JPG/PNG, Maks. 7MB)</span>
                   </label>
                   <input 
                     type="file" 
                     name="file_ktp" 
-                    accept="image/jpeg,image/png,application/pdf" 
+                    accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" 
                     required 
                     onChange={handleFileChange} 
-                    style={{ fontSize: '0.78rem' }} 
+                    style={{ fontSize: '0.78rem', width: '100%' }} 
                   />
                   {files.file_ktp && (
                     <div style={{ fontSize: '0.76rem', color: '#16A34A', marginTop: '6px' }}>
@@ -401,14 +440,14 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
 
                 <div style={{ border: '1px dashed #CBD5E1', borderRadius: '8px', padding: '14px', backgroundColor: '#F8FAFC' }}>
                   <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#334155', marginBottom: '4px' }}>
-                    Kartu Keluarga (KK)
+                    Kartu Keluarga (KK) <span style={{ fontSize: '0.74rem', color: '#64748B', fontWeight: '400' }}>(Wajib PDF, Maks. 7MB)</span>
                   </label>
                   <input 
                     type="file" 
                     name="file_kk" 
-                    accept="image/jpeg,image/png,application/pdf" 
+                    accept=".pdf,application/pdf" 
                     onChange={handleFileChange} 
-                    style={{ fontSize: '0.78rem' }} 
+                    style={{ fontSize: '0.78rem', width: '100%' }} 
                   />
                   {files.file_kk && (
                     <div style={{ fontSize: '0.76rem', color: '#16A34A', marginTop: '6px' }}>
@@ -419,14 +458,14 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
 
                 <div style={{ border: '1px dashed #CBD5E1', borderRadius: '8px', padding: '14px', backgroundColor: '#F8FAFC' }}>
                   <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#334155', marginBottom: '4px' }}>
-                    Dokumen NIB (Jika ada)
+                    Dokumen NIB (Jika ada) <span style={{ fontSize: '0.74rem', color: '#64748B', fontWeight: '400' }}>(Wajib PDF, Maks. 7MB)</span>
                   </label>
                   <input 
                     type="file" 
                     name="file_nib" 
-                    accept="image/jpeg,image/png,application/pdf" 
+                    accept=".pdf,application/pdf" 
                     onChange={handleFileChange} 
-                    style={{ fontSize: '0.78rem' }} 
+                    style={{ fontSize: '0.78rem', width: '100%' }} 
                   />
                   {files.file_nib && (
                     <div style={{ fontSize: '0.76rem', color: '#16A34A', marginTop: '6px' }}>
@@ -437,14 +476,14 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
 
                 <div style={{ border: '1px dashed #CBD5E1', borderRadius: '8px', padding: '14px', backgroundColor: '#F8FAFC' }}>
                   <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#334155', marginBottom: '4px' }}>
-                    Proposal Usaha / Rencana Anggaran
+                    Proposal Usaha / Rencana Anggaran <span style={{ fontSize: '0.74rem', color: '#64748B', fontWeight: '400' }}>(Wajib PDF, Maks. 7MB)</span>
                   </label>
                   <input 
                     type="file" 
                     name="file_proposal" 
-                    accept="application/pdf" 
+                    accept=".pdf,application/pdf" 
                     onChange={handleFileChange} 
-                    style={{ fontSize: '0.78rem' }} 
+                    style={{ fontSize: '0.78rem', width: '100%' }} 
                   />
                   {files.file_proposal && (
                     <div style={{ fontSize: '0.76rem', color: '#16A34A', marginTop: '6px' }}>

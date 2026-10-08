@@ -113,7 +113,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout }) {
             tipe: 'sertifikasi',
             judul: judul,
             pesan: pesan,
-            waktu: s.created_at ? new Date(s.created_at).toLocaleDateString('id-ID') : 'Terkini',
+            waktu: b.created_at ? new Date(b.created_at).toLocaleDateString('id-ID') : 'Terkini',
             status: s.status,
             targetHalaman: 'sertifikasi',
             dibaca: s.status === 'Selesai' ? false : true
@@ -263,25 +263,19 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout }) {
             )}
           </div>
 
-          <span
-            onClick={() => {
-              setHalaman('dashboard');
-              let percobaan = 0;
-              const cobaScroll = () => {
-                const target = document.getElementById('komunitas');
-                if (target) {
-                  target.scrollIntoView({ behavior: 'smooth' });
-                } else if (percobaan < 20) {
-                  percobaan++;
-                  setTimeout(cobaScroll, 100);
-                }
-              };
-              setTimeout(cobaScroll, 50);
+          <a
+            href="https://www.facebook.com/waroenkUMKM"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              cursor: 'pointer',
+              opacity: 0.85,
+              textDecoration: 'none',
+              color: 'inherit'
             }}
-            style={{ cursor: 'pointer', opacity: 0.85 }}
           >
             Gabung Komunitas
-          </span>
+          </a>
         </div>
         
         {/* Bagian Kanan: Lonceng Notifikasi & Menu Profil */}

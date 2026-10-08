@@ -39,6 +39,7 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
   const [nomorSukses, setNomorSukses] = useState(null);
 
   const API_BASE_URL = `http://${window.location.hostname || '127.0.0.1'}:8000`;
+  const MAX_FILE_SIZE = 7 * 1024 * 1024; // 7 MB
 
   const handleKembaliKeDashboard = () => {
     if (typeof setHalaman === 'function') {
@@ -62,9 +63,42 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
 
   const handleFileChange = (e) => {
     const { name, files: selectedFiles } = e.target;
-    if (selectedFiles && selectedFiles[0]) {
-      setFiles((prev) => ({ ...prev, [name]: selectedFiles[0] }));
+    if (!selectedFiles || !selectedFiles[0]) return;
+
+    const file = selectedFiles[0];
+
+    // Validasi batas ukuran file (7 MB)
+    if (file.size > MAX_FILE_SIZE) {
+      setErrorForm(`Ukuran file "${file.name}" melebihi batas maksimal 7 MB.`);
+      e.target.value = '';
+      setFiles((prev) => ({ ...prev, [name]: null }));
+      return;
     }
+
+    const fileExt = file.name.split('.').pop()?.toLowerCase();
+
+    // Validasi tipe file
+    if (name === 'file_ktp' || name === 'file_foto_produk') {
+      const validTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+      if (!validTypes.includes(file.type) && !['jpg', 'jpeg', 'png', 'pdf'].includes(fileExt)) {
+        const label = name === 'file_ktp' ? 'Foto KTP' : 'Foto Tempat / Kemasan Produk';
+        setErrorForm(`${label} harus berformat PDF, JPG, atau PNG.`);
+        e.target.value = '';
+        setFiles((prev) => ({ ...prev, [name]: null }));
+        return;
+      }
+    } else if (name === 'file_dokumen_pendukung') {
+      // Dokumen pendukung wajib PDF
+      if (file.type !== 'application/pdf' && fileExt !== 'pdf') {
+        setErrorForm('Dokumen Pendukung / NIB / Surat Keterangan Usaha wajib berformat PDF.');
+        e.target.value = '';
+        setFiles((prev) => ({ ...prev, [name]: null }));
+        return;
+      }
+    }
+
+    setErrorForm('');
+    setFiles((prev) => ({ ...prev, [name]: file }));
   };
 
   const handleSubmitForm = async (e) => {
@@ -251,7 +285,6 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
           <div style={{ backgroundColor: '#FFFFFF', borderRadius: '16px', border: '1px solid #E2E8F0', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.05)', padding: '36px' }}>
             <div style={{ borderBottom: '1px solid #E2E8F0', paddingBottom: '20px', marginBottom: '24px' }}>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', backgroundColor: '#DCFCE7', color: '#166534', padding: '4px 12px', borderRadius: '999px', fontSize: '0.78rem', fontWeight: '700', marginBottom: '8px' }}>
-                <Award size={14} /> Fasilitasi Sertifikasi & Jaminan Mutu Produk
               </div>
               <h1 style={{ margin: 0, fontSize: '1.5rem', fontWeight: '800', color: '#0F172A' }}>
                 Form Permohonan Sertifikasi UMKM
@@ -338,15 +371,22 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
               {/* Bagian 3: Unggah Berkas */}
               <div style={{ marginBottom: '32px' }}>
                 <h3 style={{ fontSize: '1rem', fontWeight: '700', color: '#164E43', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <Upload size={17} /> 3. Berkas Persyaratan (PDF / JPG / PNG)
+                  <Upload size={17} /> 3. Berkas Persyaratan (Maks. 7 MB)
                 </h3>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                   
                   <div style={{ border: '1px dashed #CBD5E1', borderRadius: '8px', padding: '14px', backgroundColor: '#F8FAFC' }}>
                     <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#334155', marginBottom: '4px' }}>
-                      Foto KTP Pemohon *
+                      Foto KTP Pemohon * <span style={{ fontSize: '0.74rem', color: '#64748B', fontWeight: '400' }}>(PDF/JPG/PNG, Maks. 7MB)</span>
                     </label>
-                    <input type="file" name="file_ktp" accept="image/jpeg,image/png,application/pdf" required onChange={handleFileChange} style={{ fontSize: '0.78rem' }} />
+                    <input 
+                      type="file" 
+                      name="file_ktp" 
+                      accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" 
+                      required 
+                      onChange={handleFileChange} 
+                      style={{ fontSize: '0.78rem', width: '100%' }} 
+                    />
                     {files.file_ktp && (
                       <div style={{ fontSize: '0.76rem', color: '#16A34A', marginTop: '6px' }}>✓ {files.file_ktp.name}</div>
                     )}
@@ -354,9 +394,16 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
 
                   <div style={{ border: '1px dashed #CBD5E1', borderRadius: '8px', padding: '14px', backgroundColor: '#F8FAFC' }}>
                     <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#334155', marginBottom: '4px' }}>
-                      Foto Tempat / Kemasan Produk *
+                      Foto Tempat / Kemasan Produk * <span style={{ fontSize: '0.74rem', color: '#64748B', fontWeight: '400' }}>(PDF/JPG/PNG, Maks. 7MB)</span>
                     </label>
-                    <input type="file" name="file_foto_produk" accept="image/jpeg,image/png,application/pdf" required onChange={handleFileChange} style={{ fontSize: '0.78rem' }} />
+                    <input 
+                      type="file" 
+                      name="file_foto_produk" 
+                      accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" 
+                      required 
+                      onChange={handleFileChange} 
+                      style={{ fontSize: '0.78rem', width: '100%' }} 
+                    />
                     {files.file_foto_produk && (
                       <div style={{ fontSize: '0.76rem', color: '#16A34A', marginTop: '6px' }}>✓ {files.file_foto_produk.name}</div>
                     )}
@@ -364,9 +411,15 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
 
                   <div style={{ border: '1px dashed #CBD5E1', borderRadius: '8px', padding: '14px', backgroundColor: '#F8FAFC', gridColumn: 'span 2' }}>
                     <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#334155', marginBottom: '4px' }}>
-                      Dokumen Pendukung / NIB / Surat Keterangan Usaha (Opsional)
+                      Dokumen Pendukung / NIB / Surat Keterangan Usaha (Opsional) <span style={{ fontSize: '0.74rem', color: '#64748B', fontWeight: '400' }}>(Wajib PDF, Maks. 7MB)</span>
                     </label>
-                    <input type="file" name="file_dokumen_pendukung" accept="image/jpeg,image/png,application/pdf" onChange={handleFileChange} style={{ fontSize: '0.78rem' }} />
+                    <input 
+                      type="file" 
+                      name="file_dokumen_pendukung" 
+                      accept=".pdf,application/pdf" 
+                      onChange={handleFileChange} 
+                      style={{ fontSize: '0.78rem', width: '100%' }} 
+                    />
                     {files.file_dokumen_pendukung && (
                       <div style={{ fontSize: '0.76rem', color: '#16A34A', marginTop: '6px' }}>✓ {files.file_dokumen_pendukung.name}</div>
                     )}
