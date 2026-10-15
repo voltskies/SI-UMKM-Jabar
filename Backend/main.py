@@ -435,6 +435,6 @@ def get_semua_user(db: Session = Depends(get_db)):
             "email": u.email,
             "telp": u.nomor_whatsapp,
             "role": u.role or "umum",
-            "instansi": "Pelaku UMKM Jawa Barat" if u.role == "umum" else "Dinas KUK Jawa Barat"
+            "instansi": "Pelaku UMKM Jawa Barat" if u.role == "umum" else "Dinas"
         })
     return {"status": "success", "data": data}
