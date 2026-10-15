@@ -1,9 +1,13 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import axios from 'axios';
 import { 
   Menu, User, Bell, ChevronDown, LogOut, LogIn, 
   UserCheck, X, Shield, CheckCircle2, Clock, AlertCircle, FileText 
 } from 'lucide-react';
+import NotifikasiToast from './notifikasiToast';
+
+// Interval cek notifikasi baru (ms)
+const POLL_INTERVAL_MS = 10000;
 
 export default function Navbar({ halamanAktif, setHalaman, user, onLogout }) {
   const [dropdownLayanan, setDropdownLayanan] = useState(false);
@@ -11,127 +15,202 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout }) {
   const [sidebarNotifOpen, setSidebarNotifOpen] = useState(false);
   const [daftarNotif, setDaftarNotif] = useState([]);
   const [loadingNotif, setLoadingNotif] = useState(false);
+  const [toast, setToast] = useState({ show: false, message: '' });
+  const [versiDibaca, setVersiDibaca] = useState(0); // dinaikkan tiap status dibaca berubah
 
   const layananRef = useRef(null);
   const userMenuRef = useRef(null);
+  const keyTerlihat = useRef(new Set());   // key notif yang sudah pernah muncul (buat deteksi notif baru)
+  const sudahMuatPertama = useRef(false);  // fetch pertama = baseline, tidak memunculkan toast
+  const sedangFetch = useRef(false);       // cegah request polling bertumpuk
 
   const API_BASE_URL = `http://${window.location.hostname || '127.0.0.1'}:8000`;
+  const storageKey = user ? `notif_dibaca_${user.role}_${user.id}` : null;
 
-  // Hitung jumlah notifikasi yang belum dibaca
-  const jumlahBelumDibaca = daftarNotif.filter((n) => !n.dibaca).length;
+  // Status "dibaca" disimpan di localStorage per user, jadi tidak hilang saat data
+  // di-fetch ulang (polling) atau halaman di-refresh.
+  const bacaKeysTersimpan = useCallback(() => {
+    if (!storageKey) return new Set();
+    try {
+      return new Set(JSON.parse(localStorage.getItem(storageKey) || '[]'));
+    } catch {
+      return new Set();
+    }
+  }, [storageKey]);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const dibacaKeys = useMemo(() => bacaKeysTersimpan(), [bacaKeysTersimpan, versiDibaca]);
+
+  const daftarNotifTampil = daftarNotif.map((n) => ({
+    ...n,
+    dibaca: !n.perluPerhatian || dibacaKeys.has(n.key)
+  }));
+  const jumlahBelumDibaca = daftarNotifTampil.filter((n) => !n.dibaca).length;
+
+  // Ganti user (login/logout) -> reset baseline deteksi notif baru
+  useEffect(() => {
+    sudahMuatPertama.current = false;
+    keyTerlihat.current = new Set();
+  }, [storageKey]);
+
+  const tandaiDibaca = useCallback((keys) => {
+    if (!storageKey) return;
+    const next = bacaKeysTersimpan();
+    keys.forEach((k) => next.add(k));
+    try {
+      localStorage.setItem(storageKey, JSON.stringify([...next]));
+    } catch { /* abaikan jika storage penuh/diblokir */ }
+    setVersiDibaca((v) => v + 1);
+  }, [storageKey, bacaKeysTersimpan]);
+
+  const tutupToast = useCallback(() => setToast({ show: false, message: '' }), []);
 
   // 1. Ambil Notifikasi Nyata dari Database
-  const fetchNotifikasiReal = useCallback(async () => {
+  //    silent = true -> dipakai polling: tanpa tulisan "Memeriksa notifikasi..."
+  const fetchNotifikasiReal = useCallback(async (silent = false) => {
     if (!user) {
       setDaftarNotif([]);
       return;
     }
+    if (sedangFetch.current) return;
+    sedangFetch.current = true;
 
     try {
-      setLoadingNotif(true);
+      if (!silent) setLoadingNotif(true);
       const items = [];
+
+      const ambil = (path) =>
+        axios.get(`${API_BASE_URL}${path}`).then((r) => r.data?.data || []).catch(() => null);
+
+      const [dataBantuan, dataSertifikasi] = await Promise.all([
+        ambil('/api/v1/admin/pengajuan'),
+        ambil('/api/v1/admin/sertifikasi')
+      ]);
+
+      // Server tidak terjangkau: biarkan notif yang sudah tampil, jangan dikosongkan
+      if (dataBantuan === null && dataSertifikasi === null) return;
+
+      const listBantuan = dataBantuan || [];
+      const listSertifikasi = dataSertifikasi || [];
 
       // Skenario A: Jika yang login adalah ADMIN DINAS
       if (user.role === 'admin') {
-        const [resBantuan, resSertifikasi] = await Promise.all([
-          axios.get(`${API_BASE_URL}/api/v1/admin/pengajuan`).catch(() => ({ data: { data: [] } })),
-          axios.get(`${API_BASE_URL}/api/v1/admin/sertifikasi`).catch(() => ({ data: { data: [] } }))
-        ]);
-
-        const bantuanAntrean = (resBantuan.data?.data || []).filter(
-          (b) => b.status === 'Menunggu Verifikasi'
-        );
-        const sertifAntrean = (resSertifikasi.data?.data || []).filter(
-          (s) => s.status === 'Menunggu Verifikasi'
-        );
-
-        bantuanAntrean.forEach((b) => {
-          items.push({
-            id: `adm-bantuan-${b.id}`,
-            tipe: 'bantuan',
-            judul: 'Permohonan Bantuan Masuk',
-            pesan: `${b.nama_usaha} mengajukan bantuan modal sebesar Rp ${Number(String(b.jumlah_dana).replace(/\D/g, '') || 0).toLocaleString('id-ID')}.`,
-            waktu: b.created_at ? new Date(b.created_at).toLocaleDateString('id-ID') : 'Baru saja',
-            status: b.status,
-            targetHalaman: 'admin',
-            dibaca: false
+        listBantuan
+          .filter((b) => b.status === 'Menunggu Verifikasi')
+          .forEach((b) => {
+            items.push({
+              id: `adm-bantuan-${b.id}`,
+              key: `adm-bantuan-${b.id}|${b.status}`,
+              tipe: 'bantuan',
+              judul: 'Permohonan Bantuan Masuk',
+              pesan: `${b.nama_usaha} mengajukan bantuan modal sebesar Rp ${Number(String(b.jumlah_dana).replace(/\D/g, '') || 0).toLocaleString('id-ID')}.`,
+              waktu: b.created_at ? new Date(b.created_at).toLocaleDateString('id-ID') : 'Baru saja',
+              status: b.status,
+              targetHalaman: 'admin',
+              perluPerhatian: true
+            });
           });
-        });
 
-        sertifAntrean.forEach((s) => {
-          items.push({
-            id: `adm-sertif-${s.id}`,
-            tipe: 'sertifikasi',
-            judul: 'Pengajuan Sertifikasi Baru',
-            pesan: `${s.nama_usaha} mendaftarkan produk "${s.nama_produk}" (${s.jenis_sertifikasi}).`,
-            waktu: s.created_at ? new Date(s.created_at).toLocaleDateString('id-ID') : 'Baru saja',
-            status: s.status,
-            targetHalaman: 'admin',
-            dibaca: false
+        listSertifikasi
+          .filter((s) => s.status === 'Menunggu Verifikasi')
+          .forEach((s) => {
+            items.push({
+              id: `adm-sertif-${s.id}`,
+              key: `adm-sertif-${s.id}|${s.status}`,
+              tipe: 'sertifikasi',
+              judul: 'Pengajuan Sertifikasi Baru',
+              pesan: `${s.nama_usaha} mendaftarkan produk "${s.nama_produk}" (${s.jenis_sertifikasi}).`,
+              waktu: s.created_at ? new Date(s.created_at).toLocaleDateString('id-ID') : 'Baru saja',
+              status: s.status,
+              targetHalaman: 'admin',
+              perluPerhatian: true
+            });
           });
-        });
-      } 
+      }
       // Skenario B: Jika yang login adalah PELAKU UMKM (Role umum)
       else {
-        const [resBantuan, resSertifikasi] = await Promise.all([
-          axios.get(`${API_BASE_URL}/api/v1/admin/pengajuan`).catch(() => ({ data: { data: [] } })),
-          axios.get(`${API_BASE_URL}/api/v1/admin/sertifikasi`).catch(() => ({ data: { data: [] } }))
-        ]);
-
         // Filter pengajuan milik user ini berdasarkan user_id
-        const myBantuan = (resBantuan.data?.data || []).filter(
-          (b) => b.user_id === user.id
-        );
-        const mySertifikasi = (resSertifikasi.data?.data || []).filter(
-          (s) => s.user_id === user.id
-        );
+        listBantuan
+          .filter((b) => b.user_id === user.id)
+          .forEach((b) => {
+            let pesan = `Status saat ini: ${b.status}.`;
+            if (b.catatan_admin) pesan += ` Catatan Admin: "${b.catatan_admin}"`;
 
-        myBantuan.forEach((b) => {
-          let judul = `Permohonan Bantuan (${b.nomor_pengajuan})`;
-          let pesan = `Status saat ini: ${b.status}.`;
-          if (b.catatan_admin) pesan += ` Catatan Admin: "${b.catatan_admin}"`;
-
-          items.push({
-            id: `user-bantuan-${b.id}`,
-            tipe: 'bantuan',
-            judul: judul,
-            pesan: pesan,
-            waktu: b.created_at ? new Date(b.created_at).toLocaleDateString('id-ID') : 'Terkini',
-            status: b.status,
-            targetHalaman: 'bantuan',
-            dibaca: b.status === 'Disetujui' ? false : true
+            items.push({
+              id: `user-bantuan-${b.id}`,
+              // key berubah saat status/catatan berubah -> dianggap notif baru & belum dibaca
+              key: `user-bantuan-${b.id}|${b.status}|${b.catatan_admin || ''}`,
+              tipe: 'bantuan',
+              judul: `Permohonan Bantuan (${b.nomor_pengajuan})`,
+              pesan,
+              waktu: b.created_at ? new Date(b.created_at).toLocaleDateString('id-ID') : 'Terkini',
+              status: b.status,
+              targetHalaman: 'bantuan',
+              perluPerhatian: b.status !== 'Menunggu Verifikasi'
+            });
           });
-        });
 
-        mySertifikasi.forEach((s) => {
-          let judul = `Legalitas & Sertifikasi (${s.nomor_registrasi})`;
-          let pesan = `Pengajuan produk ${s.nama_produk} berstatus: ${s.status}.`;
-          if (s.catatan_admin) pesan += ` Pesan: "${s.catatan_admin}"`;
+        listSertifikasi
+          .filter((s) => s.user_id === user.id)
+          .forEach((s) => {
+            let pesan = `Pengajuan produk ${s.nama_produk} berstatus: ${s.status}.`;
+            if (s.catatan_admin) pesan += ` Pesan: "${s.catatan_admin}"`;
 
-          items.push({
-            id: `user-sertif-${s.id}`,
-            tipe: 'sertifikasi',
-            judul: judul,
-            pesan: pesan,
-            waktu: b.created_at ? new Date(b.created_at).toLocaleDateString('id-ID') : 'Terkini',
-            status: s.status,
-            targetHalaman: 'sertifikasi',
-            dibaca: s.status === 'Selesai' ? false : true
+            items.push({
+              id: `user-sertif-${s.id}`,
+              key: `user-sertif-${s.id}|${s.status}|${s.catatan_admin || ''}`,
+              tipe: 'sertifikasi',
+              judul: `Legalitas & Sertifikasi (${s.nomor_registrasi})`,
+              pesan,
+              // FIX: sebelumnya memakai `b.created_at` (b tidak ada di scope ini -> ReferenceError)
+              waktu: s.created_at ? new Date(s.created_at).toLocaleDateString('id-ID') : 'Terkini',
+              status: s.status,
+              targetHalaman: 'sertifikasi',
+              perluPerhatian: s.status !== 'Menunggu Verifikasi'
+            });
           });
+      }
+
+      // Deteksi notif baru -> tampilkan toast (kecuali pada fetch pertama)
+      const baru = items.filter((n) => n.perluPerhatian && !keyTerlihat.current.has(n.key));
+      items.forEach((n) => keyTerlihat.current.add(n.key));
+      if (sudahMuatPertama.current && baru.length > 0) {
+        setToast({
+          show: true,
+          message: baru.length === 1
+            ? `${baru[0].judul}: ${baru[0].status}`
+            : `${baru.length} notifikasi baru`
         });
       }
+      sudahMuatPertama.current = true;
 
       setDaftarNotif(items);
     } catch (err) {
       console.error('Gagal mengambil data notifikasi:', err);
     } finally {
+      sedangFetch.current = false;
       setLoadingNotif(false);
     }
   }, [user, API_BASE_URL]);
 
+  // Fetch awal saat user berubah (login / refresh)
   useEffect(() => {
     fetchNotifikasiReal();
   }, [fetchNotifikasiReal]);
+
+  // Polling: cek ulang tiap beberapa detik selama tab terlihat, dan langsung cek saat tab aktif lagi
+  useEffect(() => {
+    if (!user) return;
+    const cek = () => {
+      if (!document.hidden) fetchNotifikasiReal(true);
+    };
+    const timer = setInterval(cek, POLL_INTERVAL_MS);
+    document.addEventListener('visibilitychange', cek);
+    return () => {
+      clearInterval(timer);
+      document.removeEventListener('visibilitychange', cek);
+    };
+  }, [user, fetchNotifikasiReal]);
 
   // Tutup dropdown otomatis jika pengguna mengklik di luar elemen
   useEffect(() => {
@@ -148,14 +227,12 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout }) {
   }, []);
 
   const tandaiSemuaDibaca = () => {
-    setDaftarNotif((prev) => prev.map((n) => ({ ...n, dibaca: true })));
+    tandaiDibaca(daftarNotif.filter((n) => n.perluPerhatian).map((n) => n.key));
   };
 
   const klikNotifikasi = (notif) => {
-    // Tandai spesifik notif ini sudah dibaca
-    setDaftarNotif((prev) =>
-      prev.map((n) => (n.id === notif.id ? { ...n, dibaca: true } : n))
-    );
+    // Tandai spesifik notif ini sudah dibaca (tersimpan di localStorage)
+    tandaiDibaca([notif.key]);
     setSidebarNotifOpen(false);
     if (notif.targetHalaman && typeof setHalaman === 'function') {
       setHalaman(notif.targetHalaman);
@@ -174,6 +251,8 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout }) {
 
   return (
     <>
+      <NotifikasiToast show={toast.show} message={toast.message} onClose={tutupToast} />
+
       <nav style={{
         backgroundColor: '#164E43',
         color: '#FFFFFF',
@@ -589,7 +668,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout }) {
                   </p>
                 </div>
               ) : (
-                daftarNotif.map((notif) => (
+                daftarNotifTampil.map((notif) => (
                   <div
                     key={notif.id}
                     onClick={() => klikNotifikasi(notif)}
