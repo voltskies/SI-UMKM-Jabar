@@ -3,7 +3,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { 
   ArrowLeft, Lock, Mail, User, Phone, Eye, EyeOff, 
-  ShieldCheck, ArrowRight, CreditCard, KeyRound, X
+  ArrowRight, CreditCard, X
 } from 'lucide-react';
 
 export default function Login({ onKembali, onLoginSukses, setHalaman }) {
@@ -490,11 +490,6 @@ export default function Login({ onKembali, onLoginSukses, setHalaman }) {
               </div>
             )}
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.72rem', color: '#64748B', marginTop: '2px' }}>
-              <ShieldCheck size={14} color="#008848" />
-              <span>Kata sandi dienkripsi dengan standar hash Bcrypt sebelum disimpan.</span>
-            </div>
-
             <button
               type="submit"
               disabled={loading}
@@ -588,16 +583,7 @@ export default function Login({ onKembali, onLoginSukses, setHalaman }) {
               <X size={16} />
             </button>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
-              <div style={{
-                backgroundColor: '#ECFDF5',
-                color: '#008848',
-                borderRadius: '10px',
-                padding: '8px',
-                display: 'flex'
-              }}>
-                <KeyRound size={20} />
-              </div>
+            <div style={{ marginBottom: '8px' }}>
               <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: '800', color: '#0F172A' }}>
                 {forgotStep === 1 ? 'Pemulihan Kata Sandi' : 'Verifikasi OTP & Reset'}
               </h3>
