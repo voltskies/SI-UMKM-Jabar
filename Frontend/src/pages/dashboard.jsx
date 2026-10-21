@@ -70,11 +70,6 @@ const KABUPATEN_KOTA_JABAR = [
   'Kota Cimahi', 'Kota Tasikmalaya', 'Kota Banjar'
 ];
 
-// =====================================================================
-// ✅ [BARU] Fungsi bantu untuk mewarnai peta dari DATA (menggantikan
-//    getWilayahMapChartColor yang warnanya hardcode per nama wilayah)
-// =====================================================================
-
 // Nama wilayah dari GeoJSON -> "Kabupaten X" / "Kota X"
 const namaWilayah = (f) => {
   const { NAME_2: n, TYPE_2: t } = f.properties;
@@ -82,20 +77,9 @@ const namaWilayah = (f) => {
   return t === 'Kabupaten' ? `Kabupaten ${n}` : n;
 };
 
-// Kunci pencocokan: "Kabupaten Bandung" / "Kab. Bandung" / "Bandung" -> "bandung"
-// ("Kota Bandung" tetap "kota bandung", jadi tidak tertukar)
+// Kunci pencocokan: "Kabupaten Bandung" -> "bandung"
 const kunciWilayah = (s = '') =>
   s.toLowerCase().trim().replace(/^kabupaten\s+|^kab\.\s*/, '');
-
-// Kelompok kategori (aturannya sama dengan getMarkerColor di bawah)
-const getKelompok = (kategori) => {
-  const kat = (kategori || '').toUpperCase();
-  if (kat.includes('AKSESORIS') || kat.includes('CRAFT') || kat.includes('KRIYA') || kat.includes('KERAJINAN')) return 'Kerajinan & Kriya';
-  if (kat.includes('KULINER') || kat.includes('MAKANAN') || kat.includes('MINUMAN') || kat.includes('OBAT')) return 'Kuliner';
-  if (kat.includes('FASHION') || kat.includes('BATIK') || kat.includes('KONVEKSI') || kat.includes('BORDIR')) return 'Fashion';
-  if (kat.includes('JASA') || kat.includes('AGRIBISNIS') || kat.includes('INDUSTRI') || kat.includes('MEBEL') || kat.includes('DEKORASI')) return 'Jasa & Lainnya';
-  return 'Lainnya';
-};
 
 const WARNA_KELOMPOK = {
   'Kerajinan & Kriya': '#EAB308',
@@ -105,9 +89,9 @@ const WARNA_KELOMPOK = {
   'Lainnya': '#164E43',
 };
 
-// LAYER 1: warna poligon = warna MapChart buatan sendiri (dikelompokkan per wilayah).
+// LAYER 1: warna poligon tematik
 const KELOMPOK_MAPCHART = [
-  { warna: '#cc3333', wilayah: ['bandung'] },                                   // Bandung, Bandung Barat, Kota Bandung
+  { warna: '#cc3333', wilayah: ['bandung'] },
   { warna: '#762a83', wilayah: ['bogor', 'subang', 'cirebon', 'pangandaran'] },
   { warna: '#74add1', wilayah: ['karawang', 'sumedang'] },
   { warna: '#00441b', wilayah: ['indramayu', 'garut', 'bekasi'] },
@@ -116,7 +100,7 @@ const KELOMPOK_MAPCHART = [
   { warna: '#ffffb3', wilayah: ['sukabumi', 'cimahi', 'tasikmalaya', 'depok'] },
   { warna: '#ffff33', wilayah: ['kuningan'] },
 ];
-// Ringkasan UMKM per wilayah (jumlah UMKM dari data-kategori_UMKM.csv, semua tahun digabung)
+
 const DATA_WILAYAH = {"bandung": {"total": 940, "dominan": "Kuliner", "rincian": {"Kuliner": 558, "Fashion": 258, "Kerajinan & Kriya": 70, "Jasa & Lainnya": 54}}, "bandung barat": {"total": 821, "dominan": "Kuliner", "rincian": {"Kuliner": 408, "Fashion": 205, "Jasa & Lainnya": 115, "Kerajinan & Kriya": 93}}, "bekasi": {"total": 709, "dominan": "Kuliner", "rincian": {"Kuliner": 420, "Fashion": 156, "Kerajinan & Kriya": 88, "Jasa & Lainnya": 45}}, "bogor": {"total": 928, "dominan": "Kuliner", "rincian": {"Kuliner": 484, "Fashion": 232, "Jasa & Lainnya": 110, "Kerajinan & Kriya": 102}}, "ciamis": {"total": 745, "dominan": "Kuliner", "rincian": {"Kuliner": 515, "Fashion": 160, "Kerajinan & Kriya": 46, "Jasa & Lainnya": 24}}, "cianjur": {"total": 735, "dominan": "Kuliner", "rincian": {"Kuliner": 424, "Fashion": 163, "Kerajinan & Kriya": 79, "Jasa & Lainnya": 69}}, "cirebon": {"total": 846, "dominan": "Kuliner", "rincian": {"Kuliner": 477, "Fashion": 200, "Jasa & Lainnya": 87, "Kerajinan & Kriya": 82}}, "garut": {"total": 835, "dominan": "Kuliner", "rincian": {"Kuliner": 410, "Fashion": 252, "Jasa & Lainnya": 101, "Kerajinan & Kriya": 72}}, "indramayu": {"total": 592, "dominan": "Kuliner", "rincian": {"Kuliner": 328, "Fashion": 115, "Kerajinan & Kriya": 79, "Jasa & Lainnya": 70}}, "karawang": {"total": 723, "dominan": "Kuliner", "rincian": {"Kuliner": 445, "Fashion": 149, "Kerajinan & Kriya": 68, "Jasa & Lainnya": 61}}, "kuningan": {"total": 681, "dominan": "Kuliner", "rincian": {"Kuliner": 469, "Fashion": 150, "Kerajinan & Kriya": 32, "Jasa & Lainnya": 30}}, "majalengka": {"total": 815, "dominan": "Kuliner", "rincian": {"Kuliner": 493, "Fashion": 171, "Kerajinan & Kriya": 76, "Jasa & Lainnya": 75}}, "pangandaran": {"total": 615, "dominan": "Kuliner", "rincian": {"Kuliner": 357, "Fashion": 150, "Kerajinan & Kriya": 73, "Jasa & Lainnya": 35}}, "purwakarta": {"total": 497, "dominan": "Kuliner", "rincian": {"Kuliner": 243, "Jasa & Lainnya": 105, "Fashion": 103, "Kerajinan & Kriya": 46}}, "subang": {"total": 661, "dominan": "Kuliner", "rincian": {"Kuliner": 335, "Fashion": 142, "Kerajinan & Kriya": 93, "Jasa & Lainnya": 91}}, "sukabumi": {"total": 780, "dominan": "Kuliner", "rincian": {"Kuliner": 377, "Fashion": 212, "Kerajinan & Kriya": 106, "Jasa & Lainnya": 85}}, "sumedang": {"total": 758, "dominan": "Kuliner", "rincian": {"Kuliner": 451, "Fashion": 180, "Kerajinan & Kriya": 75, "Jasa & Lainnya": 52}}, "tasikmalaya": {"total": 706, "dominan": "Kuliner", "rincian": {"Kuliner": 406, "Fashion": 177, "Kerajinan & Kriya": 84, "Jasa & Lainnya": 39}}, "kota bandung": {"total": 1154, "dominan": "Kuliner", "rincian": {"Kuliner": 519, "Fashion": 423, "Kerajinan & Kriya": 135, "Jasa & Lainnya": 77}}, "kota banjar": {"total": 556, "dominan": "Kuliner", "rincian": {"Kuliner": 292, "Fashion": 113, "Jasa & Lainnya": 93, "Kerajinan & Kriya": 58}}, "kota bekasi": {"total": 517, "dominan": "Kuliner", "rincian": {"Kuliner": 231, "Fashion": 144, "Jasa & Lainnya": 90, "Kerajinan & Kriya": 52}}, "kota bogor": {"total": 554, "dominan": "Kuliner", "rincian": {"Kuliner": 267, "Fashion": 181, "Jasa & Lainnya": 57, "Kerajinan & Kriya": 49}}, "kota cimahi": {"total": 637, "dominan": "Kuliner", "rincian": {"Kuliner": 351, "Fashion": 199, "Kerajinan & Kriya": 61, "Jasa & Lainnya": 26}}, "kota cirebon": {"total": 635, "dominan": "Kuliner", "rincian": {"Kuliner": 413, "Fashion": 112, "Kerajinan & Kriya": 68, "Jasa & Lainnya": 42}}, "kota depok": {"total": 540, "dominan": "Kuliner", "rincian": {"Kuliner": 367, "Fashion": 98, "Kerajinan & Kriya": 39, "Jasa & Lainnya": 36}}, "kota sukabumi": {"total": 604, "dominan": "Kuliner", "rincian": {"Kuliner": 347, "Fashion": 119, "Jasa & Lainnya": 75, "Kerajinan & Kriya": 63}}, "kota tasikmalaya": {"total": 658, "dominan": "Kuliner", "rincian": {"Kuliner": 296, "Fashion": 269, "Kerajinan & Kriya": 71, "Jasa & Lainnya": 22}}};
 
 const getWarnaMapChart = (nama = '') => {
@@ -125,9 +109,6 @@ const getWarnaMapChart = (nama = '') => {
   return g ? g.warna : '#CFD8DC';
 };
 
-// ✅ [BARU] Style & handler poligon dibuat di LUAR komponen supaya referensinya tetap sama.
-//    Kalau ditulis inline, tiap zoom (setZoomLevel -> re-render) react-leaflet menganggap
-//    prop `style` berubah lalu memanggil layer.setStyle() ulang ke semua poligon.
 const STYLE_WILAYAH_NORMAL = { weight: 0.7, opacity: 0.75, color: '#1E293B', fillOpacity: 0.45 };
 
 const styleWilayah = (feature) => ({
@@ -135,7 +116,6 @@ const styleWilayah = (feature) => ({
   fillColor: getWarnaMapChart(namaWilayah(feature)),
 });
 
-// Saat zoom >= 9 warna wilayah dihilangkan (digantikan titik UMKM), hanya garis batas tipis yang tersisa.
 const STYLE_BATAS_SAJA = { fill: false, weight: 0.7, opacity: 0.5, color: '#1E293B' };
 
 const onEachWilayah = (feature, layer) => {
@@ -170,7 +150,6 @@ const onEachWilayah = (feature, layer) => {
       e.target.setStyle({ weight: 1.8, fillOpacity: 0.7 });
       e.target.bringToFront();
     },
-    // kembali ke style normal poligon ITU (warnanya ikut di-set ulang, bukan cuma weight/opacity)
     mouseout: (e) => e.target.setStyle({ ...styleWilayah(feature) }),
   });
 };
@@ -243,9 +222,6 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
     return () => clearInterval(timer);
   }, []);
 
-  // 1. Mengambil Batas Wilayah Poligon GeoJSON Jawa Barat
-  // ✅ [DIUBAH] Sumber sekarang file lokal public/geo/jabar.json (bukan URL superpikar).
-  //    Waduk Cirata dibuang supaya tidak ikut sebagai wilayah.
   useEffect(() => {
     axios.get('/geo/jabar.json')
       .then((res) => {
@@ -257,7 +233,6 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
       .catch((err) => console.error('Gagal memuat GeoJSON Jawa Barat:', err));
   }, []);
 
-  // 2. Mengambil Titik Data UMKM dari Database FastAPI
   const fetchUMKM = async () => {
     try {
       const res = await axios.get('http://127.0.0.1:8000/api/v1/umkm');
@@ -266,10 +241,6 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
         ? responseData
         : (responseData.data || responseData.items || []);
       setUmkmList(dataArray);
-
-      // 🔍 [OPSIONAL, UNTUK CEK NAMA] Hapus tanda // di baris bawah kalau ada wilayah
-      //    yang tetap abu-abu, lalu lihat hasilnya di Console (F12).
-      // console.log('Nama wilayah di database:', [...new Set(dataArray.map((u) => u.kabupaten_kota))]);
     } catch (err) {
       console.error('Gagal mengambil data dari API FastAPI:', err);
     }
@@ -303,24 +274,66 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
     });
   }, [umkmList, searchKeyword, filterActive, selectedKabKota]);
 
-  // Agregasi Jumlah UMKM Per Kabupaten/Kota dari Database
-  // (dibiarkan apa adanya; sekarang tidak dipakai lagi oleh peta, itu tidak apa-apa)
-  const totalUMKMPerDaerah = useMemo(() => {
-    const counts = {};
-    umkmList.forEach((item) => {
-      const kab = (item.kabupaten_kota || '').trim().toUpperCase();
-      if (kab) {
-        counts[kab] = (counts[kab] || 0) + 1;
-      }
-    });
-    return counts;
-  }, [umkmList]);
-
-  // Tooltip wilayah memakai data tertanam (DATA_WILAYAH), tidak perlu file/API.
-  const dataWilayah = DATA_WILAYAH;
-
   return (
     <div style={{ backgroundColor: '#F8FAFC', minHeight: '100vh', display: 'flex', flexDirection: 'column', fontFamily: 'Inter, system-ui, sans-serif' }}>
+      
+      {/* Animasi Fluid Spring & Hover Effect khusus Filter Bar (Jitter Video Style) */}
+      <style>{`
+        @keyframes jitterBarEntry {
+          0% {
+            opacity: 0;
+            transform: translateY(22px) scale(0.975);
+          }
+          60% {
+            opacity: 1;
+            transform: translateY(-3px) scale(1.006);
+          }
+          85% {
+            transform: translateY(1px) scale(0.998);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+        }
+
+        .jitter-filter-bar {
+          animation: jitterBarEntry 0.85s cubic-bezier(0.16, 1, 0.3, 1) both;
+          transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .jitter-filter-bar:hover {
+          box-shadow: 0 16px 36px -10px rgba(15, 23, 42, 0.1), 0 0 0 1px rgba(0, 136, 72, 0.15);
+          transform: translateY(-2px);
+        }
+
+        .jitter-pill-btn {
+          transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .jitter-pill-btn:hover {
+          transform: translateY(-2px) scale(1.05);
+        }
+
+        .jitter-pill-btn:active {
+          transform: scale(0.94);
+        }
+
+        .jitter-input-control {
+          transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .jitter-input-control:hover {
+          border-color: #94A3B8;
+        }
+
+        .jitter-input-control:focus {
+          border-color: #008848 !important;
+          box-shadow: 0 0 0 3px rgba(0, 136, 72, 0.14);
+          outline: none;
+        }
+      `}</style>
+
       <Navbar setHalaman={setHalaman} user={user} />
 
       {/* Hero Carousel */}
@@ -415,22 +428,37 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
           </div>
         </section>
 
-        {/* Filter Bar */}
-        <div style={{ backgroundColor: '#fff', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '16px 20px', marginBottom: '20px', display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '14px' }}>
+        {/* Filter Bar Interaktif & Animatif (Jitter Motion Style) */}
+        <div className="jitter-filter-bar" style={{
+          backgroundColor: '#FFFFFF',
+          border: '1px solid #E2E8F0',
+          borderRadius: '16px',
+          padding: '16px 20px',
+          marginBottom: '24px',
+          display: 'flex',
+          flexWrap: 'wrap',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          gap: '14px',
+          boxShadow: '0 4px 20px -2px rgba(15, 23, 42, 0.05)'
+        }}>
+          {/* Tombol Kategori Pill */}
           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
             {['Semua', 'Kuliner', 'Fashion', 'Kerajinan', 'Jasa'].map((kat) => (
               <button
                 key={kat}
                 onClick={() => setFilterActive(kat)}
+                className="jitter-pill-btn"
                 style={{
-                  padding: '6px 14px',
-                  borderRadius: '20px',
-                  border: '1px solid #E2E8F0',
+                  padding: '7px 16px',
+                  borderRadius: '999px',
+                  border: filterActive === kat ? '1px solid #008848' : '1px solid #E2E8F0',
                   cursor: 'pointer',
-                  fontSize: '0.82rem',
+                  fontSize: '0.84rem',
                   fontWeight: filterActive === kat ? '700' : '500',
-                  backgroundColor: filterActive === kat ? '#008848' : '#fff',
-                  color: filterActive === kat ? '#fff' : '#475569'
+                  backgroundColor: filterActive === kat ? '#008848' : '#FFFFFF',
+                  color: filterActive === kat ? '#FFFFFF' : '#475569',
+                  boxShadow: filterActive === kat ? '0 4px 12px rgba(0, 136, 72, 0.28)' : 'none'
                 }}
               >
                 {kat}
@@ -438,11 +466,22 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
             ))}
           </div>
 
+          {/* Form Pencarian & Dropdown Wilayah */}
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flex: '1', maxWidth: '580px' }}>
             <select
               value={selectedKabKota}
               onChange={(e) => setSelectedKabKota(e.target.value)}
-              style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.84rem', cursor: 'pointer', minWidth: '180px' }}
+              className="jitter-input-control"
+              style={{
+                padding: '9px 12px',
+                borderRadius: '10px',
+                border: '1px solid #CBD5E1',
+                fontSize: '0.84rem',
+                cursor: 'pointer',
+                minWidth: '180px',
+                backgroundColor: '#F8FAFC',
+                color: '#1E293B'
+              }}
             >
               {KABUPATEN_KOTA_JABAR.map((kab) => (
                 <option key={kab} value={kab}>{kab}</option>
@@ -450,13 +489,23 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
             </select>
 
             <div style={{ position: 'relative', width: '100%' }}>
-              <Search size={16} color="#94A3B8" style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }} />
+              <Search size={16} color="#94A3B8" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
               <input
                 type="text"
                 placeholder="Cari nama usaha atau produk..."
                 value={searchKeyword}
                 onChange={(e) => setSearchKeyword(e.target.value)}
-                style={{ width: '100%', padding: '8px 12px 8px 34px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.84rem', boxSizing: 'border-box' }}
+                className="jitter-input-control"
+                style={{
+                  width: '100%',
+                  padding: '9px 12px 9px 38px',
+                  borderRadius: '10px',
+                  border: '1px solid #CBD5E1',
+                  fontSize: '0.84rem',
+                  boxSizing: 'border-box',
+                  backgroundColor: '#FFFFFF',
+                  color: '#0F172A'
+                }}
               />
             </div>
           </div>
@@ -475,9 +524,6 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
 
             {/* Legenda */}
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', padding: '8px 12px', backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '8px', marginBottom: '12px', fontSize: '0.75rem', color: '#334155' }}>
-              {/* ✅ [DIUBAH] Legenda lama "Zonasi MapChart" (yang pakai kondisi zoomLevel < 9)
-                  diganti satu legenda saja, karena warna wilayah dan warna titik sekarang sama
-                  (sama-sama mengikuti kategori). */}
               {zoomLevel < 9 && KELOMPOK_MAPCHART.map((k) => (
                 <div key={k.warna} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <span style={{ width: '12px', height: '12px', borderRadius: '3px', backgroundColor: k.warna, border: '1px solid #1E293B' }}></span>
@@ -485,28 +531,22 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
                 </div>
               ))}
               {zoomLevel >= 9 && <>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#EAB308' }}></span><span><strong>Kuning:</strong> Aksesoris & Kriya</span></div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#16A34A' }}></span><span><strong>Hijau:</strong> Makanan & Minuman</span></div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#9333EA' }}></span><span><strong>Ungu:</strong> Fashion & Batik</span></div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#0284C7' }}></span><span><strong>Biru:</strong> Jasa, Mebel & Lainnya</span></div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#EAB308' }}></span><span><strong>Kuning:</strong> Aksesoris & Kriya</span></div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#16A34A' }}></span><span><strong>Hijau:</strong> Makanan & Minuman</span></div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#9333EA' }}></span><span><strong>Ungu:</strong> Fashion & Batik</span></div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#0284C7' }}></span><span><strong>Biru:</strong> Jasa, Mebel & Lainnya</span></div>
               </>}
             </div>
 
             <div style={{ height: '520px', borderRadius: '10px', overflow: 'hidden', border: '1px solid #E2E8F0', position: 'relative' }}>
-              {/* ✅ [DIUBAH] Ditambah background putih saat mode poligon (zoom < 9), biar mirip MapChart */}
               <MapContainer center={[-6.9175, 107.6191]} zoom={8} scrollWheelZoom={true} style={{ height: '100%', width: '100%' }}>
                 <MapZoomListener onZoomChanged={(z) => setZoomLevel(z)} />
 
-                {/* ✅ [DIUBAH] Peta dasar OSM selalu tampil (layer paling bawah).
-                    */}
                 <TileLayer
                   attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 />
 
-                {/* 1. SEBELUM ZOOM (zoom < 9): Poligon batas wilayah */}
-                {/* ✅ [DIUBAH] Seluruh blok GeoJSON ini: warna sekarang dari kategori dominan data,
-                    tooltip berisi dominan + total + rincian, dan ada efek hover. */}
                 {geoData && (
                   <Pane name="wilayah" style={{ zIndex: 350 }}>
                   {zoomLevel < 9 ? (
@@ -529,8 +569,6 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
                   </Pane>
                 )}
 
-                {/* 2. SETELAH ZOOM (zoom >= 9): Titik Komoditas dari database (Latitude & Longitude) */}
-                {/* (bagian ini TIDAK diubah) */}
                 {zoomLevel >= 9 && filteredUMKM.map((item) => {
                   const rawLat = item.latitude;
                   const rawLng = item.longitude;
