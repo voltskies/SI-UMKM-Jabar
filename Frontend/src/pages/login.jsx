@@ -495,16 +495,7 @@ export default function Login({ onKembali, onLoginSukses, setHalaman }) {
               <X size={16} />
             </button>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
-              <div style={{
-                backgroundColor: '#ECFDF5',
-                color: '#008848',
-                borderRadius: '10px',
-                padding: '8px',
-                display: 'flex'
-              }}>
-                <KeyRound size={20} />
-              </div>
+            <div style={{ marginBottom: '8px' }}>
               <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: '800', color: '#0F172A' }}>
                 {forgotStep === 1 ? 'Pemulihan Kata Sandi' : 'Verifikasi OTP & Reset'}
               </h3>
