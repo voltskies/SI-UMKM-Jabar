@@ -1,17 +1,18 @@
+import emailjs from '@emailjs/browser';
 import { useState } from 'react';
 import axios from 'axios';
 import { 
   ArrowLeft, Lock, Mail, User, Phone, Eye, EyeOff, 
-  ShieldCheck, ArrowRight, CreditCard
+  ShieldCheck, ArrowRight, CreditCard, KeyRound, X
 } from 'lucide-react';
 
 export default function Login({ onKembali, onLoginSukses, setHalaman }) {
-  const [isRegister, setIsRegister] = useState(true);
+  const [isRegister, setIsRegister] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  // State data formulir
+  // State data formulir autentikasi
   const [namaLengkap, setNamaLengkap] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -19,8 +20,22 @@ export default function Login({ onKembali, onLoginSukses, setHalaman }) {
   const [nomorWhatsapp, setNomorWhatsapp] = useState('');
   const [nik, setNik] = useState('');
 
-  // Sinkronisasi otomatis base URL backend sesuai host browser aktif
-const API_BASE_URL = 'http://127.0.0.1:8000';
+  // State Modal Lupa Password
+  const [showForgotModal, setShowForgotModal] = useState(false);
+  const [forgotStep, setForgotStep] = useState(1); // 1 = Input Email, 2 = Input OTP & Password Baru
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotOtp, setForgotOtp] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
+  const [forgotLoading, setForgotLoading] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+
+  const API_BASE_URL = 'http://127.0.0.1:8000';
+
+  // Kredensial EmailJS Browser SDK (Port 443 HTTPS - Bebas Blokir ISP / Wi-Fi)
+  const EMAILJS_SERVICE_ID = 'service_vr07rh';
+  const EMAILJS_TEMPLATE_ID = 'template_318btwq';
+  const EMAILJS_PUBLIC_KEY = 'BrC6NgRExKr6v1fz7';
 
   const handleKembaliKeDashboard = () => {
     if (typeof setHalaman === 'function') {
@@ -62,7 +77,6 @@ const API_BASE_URL = 'http://127.0.0.1:8000';
 
     try {
       if (isRegister) {
-        // 1. Registrasi Akun (Password otomatis di-hash Bcrypt oleh FastAPI)
         const res = await axios.post(`${API_BASE_URL}/api/v1/auth/register`, {
           nik: nik.trim(),
           nama_lengkap: namaLengkap.trim(),
@@ -71,12 +85,11 @@ const API_BASE_URL = 'http://127.0.0.1:8000';
           password: password
         });
 
-        alert(res.data.message || 'Pendaftaran berhasil! Silakan masuk menggunakan akun Anda.');
+        alert(res.data.message || 'Pendaftaran berhasil! Akun Anda langsung aktif. Silakan masuk.');
         setIsRegister(false);
         setPassword('');
         setConfirmPassword('');
       } else {
-        // 2. Login Akun (FastAPI memvalidasi hash kata sandi)
         const res = await axios.post(`${API_BASE_URL}/api/v1/auth/login`, { 
           email: email.trim().toLowerCase(), 
           password: password 
@@ -96,19 +109,119 @@ const API_BASE_URL = 'http://127.0.0.1:8000';
     } catch (err) {
       console.error("Detail Error API:", err);
       if (err.response) {
-        // Backend merespons dengan status error (400, 422, 500, dll)
         const detailMsg = err.response.data?.detail || err.response.data?.message || `Error Server (${err.response.status})`;
         const pesan = Array.isArray(detailMsg) 
           ? detailMsg.map((d) => d.msg || JSON.stringify(d)).join(', ') 
           : typeof detailMsg === 'object' ? JSON.stringify(detailMsg) : detailMsg;
         alert(`Gagal: ${pesan}`);
       } else if (err.request) {
-        alert(`Koneksi terputus ke ${API_BASE_URL}. Pastikan terminal uvicorn tidak error.`);
+        alert(`Koneksi terputus ke ${API_BASE_URL}. Pastikan backend uvicorn berjalan.`);
       } else {
         alert(`Gagal: ${err.message}`);
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Handler Lupa Password Tahap 1: Kirim Kode OTP Langsung via Browser SDK EmailJS
+  const handleKirimOtpLupaPassword = async (e) => {
+    e.preventDefault();
+    const targetEmail = forgotEmail.trim().toLowerCase();
+    if (!targetEmail) {
+      alert('Masukkan email Anda terlebih dahulu.');
+      return;
+    }
+
+    setForgotLoading(true);
+
+    // Generate 6 digit kode OTP acak
+    const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    try {
+      // Kirim email lewat EmailJS browser SDK (Port 443 HTTPS resmi)
+      await emailjs.send(
+        EMAILJS_SERVICE_ID,
+        EMAILJS_TEMPLATE_ID,
+        {
+          email: targetEmail,
+          passcode: generatedOtp
+        },
+        EMAILJS_PUBLIC_KEY
+      );
+
+      // Simpan OTP dan waktu kadaluwarsa (5 menit) ke sessionStorage browser
+      sessionStorage.setItem(`otp_val_${targetEmail}`, generatedOtp);
+      sessionStorage.setItem(`otp_exp_${targetEmail}`, (Date.now() + 5 * 60 * 1000).toString());
+
+      alert(`Kode verifikasi OTP berhasil dikirimkan ke email ${targetEmail}! Silakan periksa kotak masuk atau spam.`);
+      setForgotStep(2);
+    } catch (err) {
+      console.error("Gagal kirim via EmailJS:", err);
+      alert(`Gagal mengirim kode verifikasi: ${err.text || err.message || 'Periksa koneksi internet Anda.'}`);
+    } finally {
+      setForgotLoading(false);
+    }
+  };
+
+  // Handler Lupa Password Tahap 2: Validasi OTP & Simpan Password Baru
+  const handleResetPassword = async (e) => {
+    e.preventDefault();
+    const targetEmail = forgotEmail.trim().toLowerCase();
+
+    if (!forgotOtp.trim()) {
+      alert('Masukkan 6 digit kode OTP yang diterima di email!');
+      return;
+    }
+    if (newPassword.length < 6) {
+      alert('Kata sandi baru minimal 6 karakter!');
+      return;
+    }
+    if (newPassword !== confirmNewPassword) {
+      alert('Konfirmasi kata sandi baru tidak cocok!');
+      return;
+    }
+
+    // Verifikasi OTP dari sessionStorage
+    const storedOtp = sessionStorage.getItem(`otp_val_${targetEmail}`);
+    const storedExp = sessionStorage.getItem(`otp_exp_${targetEmail}`);
+
+    if (!storedOtp || storedOtp !== forgotOtp.trim()) {
+      alert('Kode OTP yang Anda masukkan salah!');
+      return;
+    }
+
+    if (storedExp && Date.now() > parseInt(storedExp, 10)) {
+      alert('Kode OTP sudah kedaluwarsa (lebih dari 5 menit). Silakan minta kode baru.');
+      setForgotStep(1);
+      return;
+    }
+
+    setForgotLoading(true);
+    try {
+      const res = await axios.post(`${API_BASE_URL}/api/v1/auth/reset-password`, {
+        email: targetEmail,
+        otp: forgotOtp.trim(),
+        new_password: newPassword
+      });
+
+      alert(res.data.message || 'Kata sandi berhasil diperbarui! Silakan masuk menggunakan kata sandi baru.');
+      
+      // Bersihkan session OTP
+      sessionStorage.removeItem(`otp_val_${targetEmail}`);
+      sessionStorage.removeItem(`otp_exp_${targetEmail}`);
+
+      setShowForgotModal(false);
+      setForgotStep(1);
+      setForgotOtp('');
+      setNewPassword('');
+      setConfirmNewPassword('');
+      setEmail(targetEmail);
+    } catch (err) {
+      const detail = err.response?.data?.detail || err.message;
+      alert(`Gagal: ${detail}`);
+    } finally {
+      setForgotLoading(false);
     }
   };
 
@@ -121,7 +234,8 @@ const API_BASE_URL = 'http://127.0.0.1:8000';
       justifyContent: 'center',
       alignItems: 'center',
       padding: '30px 16px',
-      fontFamily: 'Inter, system-ui, sans-serif'
+      fontFamily: 'Inter, system-ui, sans-serif',
+      position: 'relative'
     }}>
       <div style={{ maxWidth: '1020px', width: '100%', marginBottom: '14px' }}>
         <button
@@ -292,9 +406,23 @@ const API_BASE_URL = 'http://127.0.0.1:8000';
 
             <div style={{ display: 'grid', gridTemplateColumns: isRegister ? '1fr 1fr' : '1fr', gap: '12px' }}>
               <div>
-                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '700', color: '#334155', marginBottom: '6px' }}>
-                  PASSWORD <span style={{ color: '#DC2626' }}>*</span>
-                </label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                  <label style={{ fontSize: '0.75rem', fontWeight: '700', color: '#334155' }}>
+                    PASSWORD <span style={{ color: '#DC2626' }}>*</span>
+                  </label>
+                  {!isRegister && (
+                    <span
+                      onClick={() => {
+                        setForgotEmail(email);
+                        setForgotStep(1);
+                        setShowForgotModal(true);
+                      }}
+                      style={{ fontSize: '0.74rem', color: '#008848', fontWeight: '700', cursor: 'pointer', textDecoration: 'underline' }}
+                    >
+                      Lupa kata sandi?
+                    </span>
+                  )}
+                </div>
                 <div style={{ position: 'relative' }}>
                   <Lock size={15} color="#94A3B8" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
                   <input
@@ -402,7 +530,6 @@ const API_BASE_URL = 'http://127.0.0.1:8000';
             </span>
           </div>
 
-          {/* Tulisan masuk admin */}
           <div style={{ textAlign: 'center', marginTop: '10px', fontSize: '0.82rem', color: '#64748B' }}>
             <span
               onClick={() => setHalaman('admin')}
@@ -412,8 +539,219 @@ const API_BASE_URL = 'http://127.0.0.1:8000';
             </span>
           </div>
         </div>
-
       </div>
+
+      {/* MODAL POP-UP LUPA PASSWORD */}
+      {showForgotModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          backgroundColor: 'rgba(15, 23, 42, 0.6)',
+          backdropFilter: 'blur(4px)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 9999,
+          padding: '16px'
+        }}>
+          <div style={{
+            backgroundColor: '#FFFFFF',
+            borderRadius: '20px',
+            maxWidth: '440px',
+            width: '100%',
+            padding: '28px 26px',
+            boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
+            position: 'relative'
+          }}>
+            <button
+              type="button"
+              onClick={() => setShowForgotModal(false)}
+              style={{
+                position: 'absolute',
+                top: '18px',
+                right: '18px',
+                background: '#F1F5F9',
+                border: 'none',
+                borderRadius: '50%',
+                width: '32px',
+                height: '32px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                color: '#64748B'
+              }}
+            >
+              <X size={16} />
+            </button>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+              <div style={{
+                backgroundColor: '#ECFDF5',
+                color: '#008848',
+                borderRadius: '10px',
+                padding: '8px',
+                display: 'flex'
+              }}>
+                <KeyRound size={20} />
+              </div>
+              <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: '800', color: '#0F172A' }}>
+                {forgotStep === 1 ? 'Pemulihan Kata Sandi' : 'Verifikasi OTP & Reset'}
+              </h3>
+            </div>
+            
+            <p style={{ fontSize: '0.82rem', color: '#64748B', margin: '0 0 20px 0', lineHeight: 1.5 }}>
+              {forgotStep === 1 
+                ? 'Masukkan alamat email yang terdaftar untuk menerima kode verifikasi OTP pemulihan kata sandi.'
+                : `Kode OTP 6 digit telah dikirimkan ke email ${forgotEmail}. Silakan periksa inbox atau folder spam Anda.`}
+            </p>
+
+            {forgotStep === 1 ? (
+              <form onSubmit={handleKirimOtpLupaPassword} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '700', color: '#334155', marginBottom: '6px' }}>
+                    ALAMAT EMAIL TERDAFTAR <span style={{ color: '#DC2626' }}>*</span>
+                  </label>
+                  <div style={{ position: 'relative' }}>
+                    <Mail size={16} color="#94A3B8" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+                    <input
+                      type="email"
+                      required
+                      placeholder="contoh: nama@gmail.com"
+                      value={forgotEmail}
+                      onChange={(e) => setForgotEmail(e.target.value)}
+                      style={{ width: '100%', padding: '10px 12px 10px 38px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.84rem', boxSizing: 'border-box' }}
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={forgotLoading}
+                  style={{
+                    backgroundColor: '#164E43',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    borderRadius: '8px',
+                    padding: '11px',
+                    fontSize: '0.86rem',
+                    fontWeight: '700',
+                    cursor: forgotLoading ? 'not-allowed' : 'pointer',
+                    marginTop: '6px'
+                  }}
+                >
+                  {forgotLoading ? 'Mengirim Kode OTP...' : 'Kirim Kode Verifikasi'}
+                </button>
+              </form>
+            ) : (
+              <form onSubmit={handleResetPassword} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '700', color: '#334155', marginBottom: '6px' }}>
+                    KODE VERIFIKASI OTP (6 DIGIT) <span style={{ color: '#DC2626' }}>*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    maxLength={6}
+                    placeholder="Contoh: 123456"
+                    value={forgotOtp}
+                    onChange={(e) => setForgotOtp(e.target.value.replace(/\D/g, ''))}
+                    style={{
+                      width: '100%',
+                      padding: '10px 12px',
+                      borderRadius: '8px',
+                      border: '2px solid #164E43',
+                      fontSize: '1.1rem',
+                      letterSpacing: '4px',
+                      textAlign: 'center',
+                      fontWeight: '800',
+                      boxSizing: 'border-box'
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '700', color: '#334155', marginBottom: '6px' }}>
+                    KATA SANDI BARU <span style={{ color: '#DC2626' }}>*</span>
+                  </label>
+                  <div style={{ position: 'relative' }}>
+                    <Lock size={15} color="#94A3B8" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+                    <input
+                      type={showNewPassword ? 'text' : 'password'}
+                      required
+                      placeholder="Minimal 6 karakter"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      style={{ width: '100%', padding: '10px 34px 10px 36px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.84rem', boxSizing: 'border-box' }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowNewPassword(!showNewPassword)}
+                      style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#94A3B8', padding: 0 }}
+                    >
+                      {showNewPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '700', color: '#334155', marginBottom: '6px' }}>
+                    KONFIRMASI KATA SANDI BARU <span style={{ color: '#DC2626' }}>*</span>
+                  </label>
+                  <input
+                    type="password"
+                    required
+                    placeholder="Ulangi kata sandi baru"
+                    value={confirmNewPassword}
+                    onChange={(e) => setConfirmNewPassword(e.target.value)}
+                    style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.84rem', boxSizing: 'border-box' }}
+                  />
+                </div>
+
+                <div style={{ display: 'flex', gap: '8px', marginTop: '6px' }}>
+                  <button
+                    type="button"
+                    onClick={() => setForgotStep(1)}
+                    style={{
+                      flex: 1,
+                      backgroundColor: '#F1F5F9',
+                      color: '#475569',
+                      border: 'none',
+                      borderRadius: '8px',
+                      padding: '11px',
+                      fontSize: '0.84rem',
+                      fontWeight: '700',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Kirim Ulang
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={forgotLoading}
+                    style={{
+                      flex: 2,
+                      backgroundColor: '#164E43',
+                      color: '#FFFFFF',
+                      border: 'none',
+                      borderRadius: '8px',
+                      padding: '11px',
+                      fontSize: '0.84rem',
+                      fontWeight: '700',
+                      cursor: forgotLoading ? 'not-allowed' : 'pointer'
+                    }}
+                  >
+                    {forgotLoading ? 'Memperbarui...' : 'Simpan Kata Sandi'}
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

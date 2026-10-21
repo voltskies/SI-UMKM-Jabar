@@ -1,7 +1,8 @@
-from sqlalchemy import Column, Integer, String, Text, ForeignKey, DateTime
-from sqlalchemy.orm import relationship
 from datetime import datetime
+from sqlalchemy import Column, Integer, String, Text, ForeignKey, DateTime, Boolean
+from sqlalchemy.orm import relationship
 from database import Base
+
 
 class User(Base):
     __tablename__ = "users"
@@ -12,11 +13,19 @@ class User(Base):
     email = Column(String(100), unique=True, index=True, nullable=False)
     password = Column(String(255), nullable=False)
     nomor_whatsapp = Column(String(20), nullable=False)
-    role = Column(String(20), default="pemohon")  # pemohon / admin
+    role = Column(String(20), default="umum")  # umum / admin
     created_at = Column(DateTime, default=datetime.utcnow)
 
-    # Relasi ke pengajuan bantuan
+    # Otomatis langsung aktif tanpa perlu OTP pendaftaran
+    is_verified = Column(Boolean, default=True, nullable=False)
+    
+    # Kolom OTP digunakan saat Lupa Password
+    otp_code = Column(String(6), nullable=True)
+    otp_expires_at = Column(DateTime, nullable=True)
+
+    # Relasi
     pengajuan = relationship("PengajuanBantuan", back_populates="pemohon")
+    sertifikasi = relationship("PengajuanSertifikasi", back_populates="pemohon")
 
 
 class UMKM(Base):
@@ -24,7 +33,7 @@ class UMKM(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     nama_usaha = Column(String(150), nullable=False)
-    kategori = Column(String(100), index=True, nullable=False)  # Kuliner, Fashion, dll.
+    kategori = Column(String(100), index=True, nullable=False)
     kabupaten_kota = Column(String(100), index=True, nullable=False)
     alamat = Column(Text, nullable=True)
     latitude = Column(String(50), nullable=True)
@@ -37,26 +46,19 @@ class PengajuanBantuan(Base):
     id = Column(Integer, primary_key=True, index=True)
     nomor_pengajuan = Column(String(50), unique=True, index=True, nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    
-    # Detail Usaha & Bantuan
     nama_usaha = Column(String(150), nullable=False)
     kategori_usaha = Column(String(100), nullable=False)
     nib = Column(String(50), nullable=True)
     jumlah_dana = Column(String(50), nullable=False)
     tujuan_penggunaan = Column(Text, nullable=False)
-    
-    # Path File Berkas yang diupload
     file_ktp = Column(String(255), nullable=False)
     file_kk = Column(String(255), nullable=True)
     file_nib = Column(String(255), nullable=True)
     file_proposal = Column(String(255), nullable=True)
-    
-    # Status Verifikasi Admin
-    status = Column(String(50), default="Menunggu Verifikasi")  # Menunggu Verifikasi, Disetujui, Ditolak
+    status = Column(String(50), default="Menunggu Verifikasi")
     catatan_admin = Column(Text, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
-    # Relasi balik ke User
     pemohon = relationship("User", back_populates="pengajuan")
 
 
@@ -92,3 +94,5 @@ class PengajuanSertifikasi(Base):
     status = Column(String(50), default="Menunggu Verifikasi")
     catatan_admin = Column(Text, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
+
+    pemohon = relationship("User", back_populates="sertifikasi")

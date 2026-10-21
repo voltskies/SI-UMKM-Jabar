@@ -1,6 +1,8 @@
 import os
 import re
 import uuid
+import random
+from datetime import datetime, timedelta
 from typing import Optional
 
 import bcrypt
@@ -12,8 +14,9 @@ from sqlalchemy.orm import Session
 import models
 from database import engine, get_db
 from supabase_client import upload_file_to_supabase
+from email_service import send_otp_email
 
-# 1. Konfigurasi Hashing Password Langsung via pustaka bcrypt
+# 1. Hashing password
 def hash_password(password: str) -> str:
     pwd_bytes = password.encode('utf-8')[:71]
     salt = bcrypt.gensalt()
@@ -24,12 +27,11 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     hash_bytes = hashed_password.encode('utf-8')
     return bcrypt.checkpw(pwd_bytes, hash_bytes)
 
-# Membuat tabel database otomatis jika belum ada
+# Buat tabel otomatis
 models.Base.metadata.create_all(bind=engine)
 
-# Metadata Kategori Swagger Docs
 tags_metadata = [
-    {"name": "Umum", "description": "Endpoint autentikasi akun dan status server API SI-UMKM Jabar."},
+    {"name": "Umum", "description": "Endpoint autentikasi akun, pemulihan password, dan status server API SI-UMKM Jabar."},
     {"name": "Pelaku UMKM", "description": "Layanan direktori UMKM, pendaftaran pelatihan, permohonan bantuan, dan sertifikasi."},
     {"name": "Pelatihan", "description": "Layanan khusus katalog dan pendaftaran pelatihan bersertifikat."},
     {"name": "Sertifikasi", "description": "Layanan pengajuan dan upload berkas sertifikasi legalitas."},
@@ -43,7 +45,7 @@ app = FastAPI(
     openapi_tags=tags_metadata
 )
 
-# CORS TERBUKA PENUH (Mengatasi masalah origin localhost vs 127.0.0.1)
+# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -52,7 +54,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# SKEMA REQUEST PYDANTIC
+# Skema Request Pydantic
 class RegisterUserRequest(BaseModel):
     nik: str
     nama_lengkap: str
@@ -64,21 +66,29 @@ class LoginUserRequest(BaseModel):
     email: str
     password: str
 
+class ForgotPasswordRequest(BaseModel):
+    email: str
+
+class ResetPasswordRequest(BaseModel):
+    email: str
+    otp: str
+    new_password: str
+
 class VerifikasiRequest(BaseModel):
     status: str
     catatan_admin: Optional[str] = None
 
 
-# ==============================================================================
-# 1. KELOMPOK: UMUM & AUTENTIKASI
-# ==============================================================================
+# ==========================================
+# 1. UMUM & AUTENTIKASI
+# ==========================================
 
 @app.get("/", tags=["Umum"], summary="Cek Kesiapan Server API")
 def read_root():
     return {"status": "success", "message": "API SI-UMKM Jabar siap digunakan!"}
 
 
-@app.post("/api/v1/auth/register", tags=["Umum"], status_code=status.HTTP_201_CREATED, summary="Registrasi Akun Baru")
+@app.post("/api/v1/auth/register", tags=["Umum"], status_code=status.HTTP_201_CREATED, summary="Registrasi Akun Baru (Langsung Aktif)")
 def register_user(payload: RegisterUserRequest, db: Session = Depends(get_db)):
     nik_clean = payload.nik.strip()
     email_clean = payload.email.strip().lower()
@@ -93,13 +103,13 @@ def register_user(payload: RegisterUserRequest, db: Session = Depends(get_db)):
     if not re.fullmatch(r"^\d{10,13}$", wa_clean):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Nomor WhatsApp tidak valid. Harus berupa angka dengan panjang 10 sampai 13 digit."
+            detail="Nomor WhatsApp tidak valid. Harus 10 sampai 13 digit angka."
         )
 
-    if not re.fullmatch(r"^[a-zA-Z0-9_.+-]+@gmail\.com$", email_clean):
+    if not re.fullmatch(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", email_clean):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Format email tidak valid. Wajib menggunakan akun @gmail.com."
+            detail="Format email tidak valid."
         )
 
     if len(payload.password) < 6:
@@ -108,24 +118,30 @@ def register_user(payload: RegisterUserRequest, db: Session = Depends(get_db)):
             detail="Kata sandi terlalu pendek. Minimal 6 karakter."
         )
 
+    # Cek apakah NIK atau Email sudah terdaftar
     user_exist = db.query(models.User).filter(
         (models.User.nik == nik_clean) | (models.User.email == email_clean)
     ).first()
+
     if user_exist:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="NIK atau Email sudah terdaftar di sistem."
+            detail="NIK atau Email sudah terdaftar di sistem. Silakan langsung masuk."
         )
 
     hashed_pwd = hash_password(payload.password)
 
+    # Akun baru langsung diset aktif (is_verified = True) tanpa perlu OTP
     user_baru = models.User(
         nik=nik_clean,
         nama_lengkap=payload.nama_lengkap.strip(),
         email=email_clean,
         nomor_whatsapp=wa_clean,
         password=hashed_pwd,
-        role="umum"
+        role="umum",
+        is_verified=True,
+        otp_code=None,
+        otp_expires_at=None
     )
 
     db.add(user_baru)
@@ -134,13 +150,12 @@ def register_user(payload: RegisterUserRequest, db: Session = Depends(get_db)):
 
     return {
         "status": "success",
-        "message": "Pendaftaran akun berhasil!",
+        "message": "Pendaftaran akun berhasil! Anda dapat langsung masuk.",
         "data": {
             "id": user_baru.id,
             "nik": user_baru.nik,
-            "nama_lengkap": user_baru.nama_lengkap,
-            "email": user_baru.email,
-            "role": user_baru.role
+            "nama": user_baru.nama_lengkap,
+            "email": user_baru.email
         }
     }
 
@@ -172,9 +187,90 @@ def login_user(payload: LoginUserRequest, db: Session = Depends(get_db)):
     }
 
 
-# ==============================================================================
-# 2. KELOMPOK: PELAKU UMKM & LAYANAN
-# ==============================================================================
+# ==========================================
+# 2. ALUR LUPA PASSWORD
+# ==========================================
+
+@app.post("/api/v1/auth/forgot-password", tags=["Umum"], summary="Kirim Kode OTP Lupa Password")
+def forgot_password(payload: ForgotPasswordRequest, db: Session = Depends(get_db)):
+    email_clean = payload.email.strip().lower()
+
+    user = db.query(models.User).filter(models.User.email == email_clean).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Email tidak terdaftar di sistem kami."
+        )
+
+    otp_code = str(random.randint(100000, 999999))
+    user.otp_code = otp_code
+    user.otp_expires_at = datetime.utcnow() + timedelta(minutes=5)
+    db.commit()
+
+    try:
+        send_otp_email(email_clean, otp_code)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Gagal mengirimkan kode OTP ke email: {str(e)}"
+        )
+
+    return {
+        "status": "success",
+        "message": "Kode OTP pemulihan kata sandi telah dikirim ke email Anda."
+    }
+
+
+@app.post("/api/v1/auth/reset-password", tags=["Umum"], summary="Reset Kata Sandi")
+def reset_password(payload: ResetPasswordRequest, db: Session = Depends(get_db)):
+    email_clean = payload.email.strip().lower()
+    otp_clean = payload.otp.strip()
+
+    user = db.query(models.User).filter(models.User.email == email_clean).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Pengguna tidak ditemukan."
+        )
+
+    # Validasi format OTP 6 digit
+    if not otp_clean or len(otp_clean) != 6:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Kode OTP harus berupa 6 digit angka."
+        )
+
+    # Jika ada OTP di database dan cocok, periksa waktu kedaluwarsa
+    if getattr(user, 'otp_code', None) and user.otp_code == otp_clean:
+        if getattr(user, 'otp_expires_at', None) and datetime.utcnow() > user.otp_expires_at:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Kode OTP telah kedaluwarsa. Silakan minta kode baru."
+            )
+
+    if len(payload.new_password) < 6:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Kata sandi baru minimal 6 karakter."
+        )
+
+    # Perbarui kata sandi dengan hash Bcrypt dan reset OTP di database
+    user.password = hash_password(payload.new_password)
+    if hasattr(user, 'otp_code'):
+        user.otp_code = None
+    if hasattr(user, 'otp_expires_at'):
+        user.otp_expires_at = None
+    db.commit()
+
+    return {
+        "status": "success",
+        "message": "Kata sandi Anda berhasil diperbarui. Silakan masuk menggunakan kata sandi baru."
+    }
+
+
+# ==========================================
+# 3. PELAKU UMKM DAN LAYANAN
+# ==========================================
 
 @app.get("/api/v1/umkm", tags=["Pelaku UMKM"], summary="Ambil Direktori Data UMKM")
 def get_all_umkm(
@@ -209,7 +305,6 @@ async def daftar_pelatihan(
     if sudah_daftar:
         raise HTTPException(status_code=400, detail="Anda sudah mendaftar di pelatihan ini.")
 
-    # Upload berkas ke folder 'pelatihan' di Supabase
     url_berkas = None
     if file_syarat:
         url_berkas = await upload_file_to_supabase(file_syarat, folder="pelatihan")
@@ -264,13 +359,13 @@ async def ajukan_bantuan(
             email=email,
             password=hash_password("default12345"),
             nomor_whatsapp=nomor_whatsapp,
-            role="umum"
+            role="umum",
+            is_verified=True
         )
         db.add(user)
         db.commit()
         db.refresh(user)
 
-    # Upload langsung ke Supabase Storage (folder 'bantuan')
     url_ktp = await upload_file_to_supabase(file_ktp, folder="bantuan")
     url_kk = await upload_file_to_supabase(file_kk, folder="bantuan") if file_kk else None
     url_nib = await upload_file_to_supabase(file_nib, folder="bantuan") if file_nib else None
@@ -325,13 +420,13 @@ async def ajukan_sertifikasi(
             email=email,
             password=hash_password("default12345"),
             nomor_whatsapp=nomor_whatsapp,
-            role="umum"
+            role="umum",
+            is_verified=True
         )
         db.add(user)
         db.commit()
         db.refresh(user)
 
-    # Upload ke Supabase Storage (folder 'sertifikasi')
     url_ktp = await upload_file_to_supabase(file_ktp, folder="sertifikasi")
     url_foto_produk = await upload_file_to_supabase(file_foto_produk, folder="sertifikasi")
     url_pendukung = await upload_file_to_supabase(file_dokumen_pendukung, folder="sertifikasi") if file_dokumen_pendukung else None
@@ -356,9 +451,9 @@ async def ajukan_sertifikasi(
     return {"status": "success", "nomor_registrasi": no_reg}
 
 
-# ==============================================================================
-# 3. KELOMPOK: UPLOAD FILE STANDALONE
-# ==============================================================================
+# ==========================================
+# 4. UPLOAD STANDALONE
+# ==========================================
 
 @app.post("/api/pelatihan/upload", tags=["Pelatihan"], summary="Upload Mandiri Berkas Pelatihan")
 async def upload_berkas_pelatihan(file: UploadFile = File(...)):
@@ -380,9 +475,9 @@ async def upload_berkas_sertifikasi(file: UploadFile = File(...)):
     }
 
 
-# ==============================================================================
-# 4. KELOMPOK: ADMIN DINAS
-# ==============================================================================
+# ==========================================
+# 5. ADMIN DINAS
+# ==========================================
 
 @app.get("/api/v1/admin/pengajuan", tags=["Admin Dinas"], summary="Get Semua Pengajuan")
 def get_semua_pengajuan(status_filter: Optional[str] = Query(None), db: Session = Depends(get_db)):
@@ -421,11 +516,10 @@ def verifikasi_sertifikasi(sertifikasi_id: int, payload: VerifikasiRequest, db: 
     db.commit()
     return {"status": "success", "message": "Status sertifikasi berhasil diperbarui."}
 
-# Tambahkan di Backend/main.py pada bagian route Admin Dinas
+
 @app.get("/api/v1/admin/users", tags=["Admin Dinas"], summary="Get Semua Akun Pengguna")
 def get_semua_user(db: Session = Depends(get_db)):
     users = db.query(models.User).order_by(models.User.id.desc()).all()
-    # Format data agar cocok dan aman dikonsumsi frontend
     data = []
     for u in users:
         data.append({
@@ -435,6 +529,7 @@ def get_semua_user(db: Session = Depends(get_db)):
             "email": u.email,
             "telp": u.nomor_whatsapp,
             "role": u.role or "umum",
+            "is_verified": getattr(u, "is_verified", True),
             "instansi": "Pelaku UMKM Jawa Barat" if u.role == "umum" else "Dinas"
         })
     return {"status": "success", "data": data}
