@@ -112,7 +112,7 @@ export default function LegalitasAdmin({ selectedId }) {
 
         {aktif && (
           <Card style={{ padding: 0, overflow: 'hidden', position: 'sticky', top: 16 }}>
-            <div style={{ background: '#164E43', color: '#fff', padding: 20 }}>
+            <div style={{ background: '#255456', color: '#fff', padding: 20 }}>
               <div style={{ fontSize: '0.7rem', opacity: 0.7 }}>Detail Permohonan Sertifikasi</div>
               <div style={{ fontSize: '1.25rem', fontWeight: 800, margin: '4px 0' }}>{aktif.nomor_registrasi}</div>
               <div style={{ fontSize: '0.85rem', opacity: 0.9 }}>{aktif.jenis_sertifikasi} · {aktif.nama_usaha}</div>

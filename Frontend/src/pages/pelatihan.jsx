@@ -134,7 +134,7 @@ export default function Pelatihan({ onKembali, onPilihPelatihan, setHalaman, use
     <div style={{ backgroundColor: '#F8FAFC', minHeight: '100vh', display: 'flex', flexDirection: 'column', fontFamily: 'Inter, system-ui, sans-serif' }}>
       
       {/* 1. Navbar Atas */}
-      <Navbar setHalaman={setHalaman} user={user} />
+      <Navbar setHalaman={setHalaman} user={user} mode="solid-sticky" />
 
       {/* 2. Konten Utama */}
       <main style={{ flex: 1, maxWidth: '1240px', width: '100%', margin: '0 auto', padding: '32px 24px 60px 24px', boxSizing: 'border-box' }}>
@@ -150,15 +150,15 @@ export default function Pelatihan({ onKembali, onPilihPelatihan, setHalaman, use
               gap: '8px',
               backgroundColor: 'transparent',
               border: 'none',
-              color: '#164E43',
+              color: '#255456',
               cursor: 'pointer',
               fontSize: '0.95rem',
               fontWeight: '700',
               padding: '6px 0',
               transition: 'color 0.15s ease'
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = '#008848')}
-            onMouseLeave={(e) => (e.currentTarget.style.color = '#164E43')}
+            onMouseEnter={(e) => (e.currentTarget.style.color = '#255456')}
+            onMouseLeave={(e) => (e.currentTarget.style.color = '#255456')}
           >
             <ArrowLeft size={20} /> Kembali ke Beranda
           </button>
@@ -206,8 +206,8 @@ export default function Pelatihan({ onKembali, onPilihPelatihan, setHalaman, use
                 padding: '7px 16px',
                 borderRadius: '999px',
                 border: '1px solid',
-                borderColor: filterKategori === kat ? '#164E43' : '#E2E8F0',
-                backgroundColor: filterKategori === kat ? '#164E43' : '#FFFFFF',
+                borderColor: filterKategori === kat ? '#255456' : '#E2E8F0',
+                backgroundColor: filterKategori === kat ? '#255456' : '#FFFFFF',
                 color: filterKategori === kat ? '#FFFFFF' : '#475569',
                 fontSize: '0.82rem',
                 fontWeight: filterKategori === kat ? '700' : '500',
@@ -243,8 +243,8 @@ export default function Pelatihan({ onKembali, onPilihPelatihan, setHalaman, use
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = 'translateY(-4px)';
-                e.currentTarget.style.boxShadow = '0 12px 20px -3px rgba(22, 78, 67, 0.12)';
-                e.currentTarget.style.borderColor = '#008848';
+                e.currentTarget.style.boxShadow = '0 12px 20px -3px rgba(37, 84, 86, 0.12)';
+                e.currentTarget.style.borderColor = '#255456';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = 'translateY(0)';
@@ -263,7 +263,7 @@ export default function Pelatihan({ onKembali, onPilihPelatihan, setHalaman, use
                   position: 'absolute',
                   top: '12px',
                   left: '12px',
-                  backgroundColor: 'rgba(22, 78, 67, 0.88)',
+                  backgroundColor: 'rgba(37, 84, 86, 0.88)',
                   backdropFilter: 'blur(4px)',
                   color: '#FFFFFF',
                   padding: '4px 12px',
@@ -292,7 +292,7 @@ export default function Pelatihan({ onKembali, onPilihPelatihan, setHalaman, use
               {/* Isi Konten Kartu */}
               <div style={{ padding: '20px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                 <div>
-                  <span style={{ fontSize: '0.74rem', fontWeight: '800', color: '#008848', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
+                  <span style={{ fontSize: '0.74rem', fontWeight: '800', color: '#255456', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
                     {item.tag}
                   </span>
                   <h3 style={{
@@ -320,10 +320,10 @@ export default function Pelatihan({ onKembali, onPilihPelatihan, setHalaman, use
                   color: '#64748B'
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <Users size={16} color="#008848" />
+                    <Users size={16} color="#255456" />
                     <span>Kuota: <strong>{item.kuota.toLocaleString('id-ID')} Peserta</strong></span>
                   </div>
-                  <span style={{ color: '#164E43', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <span style={{ color: '#255456', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
                     Detail & Daftar <ExternalLink size={14} />
                   </span>
                 </div>

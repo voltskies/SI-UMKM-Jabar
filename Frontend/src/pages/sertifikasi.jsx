@@ -192,7 +192,7 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
       
       <Navbar setHalaman={setHalaman} user={user} />
 
-      <main style={{ flex: 1, width: '100%', maxWidth: '840px', margin: '0 auto', padding: '40px 20px 60px 20px', boxSizing: 'border-box' }}>
+      <main style={{ flex: 1, width: '100%', maxWidth: '840px', margin: '0 auto', padding: '96px 20px 60px 20px', boxSizing: 'border-box' }}>
         
         <button
           type="button"
@@ -203,7 +203,7 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
             gap: '8px',
             background: 'none',
             border: 'none',
-            color: '#164E43',
+            color: '#255456',
             fontWeight: '700',
             fontSize: '0.9rem',
             cursor: 'pointer',
@@ -218,7 +218,7 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
         {view === 'dashboard' ? (
           <div>
             <div style={{ marginBottom: '28px' }}>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', backgroundColor: '#DCFCE7', color: '#166534', padding: '4px 12px', borderRadius: '999px', fontSize: '0.78rem', fontWeight: '700', marginBottom: '8px' }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', backgroundColor: '#eaf1f1', color: '#255456', padding: '4px 12px', borderRadius: '999px', fontSize: '0.78rem', fontWeight: '700', marginBottom: '8px' }}>
                 <ShieldCheck size={14} /> Pendaftaran Legalitas & Standardisasi Usaha
               </div>
               <h1 style={{ margin: '0 0 6px', fontSize: '1.75rem', fontWeight: '800', color: '#0F172A' }}>
@@ -245,7 +245,7 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
                   type="button"
                   onClick={bukaForm}
                   style={{
-                    backgroundColor: '#164E43',
+                    backgroundColor: '#255456',
                     color: '#FFFFFF',
                     border: 'none',
                     borderRadius: '10px',
@@ -253,7 +253,7 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
                     fontWeight: '700',
                     fontSize: '0.9rem',
                     cursor: 'pointer',
-                    boxShadow: '0 4px 14px rgba(22, 78, 67, 0.25)'
+                    boxShadow: '0 4px 14px rgba(37, 84, 86, 0.25)'
                   }}
                 >
                   Daftarkan Sertifikasi Baru
@@ -284,7 +284,7 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
           /* VIEW 2: FORM PENDAFTARAN */
           <div style={{ backgroundColor: '#FFFFFF', borderRadius: '16px', border: '1px solid #E2E8F0', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.05)', padding: '36px' }}>
             <div style={{ borderBottom: '1px solid #E2E8F0', paddingBottom: '20px', marginBottom: '24px' }}>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', backgroundColor: '#DCFCE7', color: '#166534', padding: '4px 12px', borderRadius: '999px', fontSize: '0.78rem', fontWeight: '700', marginBottom: '8px' }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', backgroundColor: '#eaf1f1', color: '#255456', padding: '4px 12px', borderRadius: '999px', fontSize: '0.78rem', fontWeight: '700', marginBottom: '8px' }}>
               </div>
               <h1 style={{ margin: 0, fontSize: '1.5rem', fontWeight: '800', color: '#0F172A' }}>
                 Form Permohonan Sertifikasi UMKM
@@ -304,7 +304,7 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
             <form onSubmit={handleSubmitForm}>
               {/* Bagian 1: Data Pemohon */}
               <div style={{ marginBottom: '28px' }}>
-                <h3 style={{ fontSize: '1rem', fontWeight: '700', color: '#164E43', marginBottom: '14px' }}>
+                <h3 style={{ fontSize: '1rem', fontWeight: '700', color: '#255456', marginBottom: '14px' }}>
                   1. Informasi Pemilik Usaha
                 </h3>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
@@ -331,7 +331,7 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
 
               {/* Bagian 2: Data Usaha & Produk */}
               <div style={{ marginBottom: '28px' }}>
-                <h3 style={{ fontSize: '1rem', fontWeight: '700', color: '#164E43', marginBottom: '14px' }}>
+                <h3 style={{ fontSize: '1rem', fontWeight: '700', color: '#255456', marginBottom: '14px' }}>
                   2. Rincian Usaha & Produk
                 </h3>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
@@ -370,7 +370,7 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
 
               {/* Bagian 3: Unggah Berkas */}
               <div style={{ marginBottom: '32px' }}>
-                <h3 style={{ fontSize: '1rem', fontWeight: '700', color: '#164E43', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <h3 style={{ fontSize: '1rem', fontWeight: '700', color: '#255456', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <Upload size={17} /> 3. Berkas Persyaratan (Maks. 7 MB)
                 </h3>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
@@ -388,7 +388,7 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
                       style={{ fontSize: '0.78rem', width: '100%' }} 
                     />
                     {files.file_ktp && (
-                      <div style={{ fontSize: '0.76rem', color: '#16A34A', marginTop: '6px' }}>✓ {files.file_ktp.name}</div>
+                      <div style={{ fontSize: '0.76rem', color: '#255456', marginTop: '6px' }}>✓ {files.file_ktp.name}</div>
                     )}
                   </div>
 
@@ -405,7 +405,7 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
                       style={{ fontSize: '0.78rem', width: '100%' }} 
                     />
                     {files.file_foto_produk && (
-                      <div style={{ fontSize: '0.76rem', color: '#16A34A', marginTop: '6px' }}>✓ {files.file_foto_produk.name}</div>
+                      <div style={{ fontSize: '0.76rem', color: '#255456', marginTop: '6px' }}>✓ {files.file_foto_produk.name}</div>
                     )}
                   </div>
 
@@ -421,7 +421,7 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
                       style={{ fontSize: '0.78rem', width: '100%' }} 
                     />
                     {files.file_dokumen_pendukung && (
-                      <div style={{ fontSize: '0.76rem', color: '#16A34A', marginTop: '6px' }}>✓ {files.file_dokumen_pendukung.name}</div>
+                      <div style={{ fontSize: '0.76rem', color: '#255456', marginTop: '6px' }}>✓ {files.file_dokumen_pendukung.name}</div>
                     )}
                   </div>
 
@@ -433,7 +433,7 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
                 disabled={loading}
                 style={{
                   width: '100%',
-                  backgroundColor: loading ? '#94A3B8' : '#164E43',
+                  backgroundColor: loading ? '#94A3B8' : '#255456',
                   color: '#FFFFFF',
                   border: 'none',
                   borderRadius: '10px',
@@ -441,7 +441,7 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
                   fontWeight: '700',
                   fontSize: '0.95rem',
                   cursor: loading ? 'not-allowed' : 'pointer',
-                  boxShadow: '0 4px 14px rgba(22, 78, 67, 0.25)'
+                  boxShadow: '0 4px 14px rgba(37, 84, 86, 0.25)'
                 }}
               >
                 {loading ? 'Mengunggah Berkas ke Supabase Storage...' : 'Kirim Permohonan Sertifikasi'}
@@ -475,7 +475,7 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
             textAlign: 'center',
             boxShadow: '0 20px 25px -5px rgba(0,0,0,0.2)'
           }}>
-            <div style={{ display: 'inline-flex', padding: '14px', backgroundColor: '#DCFCE7', borderRadius: '50%', color: '#16A34A', marginBottom: '16px' }}>
+            <div style={{ display: 'inline-flex', padding: '14px', backgroundColor: '#eaf1f1', borderRadius: '50%', color: '#255456', marginBottom: '16px' }}>
               <CheckCircle2 size={44} />
             </div>
             <h2 style={{ fontSize: '1.35rem', fontWeight: '800', color: '#0F172A', margin: '0 0 8px' }}>
@@ -486,12 +486,12 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
             </p>
             <div style={{
               backgroundColor: '#F8FAFC',
-              border: '2px dashed #164E43',
+              border: '2px dashed #255456',
               borderRadius: '8px',
               padding: '12px',
               fontSize: '1.1rem',
               fontWeight: '800',
-              color: '#164E43',
+              color: '#255456',
               letterSpacing: '1px',
               marginBottom: '24px'
             }}>
@@ -502,7 +502,7 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
               onClick={tutupModalSukses}
               style={{
                 width: '100%',
-                backgroundColor: '#164E43',
+                backgroundColor: '#255456',
                 color: '#FFFFFF',
                 border: 'none',
                 borderRadius: '8px',

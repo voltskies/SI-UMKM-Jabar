@@ -27,7 +27,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     hash_bytes = hashed_password.encode('utf-8')
     return bcrypt.checkpw(pwd_bytes, hash_bytes)
 
-# Buat tabel otomatis
+# Buat tabel otomatis jika belum ada
 models.Base.metadata.create_all(bind=engine)
 
 tags_metadata = [
@@ -35,7 +35,7 @@ tags_metadata = [
     {"name": "Pelaku UMKM", "description": "Layanan direktori UMKM, pendaftaran pelatihan, permohonan bantuan, dan sertifikasi."},
     {"name": "Pelatihan", "description": "Layanan khusus katalog dan pendaftaran pelatihan bersertifikat."},
     {"name": "Sertifikasi", "description": "Layanan pengajuan dan upload berkas sertifikasi legalitas."},
-    {"name": "Admin Dinas", "description": "Panel dinas untuk pemantauan dan verifikasi berkas."},
+    {"name": "Admin Dinas", "description": "Panel dinas untuk pemantauan, verifikasi berkas, dan autentikasi admin."},
 ]
 
 app = FastAPI(
@@ -62,6 +62,13 @@ class RegisterUserRequest(BaseModel):
     nomor_whatsapp: str
     password: str
 
+class RegisterAdminRequest(BaseModel):
+    nama: str
+    nip: str
+    jabatan: str
+    email: str
+    password: str
+
 class LoginUserRequest(BaseModel):
     email: str
     password: str
@@ -80,7 +87,7 @@ class VerifikasiRequest(BaseModel):
 
 
 # ==========================================
-# 1. UMUM & AUTENTIKASI
+# 1. UMUM & AUTENTIKASI PENGGUNA
 # ==========================================
 
 @app.get("/", tags=["Umum"], summary="Cek Kesiapan Server API")
@@ -118,7 +125,6 @@ def register_user(payload: RegisterUserRequest, db: Session = Depends(get_db)):
             detail="Kata sandi terlalu pendek. Minimal 6 karakter."
         )
 
-    # Cek apakah NIK atau Email sudah terdaftar
     user_exist = db.query(models.User).filter(
         (models.User.nik == nik_clean) | (models.User.email == email_clean)
     ).first()
@@ -131,7 +137,6 @@ def register_user(payload: RegisterUserRequest, db: Session = Depends(get_db)):
 
     hashed_pwd = hash_password(payload.password)
 
-    # Akun baru langsung diset aktif (is_verified = True) tanpa perlu OTP
     user_baru = models.User(
         nik=nik_clean,
         nama_lengkap=payload.nama_lengkap.strip(),
@@ -233,14 +238,12 @@ def reset_password(payload: ResetPasswordRequest, db: Session = Depends(get_db))
             detail="Pengguna tidak ditemukan."
         )
 
-    # Validasi format OTP 6 digit
     if not otp_clean or len(otp_clean) != 6:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Kode OTP harus berupa 6 digit angka."
         )
 
-    # Jika ada OTP di database dan cocok, periksa waktu kedaluwarsa
     if getattr(user, 'otp_code', None) and user.otp_code == otp_clean:
         if getattr(user, 'otp_expires_at', None) and datetime.utcnow() > user.otp_expires_at:
             raise HTTPException(
@@ -254,7 +257,6 @@ def reset_password(payload: ResetPasswordRequest, db: Session = Depends(get_db))
             detail="Kata sandi baru minimal 6 karakter."
         )
 
-    # Perbarui kata sandi dengan hash Bcrypt dan reset OTP di database
     user.password = hash_password(payload.new_password)
     if hasattr(user, 'otp_code'):
         user.otp_code = None
@@ -476,8 +478,104 @@ async def upload_berkas_sertifikasi(file: UploadFile = File(...)):
 
 
 # ==========================================
-# 5. ADMIN DINAS
+# 5. ADMIN DINAS & AUTENTIKASI ADMIN
 # ==========================================
+
+@app.post("/api/v1/auth/admin/register", tags=["Admin Dinas"], status_code=status.HTTP_201_CREATED, summary="Registrasi Admin Dinas")
+def register_admin(payload: RegisterAdminRequest, db: Session = Depends(get_db)):
+    nip_clean = payload.nip.strip()
+    email_clean = payload.email.strip().lower()
+
+    if not re.fullmatch(r"^\d{18}$", nip_clean):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="NIP tidak valid. Harus tepat 18 digit angka."
+        )
+
+    if not re.fullmatch(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", email_clean):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Format email instansi tidak valid."
+        )
+
+    if len(payload.password) < 8:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Kata sandi admin minimal 8 karakter."
+        )
+
+    user_exist = db.query(models.User).filter(
+        (models.User.nik == nip_clean) | (models.User.email == email_clean)
+    ).first()
+
+    if user_exist:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="NIP atau Email sudah terdaftar di sistem. Silakan langsung masuk."
+        )
+
+    hashed_pwd = hash_password(payload.password)
+
+    admin_baru = models.User(
+        nik=nip_clean,
+        nama_lengkap=f"{payload.nama.strip()} ({payload.jabatan.strip()})",
+        email=email_clean,
+        nomor_whatsapp="-",
+        password=hashed_pwd,
+        role="admin",
+        is_verified=True,
+        otp_code=None,
+        otp_expires_at=None
+    )
+
+    db.add(admin_baru)
+    db.commit()
+    db.refresh(admin_baru)
+
+    return {
+        "status": "success",
+        "message": "Pendaftaran akun Admin Dinas berhasil! Silakan masuk.",
+        "data": {
+            "id": admin_baru.id,
+            "nip": admin_baru.nik,
+            "nama": admin_baru.nama_lengkap,
+            "email": admin_baru.email
+        }
+    }
+
+
+@app.post("/api/v1/auth/admin/login", tags=["Admin Dinas"], summary="Login Admin Dinas")
+def login_admin(payload: LoginUserRequest, db: Session = Depends(get_db)):
+    email_clean = payload.email.strip().lower()
+
+    user = db.query(models.User).filter(
+        models.User.email == email_clean
+    ).first()
+
+    if not user or not verify_password(payload.password, user.password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Email atau kata sandi tidak cocok."
+        )
+
+    if getattr(user, 'role', '') != 'admin':
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Akses ditolak: Akun ini bukan administrator dinas."
+        )
+
+    return {
+        "status": "success",
+        "message": "Login Admin berhasil!",
+        "data": {
+            "id": user.id,
+            "nip": user.nik,
+            "nama": user.nama_lengkap,
+            "email": user.email,
+            "role": user.role
+        }
+    }
+
 
 @app.get("/api/v1/admin/pengajuan", tags=["Admin Dinas"], summary="Get Semua Pengajuan")
 def get_semua_pengajuan(status_filter: Optional[str] = Query(None), db: Session = Depends(get_db)):

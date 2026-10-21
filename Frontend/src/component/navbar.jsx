@@ -9,7 +9,8 @@ import NotifikasiToast from './notifikasiToast';
 // Interval cek notifikasi baru (ms)
 const POLL_INTERVAL_MS = 10000;
 
-export default function Navbar({ halamanAktif, setHalaman, user, onLogout }) {
+export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode }) {
+  const [isScrolled, setIsScrolled] = useState(() => window.scrollY >= 20);
   const [dropdownLayanan, setDropdownLayanan] = useState(false);
   const [dropdownUser, setDropdownUser] = useState(false);
   const [sidebarNotifOpen, setSidebarNotifOpen] = useState(false);
@@ -26,6 +27,16 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout }) {
 
   const API_BASE_URL = `http://${window.location.hostname || '127.0.0.1'}:8000`;
   const storageKey = user ? `notif_dibaca_${user.role}_${user.id}` : null;
+  const isDashboardMode = mode === 'dashboard';
+  const isSolidSticky = mode === 'solid-sticky' || isDashboardMode;
+
+  useEffect(() => {
+    if (isSolidSticky) return undefined;
+
+    const handleScroll = () => setIsScrolled(window.scrollY >= 20);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [isSolidSticky]);
 
   // Status "dibaca" disimpan di localStorage per user, jadi tidak hilang saat data
   // di-fetch ulang (polling) atau halaman di-refresh.
@@ -241,7 +252,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout }) {
 
   const getStatusIcon = (status) => {
     if (status === 'Disetujui' || status === 'Selesai') {
-      return <CheckCircle2 size={16} color="#16A34A" />;
+      return <CheckCircle2 size={16} color="#255456" />;
     }
     if (status === 'Ditolak' || status === 'Perlu Perbaikan') {
       return <AlertCircle size={16} color="#DC2626" />;
@@ -254,16 +265,29 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout }) {
       <NotifikasiToast show={toast.show} message={toast.message} onClose={tutupToast} />
 
       <nav style={{
-        backgroundColor: '#164E43',
+        backgroundColor: 'rgba(37, 84, 86, 0.90)',
         color: '#FFFFFF',
-        padding: '12px 32px',
+        padding: isSolidSticky
+          ? '12px max(16px, calc((100vw - 1200px) / 2))'
+          : '12px 32px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        position: 'relative',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
+        position: 'sticky',
+        top: 0,
+        left: 0,
+        right: 0,
+        transform: 'none',
+        width: '100%',
+        maxWidth: 'none',
+        margin: 0,
+        boxSizing: 'border-box',
+        borderRadius: isSolidSticky ? 0 : '20px',
+        backdropFilter: isSolidSticky ? 'none' : 'blur(12px)',
+        boxShadow: isSolidSticky ? '0 2px 8px rgba(0,0,0,0.15)' : (isScrolled ? '0 8px 24px rgba(0,0,0,0.16)' : 'none'),
+        transition: isSolidSticky ? 'none' : 'all 0.3s ease',
         fontFamily: 'Inter, system-ui, sans-serif',
-        zIndex: 50
+        zIndex: 1000
       }}>
         {/* Brand / Logo */}
         <div 
@@ -393,7 +417,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout }) {
                 alignItems: 'center',
                 justifyContent: 'center',
                 padding: '0 3px',
-                boxShadow: '0 0 0 2px #164E43'
+                boxShadow: '0 0 0 2px #255456'
               }}>
                 {jumlahBelumDibaca}
               </span>
@@ -407,7 +431,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout }) {
               onClick={() => setDropdownUser(!dropdownUser)}
               style={{
                 backgroundColor: '#FFFFFF',
-                color: '#164E43',
+                color: '#255456',
                 border: 'none',
                 borderRadius: '999px',
                 padding: '6px 12px',
@@ -423,7 +447,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout }) {
                 width: '26px',
                 height: '26px',
                 borderRadius: '50%',
-                backgroundColor: user ? '#164E43' : '#E2E8F0',
+                backgroundColor: user ? '#255456' : '#E2E8F0',
                 color: user ? '#FFFFFF' : '#64748B',
                 display: 'flex',
                 alignItems: 'center',
@@ -451,7 +475,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout }) {
                 {user ? (
                   <>
                     <div style={{ borderBottom: '1px solid #F1F5F9', paddingBottom: '10px', marginBottom: '8px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.72rem', color: '#008848', fontWeight: '700' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.72rem', color: '#255456', fontWeight: '700' }}>
                         <UserCheck size={14} /> Terverifikasi ({user.role})
                       </div>
                       <div style={{ fontWeight: '700', fontSize: '0.92rem', marginTop: '4px', color: '#0F172A' }}>
@@ -487,10 +511,10 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout }) {
                         display: 'flex',
                         alignItems: 'center',
                         gap: '6px',
-                        color: '#0F766E',
+                        color: '#255456',
                         fontWeight: '600'
                       }}
-                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F0FDFA'}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#eef4f4'}
                       onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                     >
                       <Shield size={14} /> Panel Admin Dinas
@@ -552,7 +576,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout }) {
                         display: 'flex',
                         alignItems: 'center',
                         gap: '8px',
-                        backgroundColor: '#164E43',
+                        backgroundColor: '#255456',
                         color: '#FFFFFF',
                         border: 'none',
                         borderRadius: '8px',
@@ -583,7 +607,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout }) {
               position: 'fixed',
               inset: 0,
               backgroundColor: 'rgba(0,0,0,0.4)',
-              zIndex: 200
+              zIndex: 1100
             }}
           />
 
@@ -595,7 +619,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout }) {
             width: '360px',
             backgroundColor: '#FFFFFF',
             boxShadow: '-8px 0 24px rgba(0,0,0,0.15)',
-            zIndex: 201,
+            zIndex: 1101,
             display: 'flex',
             flexDirection: 'column',
             fontFamily: 'Inter, system-ui, sans-serif'
@@ -625,7 +649,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout }) {
                     style={{
                       background: 'none',
                       border: 'none',
-                      color: '#008848',
+                      color: '#255456',
                       fontSize: '0.75rem',
                       fontWeight: '700',
                       cursor: 'pointer',
@@ -675,7 +699,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout }) {
                     style={{
                       padding: '14px 20px',
                       borderBottom: '1px solid #F1F5F9',
-                      backgroundColor: notif.dibaca ? '#FFFFFF' : '#F0FDF4',
+                      backgroundColor: notif.dibaca ? '#FFFFFF' : '#eef4f4',
                       display: 'flex',
                       gap: '12px',
                       cursor: 'pointer',
@@ -698,7 +722,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout }) {
                           {notif.judul}
                         </span>
                         {!notif.dibaca && (
-                          <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#16A34A' }} />
+                          <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#255456' }} />
                         )}
                       </div>
 
@@ -708,7 +732,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout }) {
 
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.72rem', color: '#94A3B8' }}>
                         <span>{notif.waktu}</span>
-                        <span style={{ color: '#008848', fontWeight: '600' }}>Lihat detail →</span>
+                        <span style={{ color: '#255456', fontWeight: '600' }}>Lihat detail →</span>
                       </div>
                     </div>
                   </div>

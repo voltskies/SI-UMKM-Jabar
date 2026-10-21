@@ -105,10 +105,10 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
       <Navbar setHalaman={setHalaman} user={user} />
 
       <div style={{
-        background: 'linear-gradient(135deg, #081E16 0%, #164E43 60%, #0F4D3A 100%)',
+        background: 'linear-gradient(135deg, #255456 0%, #255456 60%, #255456 100%)',
         color: '#FFFFFF',
         padding: '48px 8% 70px 8%',
-        boxShadow: '0 4px 20px rgba(8, 30, 22, 0.25)'
+        boxShadow: '0 4px 20px rgba(37, 84, 86, 0.25)'
       }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <button
@@ -158,19 +158,19 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
             <div>
               <div style={{ fontSize: '0.76rem', color: 'rgba(255,255,255,0.75)' }}>Kategori</div>
               <div style={{ fontWeight: '700', fontSize: '0.92rem', display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
-                <GraduationCap size={16} color="#34D399" /> {pelatihan.kategori}
+                <GraduationCap size={16} color="#a6c6c7" /> {pelatihan.kategori}
               </div>
             </div>
             <div>
               <div style={{ fontSize: '0.76rem', color: 'rgba(255,255,255,0.75)' }}>Kapasitas Kuota</div>
               <div style={{ fontWeight: '700', fontSize: '0.92rem', display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
-                <Users size={16} color="#34D399" /> {pelatihan.kuota || pelatihan.peserta || 150} Peserta
+                <Users size={16} color="#a6c6c7" /> {pelatihan.kuota || pelatihan.peserta || 150} Peserta
               </div>
             </div>
             <div>
               <div style={{ fontSize: '0.76rem', color: 'rgba(255,255,255,0.75)' }}>Alur Pendaftaran</div>
               <div style={{ fontWeight: '700', fontSize: '0.92rem', display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
-                <RefreshCw size={16} color="#34D399" /> Pendaftaran Terbuka (Mandiri)
+                <RefreshCw size={16} color="#a6c6c7" /> Pendaftaran Terbuka (Mandiri)
               </div>
             </div>
           </div>
@@ -189,7 +189,7 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
               />
             </div>
             <div style={{ padding: '30px' }}>
-              <span style={{ fontSize: '0.78rem', fontWeight: '800', color: '#008848', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+              <span style={{ fontSize: '0.78rem', fontWeight: '800', color: '#255456', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                 {pelatihan.tag || 'Fasilitasi UMKM'}
               </span>
               <h3 style={{ fontSize: '1.25rem', fontWeight: '800', color: '#0F172A', margin: '10px 0 14px 0' }}>
@@ -226,7 +226,7 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
               )}
 
               {suksesMsg && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: '#DCFCE7', border: '1px solid #86EFAC', color: '#166534', padding: '12px', borderRadius: '8px', marginBottom: '16px', fontSize: '0.82rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: '#eaf1f1', border: '1px solid #a6c6c7', color: '#255456', padding: '12px', borderRadius: '8px', marginBottom: '16px', fontSize: '0.82rem' }}>
                   <CheckCircle2 size={16} />
                   <span>{suksesMsg}</span>
                 </div>
@@ -244,7 +244,7 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
                   style={{ fontSize: '0.78rem' }}
                 />
                 {berkasSyarat && (
-                  <div style={{ fontSize: '0.75rem', color: '#16A34A', marginTop: '6px' }}>
+                  <div style={{ fontSize: '0.75rem', color: '#255456', marginTop: '6px' }}>
                     ✓ Berkas terpilih: {berkasSyarat.name}
                   </div>
                 )}
@@ -278,7 +278,7 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
                 style={{
                   width: '100%',
                   backgroundColor: '#FFFFFF',
-                  color: '#164E43',
+                  color: '#255456',
                   border: '1px solid #CBD5E1',
                   padding: '12px',
                   borderRadius: '10px',
@@ -294,7 +294,7 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.backgroundColor = '#F8FAFC';
-                  e.currentTarget.style.borderColor = '#164E43';
+                  e.currentTarget.style.borderColor = '#255456';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.backgroundColor = '#FFFFFF';
@@ -337,7 +337,7 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
             {/* Header Modal */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <div style={{ padding: '8px', backgroundColor: '#DCFCE7', borderRadius: '10px', color: '#16A34A' }}>
+                <div style={{ padding: '8px', backgroundColor: '#eaf1f1', borderRadius: '10px', color: '#255456' }}>
                   <Share2 size={20} />
                 </div>
                 <div>
@@ -371,7 +371,7 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
                   fontWeight: '600'
                 }}
               >
-                <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: '#25D366', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFF' }}>
+                <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: '#255456', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFF' }}>
                   <MessageCircle size={24} />
                 </div>
                 WhatsApp
@@ -474,7 +474,7 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
                   type="button"
                   onClick={handleSalinLink}
                   style={{
-                    backgroundColor: sudahDisalin ? '#16A34A' : '#164E43',
+                    backgroundColor: sudahDisalin ? '#255456' : '#255456',
                     color: '#FFFFFF',
                     border: 'none',
                     borderRadius: '8px',

@@ -3,8 +3,10 @@ import Dashboard from './pages/dashboard';
 import Pelatihan from './pages/pelatihan';
 import DetailPelatihan from './pages/detailPelatihan';
 import Login from './pages/login';
+import LoginAdmin from './pages/LoginAdmin';
 import Bantuan from './pages/bantuan';
 import Sertifikasi from './pages/sertifikasi';
+
 
 // Import Admin App dari folder adminpanel
 import AdminApp from './adminpanel/AdminApp';
@@ -25,6 +27,13 @@ export default function App() {
     setHalaman('dashboard');
   };
 
+   // BARU: dipanggil dari LoginAdmin setelah login admin berhasil
+  const handleLoginAdmin = (adminData) => {
+    localStorage.setItem('user_umkm', JSON.stringify(adminData));
+    setCurrentUser(adminData);
+  };
+
+
   // LOGIKA 1: Jika user yang login di sistem memiliki role 'admin'
   if (currentUser && currentUser.role === 'admin') {
     return (
@@ -36,16 +45,7 @@ export default function App() {
     );
   }
 
-  // LOGIKA 2: Jika halaman diarahkan manual ke 'admin' via menu/tombol navbar
-  if (halaman === 'admin') {
-    return (
-      <AdminApp 
-        user={currentUser} 
-        onKeluar={() => setHalaman('dashboard')} 
-        setHalaman={setHalaman} 
-      />
-    );
-  }
+ 
 
   // LOGIKA 3: Alur Standar untuk Publik / Pelaku UMKM
   return (
@@ -111,6 +111,14 @@ export default function App() {
             }
           }}
         />
+      )}
+
+      {/* 7. Halaman Login / Register Admin */}
+      {halaman === 'login-admin'&& (
+        <LoginAdmin
+          setHalaman={setHalaman}
+          onLoginSukses={handleLoginAdmin}
+          />
       )}
     </div>
   );

@@ -1,12 +1,14 @@
+import { useEffect, useState } from 'react';
 import emailjs from '@emailjs/browser';
-import { useState } from 'react';
 import axios from 'axios';
 import { 
   ArrowLeft, Lock, Mail, User, Phone, Eye, EyeOff, 
-  ArrowRight, CreditCard, X
+  ShieldCheck, ArrowRight, CreditCard, KeyRound, X
 } from 'lucide-react';
+import bgLogin from '../assets/login.jpg';
 
 export default function Login({ onKembali, onLoginSukses, setHalaman }) {
+  const [isCompact, setIsCompact] = useState(() => window.innerWidth < 900);
   const [isRegister, setIsRegister] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -20,6 +22,13 @@ export default function Login({ onKembali, onLoginSukses, setHalaman }) {
   const [nomorWhatsapp, setNomorWhatsapp] = useState('');
   const [nik, setNik] = useState('');
 
+  useEffect(() => {
+    const handleResize = () => setIsCompact(window.innerWidth < 900);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Sinkronisasi otomatis base URL backend sesuai host browser aktif
   // State Modal Lupa Password
   const [showForgotModal, setShowForgotModal] = useState(false);
   const [forgotStep, setForgotStep] = useState(1); // 1 = Input Email, 2 = Input OTP & Password Baru
@@ -227,126 +236,223 @@ export default function Login({ onKembali, onLoginSukses, setHalaman }) {
 
   return (
     <div style={{
-      minHeight: '88vh',
-      backgroundColor: '#F8FAFC',
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center',
-      padding: '30px 16px',
+      width: '100vw',
+      minHeight: '100vh',
+      marginLeft: 'calc((100% - 100vw) / 2)',
+      boxSizing: 'border-box',
+      position: 'relative',
+      backgroundImage: `url(${bgLogin})`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
       fontFamily: 'Inter, system-ui, sans-serif',
-      position: 'relative'
+      textAlign: 'left'
     }}>
-      <div style={{ maxWidth: '1020px', width: '100%', marginBottom: '14px' }}>
-        <button
-          type="button"
-          onClick={handleKembaliKeDashboard}
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '6px',
-            backgroundColor: 'transparent',
-            border: 'none',
-            color: '#164E43',
-            cursor: 'pointer',
-            fontSize: '0.86rem',
-            fontWeight: '700',
-            padding: '6px 0'
-          }}
-        >
-          <ArrowLeft size={17} /> Kembali ke Beranda
-        </button>
-      </div>
-
+      <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(15, 53, 46, 0.65)' }} />
       <div style={{
-        maxWidth: '1020px',
+        position: 'relative',
+        zIndex: 1,
         width: '100%',
+        maxWidth: '1440px',
+        minHeight: '100vh',
+        margin: '0 auto',
+        padding: isCompact ? '82px 16px 20px' : '24px',
+        boxSizing: 'border-box',
         display: 'grid',
-        gridTemplateColumns: '1.05fr 1.25fr',
-        gap: '24px',
-        alignItems: 'stretch'
+        gridTemplateColumns: isCompact ? 'minmax(0, 1fr)' : 'minmax(0, 1fr) 500px',
+        gap: isCompact ? '0' : '48px',
+        alignItems: 'center'
       }}>
-        
-        {/* Kolom Kiri */}
         <div style={{
-          background: 'linear-gradient(145deg, #164E43 0%, #0F352E 100%)',
-          borderRadius: '24px',
-          padding: '40px 32px',
-          color: '#FFFFFF',
+          position: isCompact ? 'absolute' : 'static',
+          top: isCompact ? '18px' : undefined,
+          left: isCompact ? '16px' : undefined,
+          right: isCompact ? '16px' : undefined,
           display: 'flex',
+          alignItems: isCompact ? 'center' : 'stretch',
+          justifyContent: isCompact ? 'space-between' : 'initial',
           flexDirection: 'column',
-          justifyContent: 'space-between',
-          boxShadow: '0 18px 30px -10px rgba(22, 78, 67, 0.35)'
+          alignSelf: 'stretch',
+          color: '#FFFFFF',
+          textAlign: 'left',
+          minHeight: isCompact ? undefined : 'calc(100vh - 48px)'
         }}>
           <div>
-            <div style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '8px',
-              backgroundColor: 'rgba(255, 255, 255, 0.12)',
-              backdropFilter: 'blur(6px)',
-              padding: '6px 14px',
-              borderRadius: '999px',
-              fontSize: '0.72rem',
-              fontWeight: '700',
-              marginBottom: '20px'
-            }}>
-              Portal Resmi SI-UMKM Jabar
-            </div>
-
-            <h2 style={{ fontSize: '2.1rem', fontWeight: '800', lineHeight: 1.2, margin: '0 0 10px 0' }}>
-              {isRegister ? 'Buat Akun Anda' : 'Selamat Datang'}
-            </h2>
-            <p style={{ fontSize: '0.88rem', color: 'rgba(255, 255, 255, 0.82)', margin: '0 0 32px 0', lineHeight: 1.5 }}>
-              {isRegister 
-                ? 'Bangun usaha lebih berkembang bersama integrasi layanan terpadu UMKM Jawa Barat.'
-                : 'Akses kembali pemantauan program bantuan, sertifikasi legalitas, dan kurasi pelatihan usaha.'}
-            </p>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-              <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.08)', borderRadius: '14px', padding: '14px 16px' }}>
-                <div style={{ fontWeight: '700', fontSize: '0.86rem' }}>1. Layanan UMKM Terintegrasi</div>
-                <div style={{ fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.72)' }}>Akses berbagai fasilitas dalam satu platform</div>
-              </div>
-              <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.08)', borderRadius: '14px', padding: '14px 16px' }}>
-                <div style={{ fontWeight: '700', fontSize: '0.86rem' }}>2. Pelatihan & Pendampingan</div>
-                <div style={{ fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.72)' }}>Tingkatkan kemampuan manajemen dan pemasaran</div>
-              </div>
-              <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.08)', borderRadius: '14px', padding: '14px 16px' }}>
-                <div style={{ fontWeight: '700', fontSize: '0.86rem' }}>3. Legalitas Lebih Mudah</div>
-                <div style={{ fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.72)' }}>Ajukan dan pantau proses verifikasi perizinan</div>
-              </div>
-            </div>
+            {!isCompact && (
+              <button
+                type="button"
+                onClick={handleKembaliKeDashboard}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none', color: '#FFFFFF', cursor: 'pointer', fontSize: '0.9rem', fontWeight: '600', padding: 0 }}
+              >
+                <ArrowLeft size={17} /> Kembali ke Beranda
+              </button>
+            )}
           </div>
-
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: 'rgba(255, 255, 255, 0.65)', marginTop: '32px' }}>
-            <span>Dinas KUK Provinsi Jawa Barat</span>
-            <span>SI-UMKM v1.0</span>
+          {isCompact && (
+            <button
+              type="button"
+              onClick={handleKembaliKeDashboard}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'none', border: 'none', color: '#FFFFFF', cursor: 'pointer', fontSize: '0.78rem', fontWeight: '600', padding: 0 }}
+            >
+              <ArrowLeft size={16} /> Kembali ke Beranda
+            </button>
+          )}
+          <div style={{ display: isCompact ? 'none' : 'block', alignSelf: 'center', width: '100%', maxWidth: '620px', margin: 'auto 0', paddingBottom: 0, color: '#FFFFFF', textAlign: 'left' }}>
+            <h1 style={{ fontSize: '2.4rem', fontWeight: '800', lineHeight: 1.2, margin: '0 0 16px', color: '#FFFFFF', letterSpacing: '-0.02em' }}>
+              Kelola Usaha Lebih Mudah. Ajukan Layanan Lebih Cepat.
+            </h1>
+            <p style={{ maxWidth: '560px', fontSize: '1rem', lineHeight: 1.65, color: 'rgba(255,255,255,0.92)', margin: '0 auto' }}>
+              Akses layanan terpadu UMKM Jawa Barat untuk mengembangkan usaha, mendapatkan pendampingan, dan mengajukan berbagai fasilitasi.
+            </p>
           </div>
         </div>
 
-        {/* Kolom Kanan */}
-        <div style={{
-          backgroundColor: '#FFFFFF',
-          borderRadius: '24px',
-          padding: '36px 32px',
-          border: '1px solid #E2E8F0',
-          boxShadow: '0 8px 24px rgba(15, 23, 42, 0.04)',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center'
-        }}>
-          <div style={{ marginBottom: '20px' }}>
-            <h3 style={{ fontSize: '1.45rem', fontWeight: '800', color: '#0F172A', margin: '0 0 6px 0' }}>
-              {isRegister ? 'Formulir Pendaftaran' : 'Masuk ke Akun'}
-            </h3>
-            <p style={{ fontSize: '0.82rem', color: '#64748B', margin: 0 }}>
-              {isRegister 
-                ? 'Lengkapi informasi identitas pemilik usaha di bawah ini.'
-                : 'Masukkan alamat email dan kata sandi yang telah terdaftar.'}
-            </p>
+        <div style={{ height: isCompact ? 'calc(100vh - 108px)' : 'calc(100vh - 48px - 0.5cm)', minHeight: 0, width: '100%', maxWidth: '500px', margin: '0 auto', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ backgroundColor: 'rgba(225,240,170,0.10)', backdropFilter: 'blur(14px) brightness(1.25)', WebkitBackdropFilter: 'blur(14px) brightness(1.25)', border: '1px solid rgba(255,255,255,0.30)', borderRadius: '20px', padding: isCompact ? '24px' : '32px', boxShadow: '0 18px 50px rgba(0,0,0,0.24)', display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, boxSizing: 'border-box' }}>
+            <div style={{ overflowY: 'auto', flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', justifyContent: isRegister ? 'flex-start' : 'center', padding: '2px' }}>
+              <div style={{ marginBottom: isRegister ? '24px' : '16px' }}>
+                <h2 style={{ fontSize: '1.65rem', fontWeight: '800', color: '#FFFFFF', margin: '0 0 8px', lineHeight: 1.2 }}>
+                  {isRegister ? 'Buat Akun Anda' : 'Selamat Datang Kembali'}
+                </h2>
+                <p style={{ fontSize: '0.88rem', color: 'rgba(255,255,255,0.85)', fontWeight: 500, margin: 0, lineHeight: 1.5 }}>
+                  {isRegister ? 'Lengkapi data diri untuk membuat akun UMKM.' : 'Masuk untuk melanjutkan ke layanan SI-UMKM Jabar.'}
+                </p>
+              </div>
+
+              <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                {isRegister && (
+                  <>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', color: '#FFFFFF', marginBottom: '7px' }}>
+                        NIK <span style={{ color: '#FCA5A5' }}>*</span>
+                      </label>
+                      <div style={{ position: 'relative' }}>
+                        <CreditCard size={17} color="#94A3B8" style={{ position: 'absolute', left: '13px', top: '50%', transform: 'translateY(-50%)' }} />
+                        <input type="text" required maxLength={16} placeholder="16 digit angka sesuai KTP" value={nik} onChange={(e) => setNik(e.target.value.replace(/\D/g, ''))} style={{ width: '100%', height: '46px', padding: '10px 12px 10px 42px', borderRadius: '10px', border: '1px solid #CBD5E1', fontSize: '0.9rem', color: '#0F172A', boxSizing: 'border-box' }} />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', color: '#FFFFFF', marginBottom: '7px' }}>
+                        NAMA LENGKAP <span style={{ color: '#FCA5A5' }}>*</span>
+                      </label>
+                      <div style={{ position: 'relative' }}>
+                        <User size={17} color="#94A3B8" style={{ position: 'absolute', left: '13px', top: '50%', transform: 'translateY(-50%)' }} />
+                        <input type="text" required placeholder="Nama lengkap sesuai KTP" value={namaLengkap} onChange={(e) => setNamaLengkap(e.target.value)} style={{ width: '100%', height: '46px', padding: '10px 12px 10px 42px', borderRadius: '10px', border: '1px solid #CBD5E1', fontSize: '0.9rem', color: '#0F172A', boxSizing: 'border-box' }} />
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', color: '#FFFFFF', marginBottom: '7px' }}>
+                    EMAIL <span style={{ color: '#FCA5A5' }}>*</span>
+                  </label>
+                  <div style={{ position: 'relative' }}>
+                    <Mail size={17} color="#94A3B8" style={{ position: 'absolute', left: '13px', top: '50%', transform: 'translateY(-50%)' }} />
+                    <input type="email" required placeholder="contoh: nama@gmail.com" value={email} onChange={(e) => setEmail(e.target.value)} style={{ width: '100%', height: '46px', padding: '10px 12px 10px 42px', borderRadius: '10px', border: '1px solid #CBD5E1', fontSize: '0.9rem', color: '#0F172A', boxSizing: 'border-box' }} />
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '16px' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', color: '#FFFFFF', marginBottom: '7px' }}>
+                      PASSWORD <span style={{ color: '#FCA5A5' }}>*</span>
+                    </label>
+                    <div style={{ position: 'relative' }}>
+                      <Lock size={17} color="#94A3B8" style={{ position: 'absolute', left: '13px', top: '50%', transform: 'translateY(-50%)' }} />
+                      <input type={showPassword ? 'text' : 'password'} required placeholder="Min. 6 karakter" value={password} onChange={(e) => setPassword(e.target.value)} style={{ width: '100%', height: '46px', padding: '10px 42px', borderRadius: '10px', border: '1px solid #CBD5E1', fontSize: '0.9rem', color: '#0F172A', boxSizing: 'border-box' }} />
+                      <button type="button" onClick={() => setShowPassword(!showPassword)} style={{ position: 'absolute', right: '13px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#64748B', padding: 0, display: 'flex' }}>
+                        {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+                      </button>
+                    </div>
+                  </div>
+
+                  {isRegister && (
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', color: '#FFFFFF', marginBottom: '7px' }}>
+                        KONFIRMASI PASSWORD <span style={{ color: '#FCA5A5' }}>*</span>
+                      </label>
+                      <div style={{ position: 'relative' }}>
+                        <Lock size={17} color="#94A3B8" style={{ position: 'absolute', left: '13px', top: '50%', transform: 'translateY(-50%)' }} />
+                        <input type={showConfirmPassword ? 'text' : 'password'} required placeholder="Ulangi kata sandi" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} style={{ width: '100%', height: '46px', padding: '10px 42px', borderRadius: '10px', border: '1px solid #CBD5E1', fontSize: '0.9rem', color: '#0F172A', boxSizing: 'border-box' }} />
+                        <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} style={{ position: 'absolute', right: '13px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#64748B', padding: 0, display: 'flex' }}>
+                          {showConfirmPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {isRegister && (
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', color: '#FFFFFF', marginBottom: '7px' }}>
+                      NOMOR WHATSAPP <span style={{ color: '#FCA5A5' }}>*</span>
+                    </label>
+                    <div style={{ position: 'relative' }}>
+                      <Phone size={17} color="#94A3B8" style={{ position: 'absolute', left: '13px', top: '50%', transform: 'translateY(-50%)' }} />
+                      <input type="text" required maxLength={13} placeholder="08xxxxxxxxxx (10 - 13 digit)" value={nomorWhatsapp} onChange={(e) => setNomorWhatsapp(e.target.value.replace(/\D/g, ''))} style={{ width: '100%', height: '46px', padding: '10px 12px 10px 42px', borderRadius: '10px', border: '1px solid #CBD5E1', fontSize: '0.9rem', color: '#0F172A', boxSizing: 'border-box' }} />
+                    </div>
+                  </div>
+                )}
+
+                {!isRegister && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.82rem', color: 'rgba(255,255,255,0.85)' }}>
+                    <label style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                      <input type="checkbox" style={{ accentColor: '#164E43', width: '16px', height: '16px', margin: 0 }} />
+                      Ingat saya
+                    </label>
+                    <span
+                      onClick={() => {
+                        setForgotEmail(email);
+                        setForgotStep(1);
+                        setShowForgotModal(true);
+                      }}
+                      style={{ color: '#FDE68A', fontWeight: '600', cursor: 'pointer' }}
+                    >
+                      Lupa password?
+                    </span>
+                  </div>
+                )}
+
+                {isRegister && (
+                  <div style={{ display: 'flex', alignItems: 'center', color: 'rgba(255,255,255,0.85)', fontSize: '0.75rem' }}>
+                    <ShieldCheck size={15} color="#164E43" />
+                    <span style={{ marginLeft: '6px' }}>Data Anda terlindungi</span>
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  style={{ backgroundColor: '#164E43', color: '#FFFFFF', border: 'none', borderRadius: '999px', minHeight: '48px', padding: '12px 18px', fontSize: '0.95rem', fontWeight: '700', cursor: loading ? 'not-allowed' : 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginTop: '4px', boxShadow: '0 5px 14px rgba(22,78,67,0.2)' }}
+                >
+                  {loading ? 'Memproses...' : isRegister ? 'Lanjutkan Pendaftaran' : 'Masuk'}
+                  {!loading && <ArrowRight size={17} />}
+                </button>
+              </form>
+
+              <div style={{ textAlign: 'center', marginTop: '22px', fontSize: '0.84rem', color: 'rgba(255,255,255,0.85)' }}>
+                {isRegister ? 'Sudah punya akun?' : 'Belum punya akun?'}{' '}
+                <span onClick={() => setIsRegister(!isRegister)} style={{ color: '#FDE68A', fontWeight: '700', cursor: 'pointer', textDecoration: 'underline' }}>
+                  {isRegister ? 'Masuk di sini' : 'Daftar di sini'}
+                </span>
+              </div>
+            </div>
           </div>
 
+          <div style={{ textAlign: 'center', marginTop: '10px', fontSize: '0.78rem', color: '#FFFFFF' }}>
+            <span onClick={() => setHalaman('login-admin')} style={{ fontWeight: '700', cursor: 'pointer', textDecoration: 'underline' }}>
+              Masuk Sebagai Admin Dinas
+            </span>
+          </div>
+        </div>
+        </div>
+        {/*
+          <div style={{ textAlign: 'center', marginTop: '10px', fontSize: '0.78rem', color: '#FFFFFF' }}>
+            <span onClick={() => setHalaman('login-admin')} style={{ fontWeight: '700', cursor: 'pointer', textDecoration: 'underline' }}>
+              Login sebagai Admin
+            </span>
+          </div>
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             {isRegister && (
               <>
@@ -490,6 +596,11 @@ export default function Login({ onKembali, onLoginSukses, setHalaman }) {
               </div>
             )}
 
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.72rem', color: '#64748B', marginTop: '2px' }}>
+              <ShieldCheck size={14} color="#008848" />
+              <span>Kata sandi dienkripsi dengan standar hash Bcrypt sebelum disimpan.</span>
+            </div>
+
             <button
               type="submit"
               disabled={loading}
@@ -536,6 +647,7 @@ export default function Login({ onKembali, onLoginSukses, setHalaman }) {
         </div>
       </div>
 
+*/}
       {/* MODAL POP-UP LUPA PASSWORD */}
       {showForgotModal && (
         <div style={{
@@ -583,7 +695,16 @@ export default function Login({ onKembali, onLoginSukses, setHalaman }) {
               <X size={16} />
             </button>
 
-            <div style={{ marginBottom: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
+              <div style={{
+                backgroundColor: '#ECFDF5',
+                color: '#008848',
+                borderRadius: '10px',
+                padding: '8px',
+                display: 'flex'
+              }}>
+                <KeyRound size={20} />
+              </div>
               <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: '800', color: '#0F172A' }}>
                 {forgotStep === 1 ? 'Pemulihan Kata Sandi' : 'Verifikasi OTP & Reset'}
               </h3>

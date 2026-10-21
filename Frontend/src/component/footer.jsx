@@ -3,10 +3,12 @@ import { MapPin, Phone, Mail } from 'lucide-react';
 export default function Footer() {
   return (
     <footer style={{
-      backgroundColor: '#164E43',
+      backgroundColor: '#1B4143',
       color: '#FFFFFF',
       padding: '40px 24px 20px',
-      marginTop: 'auto',
+      width: '100%',
+      margin: 'auto 0 0',
+      boxSizing: 'border-box',
       fontFamily: 'Inter, system-ui, sans-serif'
     }}>
       <div style={{

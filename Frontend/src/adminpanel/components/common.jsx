@@ -1,11 +1,11 @@
 import { Search } from 'lucide-react';
 
-export const C = { ink: '#0F172A', mute: '#64748B', line: '#E2E8F0', bg: '#F8FAFC', dark: '#164E43', link: '#008848', soft: '#F1F5F9' };
+export const C = { ink: '#0F172A', mute: '#64748B', line: '#E2E8F0', bg: '#F8FAFC', dark: '#255456', link: '#255456', soft: '#F1F5F9' };
 export const font = 'Inter, system-ui, sans-serif';
 export const rp = (n) => 'Rp ' + Number(n).toLocaleString('id-ID');
 export const grid = (min = 200, gap = 14) => ({ display: 'grid', gridTemplateColumns: `repeat(auto-fit, minmax(${min}px, 1fr))`, gap });
 
-const TONE = { amber: ['#92400E', '#FEF3C7'], green: ['#164E43', '#D1FAE5'], red: ['#991B1B', '#FEE2E2'], blue: ['#1E40AF', '#DBEAFE'], gray: ['#334155', '#E2E8F0'] };
+const TONE = { amber: ['#92400E', '#FEF3C7'], green: ['#255456', '#eaf1f1'], red: ['#991B1B', '#FEE2E2'], blue: ['#1E40AF', '#DBEAFE'], gray: ['#334155', '#E2E8F0'] };
 export const STATUS_TONE = { 'Menunggu Verifikasi': 'amber', Diproses: 'blue', Disetujui: 'green', Selesai: 'green', Ditolak: 'red', 'Perlu Perbaikan': 'gray' };
 
 export function Badge({ children, tone }) {

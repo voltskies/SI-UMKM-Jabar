@@ -64,7 +64,7 @@ export default function BantuanDetail({ item, onKembali, onUbah }) {
               </div>
               <div style={{ background: C.soft, borderRadius: 10, padding: 14 }}>
                 <div style={{ color: C.mute, fontSize: '0.75rem' }}>Jumlah Dana Diajukan</div>
-                <b style={{ fontSize: '1.2rem', color: '#164E43' }}>
+                <b style={{ fontSize: '1.2rem', color: '#255456' }}>
                   {item.jumlah_dana ? `Rp ${Number(String(item.jumlah_dana).replace(/\D/g, '') || 0).toLocaleString('id-ID')}` : '-'}
                 </b>
               </div>

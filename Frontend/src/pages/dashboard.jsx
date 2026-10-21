@@ -3,39 +3,12 @@ import axios from 'axios';
 import { MapContainer, TileLayer, GeoJSON, CircleMarker, Tooltip, Popup, Pane, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { 
-  Search, CheckCircle, ArrowRight, X, MapPin, Tag,
-  ChevronLeft, ChevronRight, Users, MessageSquare, Calendar, Radio
+  Search, ArrowRight, X, MapPin, Tag, Users, MessageSquare, Calendar, Radio,
+  Building2, Map, Layers
 } from 'lucide-react';
 
 import Navbar from '../component/navbar';
 import Footer from '../component/footer';
-
-const CAROUSEL_SLIDES = [
-  {
-    id: 1,
-    image: '/src/assets/hero1.jpg',
-    badge: 'Portal Resmi E-Governance Jawa Barat',
-    title: 'SI-UMKM Jawa Barat',
-    desc: 'Sistem Informasi & Integrasi Layanan UMKM Jawa Barat. Menghubungkan lebih dari 7,05 juta potensi UMKM dengan fasilitasi legalitas dan investasi digital.',
-    btnText: 'Ajukan Layanan Mandiri'
-  },
-  {
-    id: 2,
-    image: '/src/assets/hero2.jpg',
-    badge: 'Pemberdayaan Sentra Kreatif',
-    title: 'Pemetaan 27 Kabupaten/Kota',
-    desc: 'Eksplorasi potensi kriya, kuliner, fashion, dan agroindustri unggulan Jawa Barat berbasis integrasi peta geospasial interaktif.',
-    btnText: 'Jelajahi Pemetaan'
-  },
-  {
-    id: 3,
-    image: '/src/assets/hero3.jpg',
-    badge: 'Standardisasi & Fasilitasi Legalitas',
-    title: 'Pendampingan & Sertifikasi Produk',
-    desc: 'Akselerasi izin berusaha dan jaminan mutu produk lokal demi mewujudkan UMKM Jabar Juara yang siap ekspor.',
-    btnText: 'Konsultasi Legalitas'
-  }
-];
 
 const DAFTAR_PELATIHAN = [
   {
@@ -70,32 +43,29 @@ const KABUPATEN_KOTA_JABAR = [
   'Kota Cimahi', 'Kota Tasikmalaya', 'Kota Banjar'
 ];
 
-// Nama wilayah dari GeoJSON -> "Kabupaten X" / "Kota X"
 const namaWilayah = (f) => {
   const { NAME_2: n, TYPE_2: t } = f.properties;
   if (t === 'Kota' && !n.startsWith('Kota ')) return `Kota ${n}`;
   return t === 'Kabupaten' ? `Kabupaten ${n}` : n;
 };
 
-// Kunci pencocokan: "Kabupaten Bandung" -> "bandung"
 const kunciWilayah = (s = '') =>
   s.toLowerCase().trim().replace(/^kabupaten\s+|^kab\.\s*/, '');
 
 const WARNA_KELOMPOK = {
   'Kerajinan & Kriya': '#EAB308',
-  'Kuliner': '#16A34A',
+  'Kuliner': '#255456',
   'Fashion': '#9333EA',
   'Jasa & Lainnya': '#0284C7',
-  'Lainnya': '#164E43',
+  'Lainnya': '#255456',
 };
 
-// LAYER 1: warna poligon tematik
 const KELOMPOK_MAPCHART = [
   { warna: '#cc3333', wilayah: ['bandung'] },
   { warna: '#762a83', wilayah: ['bogor', 'subang', 'cirebon', 'pangandaran'] },
   { warna: '#74add1', wilayah: ['karawang', 'sumedang'] },
-  { warna: '#00441b', wilayah: ['indramayu', 'garut', 'bekasi'] },
-  { warna: '#b2df8a', wilayah: ['purwakarta', 'ciamis'] },
+  { warna: '#255456', wilayah: ['indramayu', 'garut', 'bekasi'] },
+  { warna: '#a6c6c7', wilayah: ['purwakarta', 'ciamis'] },
   { warna: '#800026', wilayah: ['cianjur', 'majalengka', 'banjar'] },
   { warna: '#ffffb3', wilayah: ['sukabumi', 'cimahi', 'tasikmalaya', 'depok'] },
   { warna: '#ffff33', wilayah: ['kuningan'] },
@@ -164,10 +134,10 @@ function MapZoomListener({ onZoomChanged }) {
 const getMarkerColor = (kategori) => {
   const kat = (kategori || '').toUpperCase();
   if (kat.includes('AKSESORIS') || kat.includes('CRAFT') || kat.includes('KRIYA') || kat.includes('KERAJINAN')) return '#EAB308';
-  if (kat.includes('KULINER') || kat.includes('MAKANAN') || kat.includes('MINUMAN') || kat.includes('OBAT')) return '#16A34A';
+  if (kat.includes('KULINER') || kat.includes('MAKANAN') || kat.includes('MINUMAN') || kat.includes('OBAT')) return '#255456';
   if (kat.includes('FASHION') || kat.includes('BATIK') || kat.includes('KONVEKSI') || kat.includes('BORDIR')) return '#9333EA';
   if (kat.includes('JASA') || kat.includes('AGRIBISNIS') || kat.includes('INDUSTRI') || kat.includes('MEBEL') || kat.includes('DEKORASI')) return '#0284C7';
-  return '#164E43';
+  return '#255456';
 };
 
 const getKeunggulanText = (kategori) => {
@@ -187,11 +157,12 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
   const [filterActive, setFilterActive] = useState('Semua');
   const [selectedKabKota, setSelectedKabKota] = useState('Semua Wilayah');
   const [selectedUMKM, setSelectedUMKM] = useState(null);
-  const [currentSlide, setCurrentSlide] = useState(0);
   const [zoomLevel, setZoomLevel] = useState(8);
 
   const [isPelatihanVisible, setIsPelatihanVisible] = useState(false);
+  const [isPelatihanHovered, setIsPelatihanHovered] = useState(false);
   const pelatihanSectionRef = useRef(null);
+  const pelatihanTrackRef = useRef(null);
 
   const handlePindahKePelatihan = () => {
     if (typeof setHalaman === 'function') {
@@ -216,11 +187,28 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
   }, []);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev === CAROUSEL_SLIDES.length - 1 ? 0 : prev + 1));
-    }, 5000);
-    return () => clearInterval(timer);
-  }, []);
+    if (!isPelatihanVisible || isPelatihanHovered) return undefined;
+
+    const track = pelatihanTrackRef.current;
+    if (!track) return undefined;
+
+    let animationFrame;
+    let previousTime;
+    const scroll = (time) => {
+      if (previousTime !== undefined) {
+        track.scrollLeft += (time - previousTime) * 0.025;
+        const maxScroll = track.scrollWidth - track.clientWidth;
+        if (maxScroll > 0 && track.scrollLeft >= maxScroll) {
+          track.scrollLeft = 0;
+        }
+      }
+      previousTime = time;
+      animationFrame = window.requestAnimationFrame(scroll);
+    };
+
+    animationFrame = window.requestAnimationFrame(scroll);
+    return () => window.cancelAnimationFrame(animationFrame);
+  }, [isPelatihanVisible, isPelatihanHovered]);
 
   useEffect(() => {
     axios.get('/geo/jabar.json')
@@ -250,7 +238,6 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
     fetchUMKM();
   }, []);
 
-  // Filter Data UMKM
   const filteredUMKM = useMemo(() => {
     return umkmList.filter((item) => {
       const nama = (item.nama_usaha || '').toLowerCase();
@@ -277,8 +264,117 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
   return (
     <div style={{ backgroundColor: '#F8FAFC', minHeight: '100vh', display: 'flex', flexDirection: 'column', fontFamily: 'Inter, system-ui, sans-serif' }}>
       
-      {/* Animasi Fluid Spring & Hover Effect khusus Filter Bar (Jitter Video Style) */}
+      {/* Animasi Interaktif: 3D Tilt Card & Jitter Motion */}
       <style>{`
+        @keyframes statCardFadeIn {
+          0% {
+            opacity: 0;
+            transform: translateY(28px) scale(0.95);
+          }
+          60% {
+            opacity: 1;
+            transform: translateY(-4px) scale(1.015);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+        }
+
+        .stat-card-animated {
+          position: relative;
+          background: #ffffff;
+          border: 1px solid #E2E8F0;
+          border-radius: 20px;
+          padding: 24px 22px;
+          text-align: center;
+          overflow: hidden;
+          transition: all 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+          cursor: pointer;
+          animation: statCardFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+          box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.04);
+        }
+
+        .stat-card-animated:nth-child(1) { animation-delay: 0.1s; }
+        .stat-card-animated:nth-child(2) { animation-delay: 0.22s; }
+        .stat-card-animated:nth-child(3) { animation-delay: 0.34s; }
+
+        .stat-card-animated::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 4px;
+          background: linear-gradient(90deg, #255456, #008848);
+          opacity: 0;
+          transform: scaleX(0);
+          transform-origin: center;
+          transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .stat-card-animated::after {
+          content: '';
+          position: absolute;
+          top: -60%;
+          left: -70%;
+          width: 60%;
+          height: 220%;
+          background: linear-gradient(
+            120deg,
+            rgba(255, 255, 255, 0) 0%,
+            rgba(255, 255, 255, 0.65) 50%,
+            rgba(255, 255, 255, 0) 100%
+          );
+          transform: rotate(25deg);
+          transition: all 0.75s ease;
+          pointer-events: none;
+          opacity: 0;
+        }
+
+        .stat-card-animated:hover {
+          transform: translateY(-8px) scale(1.02);
+          border-color: #A7F3D0;
+          box-shadow: 0 20px 35px -8px rgba(0, 136, 72, 0.16), 0 0 0 1px rgba(0, 136, 72, 0.12);
+        }
+
+        .stat-card-animated:hover::before {
+          opacity: 1;
+          transform: scaleX(1);
+        }
+
+        .stat-card-animated:hover::after {
+          left: 140%;
+          opacity: 1;
+        }
+
+        .stat-icon-wrapper {
+          width: 44px;
+          height: 44px;
+          border-radius: 12px;
+          margin: 0 auto 12px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background-color: #ECFDF5;
+          color: #008848;
+          transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .stat-card-animated:hover .stat-icon-wrapper {
+          transform: scale(1.15) rotate(6deg);
+          background-color: #255456;
+          color: #ffffff;
+        }
+
+        .stat-number-animated {
+          transition: color 0.3s ease;
+        }
+
+        .stat-card-animated:hover .stat-number-animated {
+          color: #008848;
+        }
+
         @keyframes jitterBarEntry {
           0% {
             opacity: 0;
@@ -336,95 +432,90 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
 
       <Navbar setHalaman={setHalaman} user={user} />
 
-      {/* Hero Carousel */}
-      <section style={{ position: 'relative', width: '100%', height: '460px', overflow: 'hidden', marginBottom: '35px', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)' }}>
-        <div style={{
-          display: 'flex',
-          width: `${CAROUSEL_SLIDES.length * 100}%`,
-          height: '100%',
-          transform: `translateX(-${currentSlide * (100 / CAROUSEL_SLIDES.length)}%)`,
-          transition: 'transform 0.6s cubic-bezier(0.25, 1, 0.5, 1)'
-        }}>
-          {CAROUSEL_SLIDES.map((slide) => (
-            <div
-              key={slide.id}
-              style={{
-                width: `${100 / CAROUSEL_SLIDES.length}%`,
-                height: '100%',
-                position: 'relative',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundImage: `url(${slide.image})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                color: 'white'
-              }}
-            >
-              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, rgba(8,30,22,0.85) 0%, rgba(15,23,42,0.65) 55%, rgba(0,0,0,0.4) 100%)' }} />
-              <div style={{ position: 'relative', zIndex: 2, maxWidth: '1200px', width: '100%', padding: '0 6%', boxSizing: 'border-box' }}>
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', backgroundColor: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(6px)', padding: '6px 14px', borderRadius: '999px', fontSize: '13px', fontWeight: '600', marginBottom: '16px' }}>
-                  <CheckCircle size={15} />
-                  {slide.badge}
-                </div>
-                <h1 style={{ fontSize: '44px', fontWeight: '800', lineHeight: '1.2', margin: '0 0 16px', maxWidth: '750px', textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>
-                  {slide.title}
-                </h1>
-                <p style={{ fontSize: '16px', lineHeight: '1.6', maxWidth: '620px', margin: '0 0 26px', color: 'rgba(255,255,255,0.9)' }}>
-                  {slide.desc}
-                </p>
-                <button
-                  onClick={handlePindahKePelatihan}
-                  style={{ backgroundColor: '#D97706', color: '#FFFFFF', border: 'none', padding: '12px 24px', borderRadius: '10px', fontWeight: '700', fontSize: '14px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '8px', boxShadow: '0 4px 14px rgba(217,119,6,0.35)' }}
-                >
-                  {slide.btnText}
-                  <ArrowRight size={17} />
-                </button>
-              </div>
-            </div>
-          ))}
+      {/* Hero Video */}
+      <section style={{ position: 'relative', width: '100%', height: 'calc(100vh - 1cm + 48px)', margin: '-48px 0 35px', overflow: 'hidden', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)' }}>
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          aria-hidden="true"
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+        >
+          <source src="/videos/landing.mp4" type="video/mp4" />
+        </video>
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, rgba(37, 84, 86,0.85) 0%, rgba(15,23,42,0.65) 55%, rgba(0,0,0,0.4) 100%)' }} />
+        <div style={{ position: 'relative', zIndex: 2, maxWidth: '1200px', width: '100%', height: '100%', margin: '0 auto', padding: '0 6%', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', justifyContent: 'center', color: '#FFFFFF' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', backgroundColor: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(6px)', padding: '6px 14px', borderRadius: '999px', fontSize: '13px', fontWeight: '600', marginBottom: '16px', width: 'fit-content' }}>
+            Portal Resmi E-Governance Jawa Barat
+          </div>
+          <h1 style={{ fontSize: '44px', fontWeight: '800', lineHeight: '1.2', margin: '0 0 16px', maxWidth: '750px', textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>
+            SI-UMKM Jawa Barat
+          </h1>
+          <p style={{ fontSize: '16px', lineHeight: '1.6', maxWidth: '620px', margin: '0 0 26px', color: 'rgba(255,255,255,0.9)' }}>
+            Sistem Informasi & Integrasi Layanan UMKM Jawa Barat. Menghubungkan lebih dari 7,05 juta potensi UMKM dengan fasilitasi legalitas dan investasi digital.
+          </p>
+          <button
+            onClick={handlePindahKePelatihan}
+            style={{ backgroundColor: '#D97706', color: '#FFFFFF', border: 'none', padding: '12px 24px', borderRadius: '10px', fontWeight: '700', fontSize: '14px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '8px', boxShadow: '0 4px 14px rgba(217,119,6,0.35)', width: 'fit-content' }}
+          >
+            Ajukan Layanan Mandiri
+            <ArrowRight size={17} />
+          </button>
         </div>
-
-        <button
-          onClick={() => setCurrentSlide((prev) => (prev === 0 ? CAROUSEL_SLIDES.length - 1 : prev - 1))}
-          style={{ position: 'absolute', left: '24px', top: '50%', transform: 'translateY(-50%)', backgroundColor: 'rgba(255, 255, 255, 0.85)', border: 'none', borderRadius: '50%', width: '42px', height: '42px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', zIndex: 10 }}
-        >
-          <ChevronLeft size={22} />
-        </button>
-
-        <button
-          onClick={() => setCurrentSlide((prev) => (prev === CAROUSEL_SLIDES.length - 1 ? 0 : prev + 1))}
-          style={{ position: 'absolute', right: '24px', top: '50%', transform: 'translateY(-50%)', backgroundColor: 'rgba(255, 255, 255, 0.85)', border: 'none', borderRadius: '50%', width: '42px', height: '42px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', zIndex: 10 }}
-        >
-          <ChevronRight size={22} />
-        </button>
       </section>
 
       {/* Main Content */}
       <main style={{ flex: 1, maxWidth: '1200px', width: '100%', margin: 'auto', padding: '0 20px 50px', boxSizing: 'border-box' }}>
         
-        {/* Ringkasan Data */}
+        {/* Ringkasan Data (Cards dengan Animasi 3D Tilt, Shine Sweep, dan Soft Elevation) */}
         <section style={{ marginBottom: '45px' }}>
           <div style={{ textAlign: 'center', marginBottom: '28px' }}>
             <span style={{ fontSize: '13px', fontWeight: '600', color: '#64748B', display: 'block', marginBottom: '6px' }}>Data Terkini</span>
             <h2 style={{ margin: 0, fontSize: '26px', fontWeight: '800', color: '#0F172A' }}>UMKM DI JAWA BARAT</h2>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', maxWidth: '1050px', margin: '0 auto' }}>
-            <div style={{ backgroundColor: '#fff', border: '1px solid #E2E8F0', borderRadius: '20px', padding: '22px 24px', textAlign: 'center' }}>
-              <div style={{ fontSize: '0.82rem', color: '#64748B', marginBottom: '6px' }}>Total UMKM Terdata</div>
-              <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#0F172A' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '22px', maxWidth: '1050px', margin: '0 auto' }}>
+            
+            {/* Card 1: Total UMKM */}
+            <div className="stat-card-animated">
+              <div className="stat-icon-wrapper">
+                <Building2 size={22} />
+              </div>
+              <div style={{ fontSize: '0.84rem', fontWeight: '600', color: '#64748B', marginBottom: '6px' }}>
+                Total UMKM Terdata
+              </div>
+              <div className="stat-number-animated" style={{ fontSize: '1.65rem', fontWeight: '800', color: '#0F172A' }}>
                 {umkmList.length > 0 ? `${umkmList.length.toLocaleString('id-ID')} Unit` : 'Memuat Data...'}
               </div>
             </div>
-            <div style={{ backgroundColor: '#fff', border: '1px solid #E2E8F0', borderRadius: '20px', padding: '22px 24px', textAlign: 'center' }}>
-              <div style={{ fontSize: '0.82rem', color: '#64748B', marginBottom: '6px' }}>Wilayah Sebaran</div>
-              <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#0F172A' }}>27 Kab / Kota</div>
+
+            {/* Card 2: Wilayah Sebaran */}
+            <div className="stat-card-animated">
+              <div className="stat-icon-wrapper">
+                <Map size={22} />
+              </div>
+              <div style={{ fontSize: '0.84rem', fontWeight: '600', color: '#64748B', marginBottom: '6px' }}>
+                Wilayah Sebaran
+              </div>
+              <div className="stat-number-animated" style={{ fontSize: '1.65rem', fontWeight: '800', color: '#0F172A' }}>
+                27 Kab / Kota
+              </div>
             </div>
-            <div style={{ backgroundColor: '#fff', border: '1px solid #E2E8F0', borderRadius: '20px', padding: '22px 24px', textAlign: 'center' }}>
-              <div style={{ fontSize: '0.82rem', color: '#64748B', marginBottom: '6px' }}>Sektor Prioritas</div>
-              <div style={{ fontSize: '1.5rem', fontWeight: '800', color: '#0F172A' }}>4 Sektor Utama</div>
+
+            {/* Card 3: Sektor Prioritas */}
+            <div className="stat-card-animated">
+              <div className="stat-icon-wrapper">
+                <Layers size={22} />
+              </div>
+              <div style={{ fontSize: '0.84rem', fontWeight: '600', color: '#64748B', marginBottom: '6px' }}>
+                Sektor Prioritas
+              </div>
+              <div className="stat-number-animated" style={{ fontSize: '1.65rem', fontWeight: '800', color: '#0F172A' }}>
+                4 Sektor Utama
+              </div>
             </div>
+
           </div>
         </section>
 
@@ -532,7 +623,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
               ))}
               {zoomLevel >= 9 && <>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#EAB308' }}></span><span><strong>Kuning:</strong> Aksesoris & Kriya</span></div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#16A34A' }}></span><span><strong>Hijau:</strong> Makanan & Minuman</span></div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#255456' }}></span><span><strong>Hijau:</strong> Makanan & Minuman</span></div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#9333EA' }}></span><span><strong>Ungu:</strong> Fashion & Batik</span></div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#0284C7' }}></span><span><strong>Biru:</strong> Jasa, Mebel & Lainnya</span></div>
               </>}
@@ -602,7 +693,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
 
                       <Popup>
                         <div style={{ fontSize: '0.85rem' }}>
-                          <h4 style={{ margin: '0 0 4px 0', color: '#164E43' }}>{item.nama_usaha}</h4>
+                          <h4 style={{ margin: '0 0 4px 0', color: '#255456' }}>{item.nama_usaha}</h4>
                           <p style={{ margin: '0 0 6px 0', color: '#64748B', fontSize: '0.78rem' }}>{item.alamat || item.kabupaten_kota}</p>
                           <span style={{ display: 'inline-block', backgroundColor: markerColor, color: '#fff', padding: '2px 8px', borderRadius: '4px', fontSize: '0.72rem', fontWeight: '700' }}>
                             {item.kategori}
@@ -651,7 +742,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
                     </div>
                     <button
                       onClick={() => setSelectedUMKM(item)}
-                      style={{ backgroundColor: '#fff', border: '1px solid #CBD5E1', color: '#008848', fontSize: '0.76rem', fontWeight: '600', padding: '5px 10px', borderRadius: '6px', cursor: 'pointer', width: '100%' }}
+                      style={{ backgroundColor: '#fff', border: '1px solid #CBD5E1', color: '#255456', fontSize: '0.76rem', fontWeight: '600', padding: '5px 10px', borderRadius: '6px', cursor: 'pointer', width: '100%' }}
                     >
                       Lihat Profil Lengkap
                     </button>
@@ -683,7 +774,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
                   "{getKeunggulanText(selectedUMKM.kategori)}"
                 </div>
               </div>
-              <button onClick={() => setSelectedUMKM(null)} style={{ width: '100%', backgroundColor: '#164E43', color: '#FFFFFF', border: 'none', borderRadius: '8px', padding: '10px', fontWeight: '700', fontSize: '0.85rem', cursor: 'pointer' }}>
+              <button onClick={() => setSelectedUMKM(null)} style={{ width: '100%', backgroundColor: '#255456', color: '#FFFFFF', border: 'none', borderRadius: '8px', padding: '10px', fontWeight: '700', fontSize: '0.85rem', cursor: 'pointer' }}>
                 Tutup
               </button>
             </div>
@@ -694,32 +785,55 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
         <section ref={pelatihanSectionRef} style={{ marginBottom: '50px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '20px' }}>
             <h2 style={{ fontSize: '24px', fontWeight: '800', color: '#0F172A', margin: 0 }}>Pelatihan</h2>
-            <button onClick={handlePindahKePelatihan} style={{ background: 'none', border: 'none', color: '#008848', fontWeight: '700', fontSize: '0.88rem', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+            <button onClick={handlePindahKePelatihan} style={{ background: 'none', border: 'none', color: '#255456', fontWeight: '700', fontSize: '0.88rem', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
               Lihat Selengkapnya <ArrowRight size={16} />
             </button>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '18px' }}>
-            {DAFTAR_PELATIHAN.map((item) => (
-              <div key={item.id} style={{ backgroundColor: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                <div style={{ height: '140px', width: '100%', overflow: 'hidden', backgroundColor: '#F1F5F9' }}>
-                  <img src={item.image} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <div
+            ref={pelatihanTrackRef}
+            onMouseEnter={() => setIsPelatihanHovered(true)}
+            onMouseLeave={() => setIsPelatihanHovered(false)}
+            onTouchStart={() => setIsPelatihanHovered(true)}
+            onTouchEnd={() => setIsPelatihanHovered(false)}
+            style={{ overflowX: 'auto', overflowY: 'hidden', scrollbarWidth: 'thin', scrollbarColor: '#255456 #E2E8F0' }}
+          >
+            <div style={{ display: 'flex', gap: '18px', width: 'max-content', padding: '8px 2px 16px 2px', boxSizing: 'border-box' }}>
+              {DAFTAR_PELATIHAN.map((item) => (
+                <div
+                  key={item.id}
+                  style={{ flex: '0 0 min(280px, 82vw)', backgroundColor: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', overflow: 'hidden', display: 'flex', flexDirection: 'column', transition: 'transform 0.25s ease, box-shadow 0.25s ease', transform: 'translateY(0)', boxShadow: '0 2px 8px rgba(15,23,42,0.06)' }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-6px)';
+                    e.currentTarget.style.boxShadow = '0 14px 24px rgba(37,84,86,0.18)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(15,23,42,0.06)';
+                  }}
+                >
+                  <div style={{ height: '140px', width: '100%', overflow: 'hidden', backgroundColor: '#F1F5F9' }}>
+                    <img src={item.image} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
+                  <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', flex: 1, justifyContent: 'space-between' }}>
+                    <h3 style={{ margin: '0 0 16px', fontSize: '0.9rem', fontWeight: '700', color: '#0F172A' }}>{item.title}</h3>
+                    <button
+                      onClick={handlePindahKePelatihan}
+                      style={{ backgroundColor: '#F1F5F9', color: '#255456', border: 'none', borderRadius: '6px', padding: '8px 12px', fontSize: '0.78rem', fontWeight: '700', cursor: 'pointer', width: '100%' }}
+                    >
+                      Selengkapnya
+                    </button>
+                  </div>
                 </div>
-                <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', flex: 1, justifyContent: 'space-between' }}>
-                  <h3 style={{ margin: '0 0 16px', fontSize: '0.9rem', fontWeight: '700', color: '#0F172A' }}>{item.title}</h3>
-                  <button onClick={handlePindahKePelatihan} style={{ backgroundColor: '#F1F5F9', color: '#0F4D3A', border: 'none', borderRadius: '6px', padding: '8px 12px', fontSize: '0.78rem', fontWeight: '700', cursor: 'pointer', width: '100%' }}>
-                    Selengkapnya
-                  </button>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </section>
 
         {/* Section Komunitas */}
-        <section style={{ backgroundColor: '#D99B26', borderRadius: '20px', padding: '40px', color: '#FFFFFF', display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '30px', alignItems: 'center' }}>
+        <section style={{ backgroundColor: 'rgba(217,155,38,0.82)', backdropFilter: 'blur(14px)', border: '1px solid rgba(255,255,255,0.3)', boxShadow: '0 12px 32px rgba(37,84,86,0.18)', borderRadius: '20px', padding: '40px', color: '#FFFFFF', display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '30px', alignItems: 'center' }}>
           <div>
-            <h2 style={{ fontSize: '28px', fontWeight: '800', margin: '0 0 12px' }}>Bergabung ke Komunitas</h2>
+            <h2 style={{ fontSize: '28px', fontWeight: '800', color: '#255456', margin: '0 0 12px' }}>Bergabung ke Komunitas</h2>
             <p style={{ fontSize: '14px', lineHeight: '1.6', margin: '0 0 24px', color: 'rgba(255,255,255,0.92)' }}>
               Terhubung dengan ribuan pelaku UMKM se-Jawa Barat. Berbagi pengalaman, tips bisnis, informasi pelatihan, dan peluang kolaborasi bersama komunitas yang aktif.
             </p>
@@ -729,7 +843,20 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}><Calendar size={18} /><span>Info pelatihan dan event terbaru</span></div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}><Radio size={18} /><span>Networking dan kolaborasi antar UMKM</span></div>
             </div>
-            <a href="https://www.facebook.com/waroenkUMKM" target="_blank" rel="noopener noreferrer" style={{ backgroundColor: '#1E4A3B', color: '#FFFFFF', textDecoration: 'none', padding: '12px 28px', borderRadius: '8px', fontWeight: '700', fontSize: '0.9rem', display: 'inline-flex', alignItems: 'center' }}>
+            <a
+              href="https://www.facebook.com/waroenkUMKM"
+              target="_blank"
+              rel="noopener noreferrer"
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#255456';
+                e.currentTarget.style.color = '#FFFFFF';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'rgba(37,84,86,0.45)';
+                e.currentTarget.style.color = '#FFFFFF';
+              }}
+              style={{ backgroundColor: 'rgba(37,84,86,0.45)', color: '#FFFFFF', textDecoration: 'none', padding: '12px 28px', borderRadius: '8px', fontWeight: '700', fontSize: '0.9rem', display: 'inline-flex', alignItems: 'center', transition: 'background-color 0.25s ease, color 0.25s ease' }}
+            >
               Gabung Sekarang
             </a>
           </div>
