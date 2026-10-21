@@ -1,9 +1,22 @@
+# Dependencies & Build Output
 node_modules/
 dist/
+build/
+
+# Environment Variables & Secrets (Kunci API)
 .env
+.env.*
+*.env
+
+# Python & Virtual Environments
 __pycache__/
+*.py[cod]
+*$py.class
 venv/
 .venv/
+env/
+
+# Uploads & Media
 uploads/
 
 # Berkas sementara LaTeX
@@ -14,3 +27,11 @@ uploads/
 *.synctex.gz
 *.out
 *.toc
+*.bbl
+*.blg
+
+# IDE & Editor Settings
+.vscode/
+.idea/
+*.swp
+.DS_Store
