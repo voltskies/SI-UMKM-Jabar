@@ -9,6 +9,7 @@ import {
 
 import Navbar from '../component/navbar';
 import Footer from '../component/footer';
+import videoLanding from '../assets/landing.mp4';
 
 const DAFTAR_PELATIHAN = [
   {
@@ -43,23 +44,24 @@ const KABUPATEN_KOTA_JABAR = [
   'Kota Cimahi', 'Kota Tasikmalaya', 'Kota Banjar'
 ];
 
+// Helper ekstraksi nama wilayah dari GeoJSON
 const namaWilayah = (f) => {
-  const { NAME_2: n, TYPE_2: t } = f.properties;
+  const { NAME_2: n, TYPE_2: t } = f.properties || {};
+  if (!n) return '';
   if (t === 'Kota' && !n.startsWith('Kota ')) return `Kota ${n}`;
   return t === 'Kabupaten' ? `Kabupaten ${n}` : n;
 };
 
-const kunciWilayah = (s = '') =>
-  s.toLowerCase().trim().replace(/^kabupaten\s+|^kab\.\s*/, '');
-
-const WARNA_KELOMPOK = {
-  'Kerajinan & Kriya': '#EAB308',
-  'Kuliner': '#255456',
-  'Fashion': '#9333EA',
-  'Jasa & Lainnya': '#0284C7',
-  'Lainnya': '#255456',
+// Normalisasi nama wilayah untuk sinkronisasi database
+const bersihkanNamaWilayah = (str = '') => {
+  return String(str)
+    .toLowerCase()
+    .replace(/kabupaten|kab\.|kota/gi, '')
+    .replace(/[^a-z0-9]/g, '')
+    .trim();
 };
 
+// Palet warna per cluster wilayah
 const KELOMPOK_MAPCHART = [
   { warna: '#cc3333', wilayah: ['bandung'] },
   { warna: '#762a83', wilayah: ['bogor', 'subang', 'cirebon', 'pangandaran'] },
@@ -71,58 +73,59 @@ const KELOMPOK_MAPCHART = [
   { warna: '#ffff33', wilayah: ['kuningan'] },
 ];
 
-const DATA_WILAYAH = {"bandung": {"total": 940, "dominan": "Kuliner", "rincian": {"Kuliner": 558, "Fashion": 258, "Kerajinan & Kriya": 70, "Jasa & Lainnya": 54}}, "bandung barat": {"total": 821, "dominan": "Kuliner", "rincian": {"Kuliner": 408, "Fashion": 205, "Jasa & Lainnya": 115, "Kerajinan & Kriya": 93}}, "bekasi": {"total": 709, "dominan": "Kuliner", "rincian": {"Kuliner": 420, "Fashion": 156, "Kerajinan & Kriya": 88, "Jasa & Lainnya": 45}}, "bogor": {"total": 928, "dominan": "Kuliner", "rincian": {"Kuliner": 484, "Fashion": 232, "Jasa & Lainnya": 110, "Kerajinan & Kriya": 102}}, "ciamis": {"total": 745, "dominan": "Kuliner", "rincian": {"Kuliner": 515, "Fashion": 160, "Kerajinan & Kriya": 46, "Jasa & Lainnya": 24}}, "cianjur": {"total": 735, "dominan": "Kuliner", "rincian": {"Kuliner": 424, "Fashion": 163, "Kerajinan & Kriya": 79, "Jasa & Lainnya": 69}}, "cirebon": {"total": 846, "dominan": "Kuliner", "rincian": {"Kuliner": 477, "Fashion": 200, "Jasa & Lainnya": 87, "Kerajinan & Kriya": 82}}, "garut": {"total": 835, "dominan": "Kuliner", "rincian": {"Kuliner": 410, "Fashion": 252, "Jasa & Lainnya": 101, "Kerajinan & Kriya": 72}}, "indramayu": {"total": 592, "dominan": "Kuliner", "rincian": {"Kuliner": 328, "Fashion": 115, "Kerajinan & Kriya": 79, "Jasa & Lainnya": 70}}, "karawang": {"total": 723, "dominan": "Kuliner", "rincian": {"Kuliner": 445, "Fashion": 149, "Kerajinan & Kriya": 68, "Jasa & Lainnya": 61}}, "kuningan": {"total": 681, "dominan": "Kuliner", "rincian": {"Kuliner": 469, "Fashion": 150, "Kerajinan & Kriya": 32, "Jasa & Lainnya": 30}}, "majalengka": {"total": 815, "dominan": "Kuliner", "rincian": {"Kuliner": 493, "Fashion": 171, "Kerajinan & Kriya": 76, "Jasa & Lainnya": 75}}, "pangandaran": {"total": 615, "dominan": "Kuliner", "rincian": {"Kuliner": 357, "Fashion": 150, "Kerajinan & Kriya": 73, "Jasa & Lainnya": 35}}, "purwakarta": {"total": 497, "dominan": "Kuliner", "rincian": {"Kuliner": 243, "Jasa & Lainnya": 105, "Fashion": 103, "Kerajinan & Kriya": 46}}, "subang": {"total": 661, "dominan": "Kuliner", "rincian": {"Kuliner": 335, "Fashion": 142, "Kerajinan & Kriya": 93, "Jasa & Lainnya": 91}}, "sukabumi": {"total": 780, "dominan": "Kuliner", "rincian": {"Kuliner": 377, "Fashion": 212, "Kerajinan & Kriya": 106, "Jasa & Lainnya": 85}}, "sumedang": {"total": 758, "dominan": "Kuliner", "rincian": {"Kuliner": 451, "Fashion": 180, "Kerajinan & Kriya": 75, "Jasa & Lainnya": 52}}, "tasikmalaya": {"total": 706, "dominan": "Kuliner", "rincian": {"Kuliner": 406, "Fashion": 177, "Kerajinan & Kriya": 84, "Jasa & Lainnya": 39}}, "kota bandung": {"total": 1154, "dominan": "Kuliner", "rincian": {"Kuliner": 519, "Fashion": 423, "Kerajinan & Kriya": 135, "Jasa & Lainnya": 77}}, "kota banjar": {"total": 556, "dominan": "Kuliner", "rincian": {"Kuliner": 292, "Fashion": 113, "Jasa & Lainnya": 93, "Kerajinan & Kriya": 58}}, "kota bekasi": {"total": 517, "dominan": "Kuliner", "rincian": {"Kuliner": 231, "Fashion": 144, "Jasa & Lainnya": 90, "Kerajinan & Kriya": 52}}, "kota bogor": {"total": 554, "dominan": "Kuliner", "rincian": {"Kuliner": 267, "Fashion": 181, "Jasa & Lainnya": 57, "Kerajinan & Kriya": 49}}, "kota cimahi": {"total": 637, "dominan": "Kuliner", "rincian": {"Kuliner": 351, "Fashion": 199, "Kerajinan & Kriya": 61, "Jasa & Lainnya": 26}}, "kota cirebon": {"total": 635, "dominan": "Kuliner", "rincian": {"Kuliner": 413, "Fashion": 112, "Kerajinan & Kriya": 68, "Jasa & Lainnya": 42}}, "kota depok": {"total": 540, "dominan": "Kuliner", "rincian": {"Kuliner": 367, "Fashion": 98, "Kerajinan & Kriya": 39, "Jasa & Lainnya": 36}}, "kota sukabumi": {"total": 604, "dominan": "Kuliner", "rincian": {"Kuliner": 347, "Fashion": 119, "Jasa & Lainnya": 75, "Kerajinan & Kriya": 63}}, "kota tasikmalaya": {"total": 658, "dominan": "Kuliner", "rincian": {"Kuliner": 296, "Fashion": 269, "Kerajinan & Kriya": 71, "Jasa & Lainnya": 22}}};
-
 const getWarnaMapChart = (nama = '') => {
-  const w = nama.toLowerCase();
+  const w = bersihkanNamaWilayah(nama);
   const g = KELOMPOK_MAPCHART.find((k) => k.wilayah.some((x) => w.includes(x)));
   return g ? g.warna : '#CFD8DC';
 };
 
-const STYLE_WILAYAH_NORMAL = { weight: 0.7, opacity: 0.75, color: '#1E293B', fillOpacity: 0.45 };
+const WARNA_SEKTOR = {
+  'Kuliner': '#255456',
+  'Fashion': '#9333EA',
+  'Kerajinan & Kriya': '#EAB308',
+  'Agribisnis & Peternakan': '#15803D',
+  'Jasa & Lainnya': '#0284C7'
+};
 
-const styleWilayah = (feature) => ({
-  ...STYLE_WILAYAH_NORMAL,
-  fillColor: getWarnaMapChart(namaWilayah(feature)),
-});
+const normalisasiKategori = (rawKategori = '') => {
+  const kat = String(rawKategori).toUpperCase().trim();
+
+  if (kat.includes('KULINER') || kat.includes('MAKANAN') || kat.includes('MINUMAN') || kat.includes('PANGAN') || kat.includes('SNACK') || kat.includes('KOPI') || kat.includes('OBAT')) {
+    return 'Kuliner';
+  }
+  if (kat.includes('FASHION') || kat.includes('BATIK') || kat.includes('BORDIR') || kat.includes('KONVEKSI') || kat.includes('BUSANA') || kat.includes('PAKAIAN') || kat.includes('TEKSTIL')) {
+    return 'Fashion';
+  }
+  if (kat.includes('AKSESORIS') || kat.includes('CRAFT') || kat.includes('KRIYA') || kat.includes('KERAJINAN') || kat.includes('ANYAMAN') || kat.includes('GERABAH')) {
+    return 'Kerajinan & Kriya';
+  }
+  if (kat.includes('AGRIBISNIS') || kat.includes('PERTANIAN') || kat.includes('PETERNAKAN') || kat.includes('PERIKANAN') || kat.includes('BIBIT') || kat.includes('TANI')) {
+    return 'Agribisnis & Peternakan';
+  }
+  return 'Jasa & Lainnya';
+};
+
+const getMarkerColor = (kategori) => {
+  const sektor = normalisasiKategori(kategori);
+  return WARNA_SEKTOR[sektor] || '#0284C7';
+};
+
+const getKeunggulanText = (dominan) => {
+  switch (dominan) {
+    case 'Kuliner':
+      return 'Cita rasa otentik khas Pasundan, higienis, dan tersertifikasi halal';
+    case 'Fashion':
+      return 'Motif pakem Parahyangan & jahitan butik berstandar mutu tinggi';
+    case 'Kerajinan & Kriya':
+      return 'Kriya anyaman & aksesoris etnik kontemporer berdaya saing ekspor';
+    case 'Agribisnis & Peternakan':
+      return 'Hasil komoditas tani segar dan bibit unggulan tanah Priangan';
+    default:
+      return 'Komoditas binaan terkurasi Dinas Koperasi & Usaha Kecil Jawa Barat';
+  }
+};
 
 const STYLE_BATAS_SAJA = { fill: false, weight: 0.7, opacity: 0.5, color: '#1E293B' };
-
-const onEachWilayah = (feature, layer) => {
-  const nama = namaWilayah(feature);
-  const d = DATA_WILAYAH[kunciWilayah(nama)];
-  const rincian = d
-    ? Object.entries(d.rincian)
-        .sort((a, b) => b[1] - a[1])
-        .map(([k, n]) => `${k}: ${n}`)
-        .join('<br/>')
-    : '';
-
-  layer.bindTooltip(
-    d
-      ? `<div style="max-width:230px;">
-           <strong>${nama}</strong><br/>
-           <span style="color:${WARNA_KELOMPOK[d.dominan]};font-weight:700;">● Dominan: ${d.dominan}</span><br/>
-           <span style="font-weight:700;">${d.total.toLocaleString('id-ID')} UMKM terdata</span><br/>
-           <span style="font-size:11px;color:#64748B;">${rincian}</span><br/>
-           <span style="font-size:11px;font-style:italic;">${getKeunggulanText(d.dominan)}</span>
-         </div>`
-      : `<strong>${nama}</strong><br/>Belum ada data UMKM`,
-    { sticky: true, direction: 'top' }
-  );
-
-  layer.on('tooltipopen', () => {
-    if (layer._map && layer._map.getZoom() >= 9) layer.closeTooltip();
-  });
-
-  layer.on({
-    mouseover: (e) => {
-      e.target.setStyle({ weight: 1.8, fillOpacity: 0.7 });
-      e.target.bringToFront();
-    },
-    mouseout: (e) => e.target.setStyle({ ...styleWilayah(feature) }),
-  });
-};
 
 function MapZoomListener({ onZoomChanged }) {
   const map = useMapEvents({
@@ -130,25 +133,6 @@ function MapZoomListener({ onZoomChanged }) {
   });
   return null;
 }
-
-const getMarkerColor = (kategori) => {
-  const kat = (kategori || '').toUpperCase();
-  if (kat.includes('AKSESORIS') || kat.includes('CRAFT') || kat.includes('KRIYA') || kat.includes('KERAJINAN')) return '#EAB308';
-  if (kat.includes('KULINER') || kat.includes('MAKANAN') || kat.includes('MINUMAN') || kat.includes('OBAT')) return '#255456';
-  if (kat.includes('FASHION') || kat.includes('BATIK') || kat.includes('KONVEKSI') || kat.includes('BORDIR')) return '#9333EA';
-  if (kat.includes('JASA') || kat.includes('AGRIBISNIS') || kat.includes('INDUSTRI') || kat.includes('MEBEL') || kat.includes('DEKORASI')) return '#0284C7';
-  return '#255456';
-};
-
-const getKeunggulanText = (kategori) => {
-  const kat = (kategori || '').toUpperCase();
-  if (kat.includes('AKSESORIS') || kat.includes('CRAFT') || kat.includes('KRIYA')) return 'Kriya anyaman bambu & aksesoris etnik kontemporer berdaya saing ekspor';
-  if (kat.includes('KULINER') || kat.includes('MAKANAN') || kat.includes('MINUMAN')) return 'Cita rasa otentik khas Pasundan, higienis, dan tersertifikasi halal';
-  if (kat.includes('FASHION') || kat.includes('BATIK')) return 'Motif pakem Parahyangan & jahitan garmen butik berstandar mutu tinggi';
-  if (kat.includes('AGRIBISNIS')) return 'Hasil tani hortikultura segar dan bibit organik unggulan tanah Priangan';
-  if (kat.includes('MEBEL')) return 'Mebel kayu jati solid berkonstruksi presisi dengan ornamen ukir khas';
-  return 'Komoditas binaan terkurasi Dinas Koperasi & Usaha Kecil Jawa Barat';
-};
 
 export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
   const [umkmList, setUmkmList] = useState([]);
@@ -224,10 +208,10 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
   const fetchUMKM = async () => {
     try {
       const res = await axios.get('http://127.0.0.1:8000/api/v1/umkm');
-      const responseData = res.data;
-      const dataArray = Array.isArray(responseData)
-        ? responseData
-        : (responseData.data || responseData.items || []);
+      const resData = res.data;
+      const dataArray = Array.isArray(resData)
+        ? resData
+        : (resData.data || resData.items || resData.results || []);
       setUmkmList(dataArray);
     } catch (err) {
       console.error('Gagal mengambil data dari API FastAPI:', err);
@@ -237,6 +221,112 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
   useEffect(() => {
     fetchUMKM();
   }, []);
+
+  // Hitung data dominan dan rincian per wilayah secara real-time dari backend
+  const dynamicDataWilayah = useMemo(() => {
+    const peta = {};
+
+    umkmList.forEach((item) => {
+      const rawKab = item.kabupaten_kota || item.kabupaten || item.kota || item.wilayah || '';
+      const key = bersihkanNamaWilayah(rawKab);
+      if (!key) return;
+
+      if (!peta[key]) {
+        peta[key] = {
+          total: 0,
+          rincian: {
+            'Kuliner': 0,
+            'Fashion': 0,
+            'Kerajinan & Kriya': 0,
+            'Agribisnis & Peternakan': 0,
+            'Jasa & Lainnya': 0
+          }
+        };
+      }
+
+      peta[key].total += 1;
+      const sektor = normalisasiKategori(item.kategori || item.sektor || item.jenis_usaha || '');
+      peta[key].rincian[sektor] = (peta[key].rincian[sektor] || 0) + 1;
+    });
+
+    Object.keys(peta).forEach((key) => {
+      const r = peta[key].rincian;
+      let sektorDominan = 'Belum Ada Data';
+      let maxCount = 0;
+
+      Object.entries(r).forEach(([sektor, count]) => {
+        if (count > maxCount) {
+          maxCount = count;
+          sektorDominan = sektor;
+        }
+      });
+
+      peta[key].dominan = maxCount > 0 ? sektorDominan : 'Belum Ada Data';
+    });
+
+    return peta;
+  }, [umkmList]);
+
+  // Style poligon wilayah: Warna berdasarkan kelompok wilayah
+  const styleWilayah = (feature) => ({
+    weight: 0.8,
+    opacity: 0.8,
+    color: '#1E293B',
+    fillColor: getWarnaMapChart(namaWilayah(feature)),
+    fillOpacity: 0.55
+  });
+
+  // Hover & Tooltip membaca data riil dari backend
+  const handleEachWilayah = (feature, layer) => {
+    const nama = namaWilayah(feature);
+    const key = bersihkanNamaWilayah(nama);
+    const d = dynamicDataWilayah[key];
+
+    if (!d || d.total === 0) {
+      layer.bindTooltip(
+        `<div style="max-width:220px;padding:4px;">
+           <strong style="font-size:13px;color:#0F172A;">${nama}</strong><br/>
+           <span style="font-size:11px;color:#64748B;">Belum ada UMKM terdaftar di database untuk wilayah ini.</span>
+         </div>`,
+        { sticky: true, direction: 'top' }
+      );
+    } else {
+      const rincianHtml = Object.entries(d.rincian)
+        .sort((a, b) => b[1] - a[1])
+        .filter(([, count]) => count > 0)
+        .map(([kat, jml]) => `${kat}: <b>${jml}</b>`)
+        .join('<br/>');
+
+      const warnaDominan = WARNA_SEKTOR[d.dominan] || '#255456';
+
+      layer.bindTooltip(
+        `<div style="max-width:240px;line-height:1.5;">
+           <strong style="font-size:13px;color:#0F172A;">${nama}</strong><br/>
+           <span style="color:${warnaDominan};font-weight:800;font-size:12px;">● Dominan: ${d.dominan}</span><br/>
+           <span style="font-weight:700;color:#334155;">${d.total.toLocaleString('id-ID')} UMKM terdata di Database</span><br/>
+           <div style="font-size:11px;color:#475569;margin:4px 0;padding:4px 0;border-top:1px solid #E2E8F0;border-bottom:1px solid #E2E8F0;">
+             ${rincianHtml}
+           </div>
+           <span style="font-size:10.5px;color:#64748B;font-style:italic;">${getKeunggulanText(d.dominan)}</span>
+         </div>`,
+        { sticky: true, direction: 'top' }
+      );
+    }
+
+    layer.on('tooltipopen', () => {
+      if (layer._map && layer._map.getZoom() >= 9) layer.closeTooltip();
+    });
+
+    layer.on({
+      mouseover: (e) => {
+        e.target.setStyle({ weight: 2.2, fillOpacity: 0.85 });
+        e.target.bringToFront();
+      },
+      mouseout: (e) => {
+        e.target.setStyle(styleWilayah(feature));
+      },
+    });
+  };
 
   const filteredUMKM = useMemo(() => {
     return umkmList.filter((item) => {
@@ -251,7 +341,8 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
       if (filterActive === 'Kuliner') matchesCategory = kat.includes('kuliner') || kat.includes('makanan') || kat.includes('minuman') || kat.includes('obat');
       else if (filterActive === 'Fashion') matchesCategory = kat.includes('fashion') || kat.includes('batik') || kat.includes('konveksi') || kat.includes('bordir');
       else if (filterActive === 'Kerajinan') matchesCategory = kat.includes('aksesoris') || kat.includes('craft') || kat.includes('kriya') || kat.includes('kerajinan');
-      else if (filterActive === 'Jasa') matchesCategory = kat.includes('jasa') || kat.includes('agribisnis') || kat.includes('industri') || kat.includes('mebel') || kat.includes('dekorasi');
+      else if (filterActive === 'Agribisnis') matchesCategory = kat.includes('agribisnis') || kat.includes('tani') || kat.includes('ternak');
+      else if (filterActive === 'Jasa') matchesCategory = kat.includes('jasa') || kat.includes('industri') || kat.includes('mebel') || kat.includes('dekorasi');
 
       const matchesKabKota =
         selectedKabKota === 'Semua Wilayah' ||
@@ -264,143 +355,151 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
   return (
     <div style={{ backgroundColor: '#F8FAFC', minHeight: '100vh', display: 'flex', flexDirection: 'column', fontFamily: 'Inter, system-ui, sans-serif' }}>
       
-      {/* Animasi Interaktif: 3D Tilt Card & Jitter Motion */}
+      {/* CSS Animasi Split Hover Card (Adaptasi Style CodePen) */}
       <style>{`
-        @keyframes statCardFadeIn {
-          0% {
-            opacity: 0;
-            transform: translateY(28px) scale(0.95);
-          }
-          60% {
-            opacity: 1;
-            transform: translateY(-4px) scale(1.015);
-          }
-          100% {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-          }
-        }
-
-        .stat-card-animated {
-          position: relative;
-          background: #ffffff;
-          border: 1px solid #E2E8F0;
-          border-radius: 20px;
-          padding: 24px 22px;
-          text-align: center;
-          overflow: hidden;
-          transition: all 0.38s cubic-bezier(0.16, 1, 0.3, 1);
-          cursor: pointer;
-          animation: statCardFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
-          box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.04);
-        }
-
-        .stat-card-animated:nth-child(1) { animation-delay: 0.1s; }
-        .stat-card-animated:nth-child(2) { animation-delay: 0.22s; }
-        .stat-card-animated:nth-child(3) { animation-delay: 0.34s; }
-
-        .stat-card-animated::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
+        .split-card-container {
           width: 100%;
-          height: 4px;
-          background: linear-gradient(90deg, #255456, #008848);
-          opacity: 0;
-          transform: scaleX(0);
-          transform-origin: center;
-          transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+          max-width: 1100px;
+          margin: 0 auto;
+          position: relative;
+          display: flex;
+          justify-content: space-between;
+          gap: 20px;
+          flex-wrap: wrap;
         }
 
-        .stat-card-animated::after {
-          content: '';
-          position: absolute;
-          top: -60%;
-          left: -70%;
-          width: 60%;
-          height: 220%;
-          background: linear-gradient(
-            120deg,
-            rgba(255, 255, 255, 0) 0%,
-            rgba(255, 255, 255, 0.65) 50%,
-            rgba(255, 255, 255, 0) 100%
-          );
-          transform: rotate(25deg);
-          transition: all 0.75s ease;
-          pointer-events: none;
-          opacity: 0;
+        .split-card {
+          position: relative;
+          cursor: pointer;
+          flex: 1 1 300px;
+          height: 220px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
         }
 
-        .stat-card-animated:hover {
-          transform: translateY(-8px) scale(1.02);
-          border-color: #A7F3D0;
-          box-shadow: 0 20px 35px -8px rgba(0, 136, 72, 0.16), 0 0 0 1px rgba(0, 136, 72, 0.12);
+        .split-card .face {
+          width: 100%;
+          height: 180px;
+          transition: 0.5s;
+          border-radius: 16px;
         }
 
-        .stat-card-animated:hover::before {
+        .split-card .face.face1 {
+          position: relative;
+          background: #1B4143;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 2;
+          transform: translateY(60px);
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .split-card:hover .face.face1 {
+          background: #008848;
+          transform: translateY(0);
+        }
+
+        .split-card .face.face1 .content {
+          opacity: 0.95;
+          transition: 0.5s;
+          text-align: center;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 10px;
+        }
+
+        .split-card:hover .face.face1 .content {
           opacity: 1;
-          transform: scaleX(1);
         }
 
-        .stat-card-animated:hover::after {
-          left: 140%;
-          opacity: 1;
-        }
-
-        .stat-icon-wrapper {
-          width: 44px;
-          height: 44px;
-          border-radius: 12px;
-          margin: 0 auto 12px;
+        .split-card .face.face1 .icon-box {
+          width: 52px;
+          height: 52px;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.15);
           display: flex;
           align-items: center;
           justify-content: center;
-          background-color: #ECFDF5;
-          color: #008848;
-          transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+          color: #FFFFFF;
+          margin-bottom: 8px;
+          transition: 0.5s;
         }
 
-        .stat-card-animated:hover .stat-icon-wrapper {
-          transform: scale(1.15) rotate(6deg);
-          background-color: #255456;
-          color: #ffffff;
-        }
-
-        .stat-number-animated {
-          transition: color 0.3s ease;
-        }
-
-        .stat-card-animated:hover .stat-number-animated {
+        .split-card:hover .face.face1 .icon-box {
+          transform: scale(1.1);
+          background: #FFFFFF;
           color: #008848;
         }
 
-        @keyframes jitterBarEntry {
-          0% {
-            opacity: 0;
-            transform: translateY(22px) scale(0.975);
-          }
-          60% {
-            opacity: 1;
-            transform: translateY(-3px) scale(1.006);
-          }
-          85% {
-            transform: translateY(1px) scale(0.998);
-          }
-          100% {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-          }
+        .split-card .face.face1 h3 {
+          margin: 4px 0 2px;
+          padding: 0;
+          color: #FFFFFF;
+          text-align: center;
+          font-size: 1.35rem;
+          font-weight: 800;
+        }
+
+        .split-card .face.face1 span {
+          color: rgba(255, 255, 255, 0.85);
+          font-size: 0.82rem;
+          font-weight: 600;
+        }
+
+        .split-card .face.face2 {
+          position: absolute;
+          background: #FFFFFF;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          padding: 20px;
+          box-sizing: border-box;
+          box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+          border: 1px solid #E2E8F0;
+          transform: translateY(60px);
+          z-index: 1;
+        }
+
+        .split-card:hover .face.face2 {
+          transform: translateY(120px);
+        }
+
+        .split-card .face.face2 .content {
+          text-align: center;
+        }
+
+        .split-card .face.face2 .content p {
+          margin: 0 0 10px;
+          padding: 0;
+          font-size: 0.82rem;
+          color: #475569;
+          line-height: 1.45;
+        }
+
+        .split-card .face.face2 .content a {
+          margin: 0;
+          display: inline-block;
+          text-decoration: none;
+          font-weight: 700;
+          font-size: 0.78rem;
+          padding: 5px 12px;
+          border: 1px solid #1B4143;
+          border-radius: 6px;
+          color: #1B4143;
+          transition: 0.3s;
+        }
+
+        .split-card .face.face2 .content a:hover {
+          background: #1B4143;
+          color: #FFFFFF;
         }
 
         .jitter-filter-bar {
-          animation: jitterBarEntry 0.85s cubic-bezier(0.16, 1, 0.3, 1) both;
           transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .jitter-filter-bar:hover {
-          box-shadow: 0 16px 36px -10px rgba(15, 23, 42, 0.1), 0 0 0 1px rgba(0, 136, 72, 0.15);
-          transform: translateY(-2px);
         }
 
         .jitter-pill-btn {
@@ -409,18 +508,6 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
 
         .jitter-pill-btn:hover {
           transform: translateY(-2px) scale(1.05);
-        }
-
-        .jitter-pill-btn:active {
-          transform: scale(0.94);
-        }
-
-        .jitter-input-control {
-          transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .jitter-input-control:hover {
-          border-color: #94A3B8;
         }
 
         .jitter-input-control:focus {
@@ -442,18 +529,15 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
           aria-hidden="true"
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
         >
-          <source src="/videos/landing.mp4" type="video/mp4" />
+          <source src={videoLanding} type="video/mp4" />
         </video>
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, rgba(37, 84, 86,0.85) 0%, rgba(15,23,42,0.65) 55%, rgba(0,0,0,0.4) 100%)' }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, rgba(27, 65, 67, 0.88) 0%, rgba(15,23,42,0.65) 55%, rgba(0,0,0,0.4) 100%)' }} />
         <div style={{ position: 'relative', zIndex: 2, maxWidth: '1200px', width: '100%', height: '100%', margin: '0 auto', padding: '0 6%', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', justifyContent: 'center', color: '#FFFFFF' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', backgroundColor: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(6px)', padding: '6px 14px', borderRadius: '999px', fontSize: '13px', fontWeight: '600', marginBottom: '16px', width: 'fit-content' }}>
-            Portal Resmi E-Governance Jawa Barat
-          </div>
           <h1 style={{ fontSize: '44px', fontWeight: '800', lineHeight: '1.2', margin: '0 0 16px', maxWidth: '750px', textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>
             SI-UMKM Jawa Barat
           </h1>
           <p style={{ fontSize: '16px', lineHeight: '1.6', maxWidth: '620px', margin: '0 0 26px', color: 'rgba(255,255,255,0.9)' }}>
-            Sistem Informasi & Integrasi Layanan UMKM Jawa Barat. Menghubungkan lebih dari 7,05 juta potensi UMKM dengan fasilitasi legalitas dan investasi digital.
+            Sistem Informasi & Integrasi Layanan UMKM Jawa Barat. Menghubungkan potensi UMKM dengan fasilitasi legalitas dan investasi digital.
           </p>
           <button
             onClick={handlePindahKePelatihan}
@@ -468,59 +552,75 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
       {/* Main Content */}
       <main style={{ flex: 1, maxWidth: '1200px', width: '100%', margin: 'auto', padding: '0 20px 50px', boxSizing: 'border-box' }}>
         
-        {/* Ringkasan Data (Cards dengan Animasi 3D Tilt, Shine Sweep, dan Soft Elevation) */}
-        <section style={{ marginBottom: '45px' }}>
-          <div style={{ textAlign: 'center', marginBottom: '28px' }}>
-            <span style={{ fontSize: '13px', fontWeight: '600', color: '#64748B', display: 'block', marginBottom: '6px' }}>Data Terkini</span>
+        {/* Ringkasan Data: Animasi Card Sliding Split (Hover Effect CodePen) */}
+        <section style={{ marginBottom: '90px' }}>
+          <div style={{ textAlign: 'center', marginBottom: '16px' }}>
+            <span style={{ fontSize: '13px', fontWeight: '600', color: '#64748B', display: 'block', marginBottom: '6px' }}>Data Terkini Database</span>
             <h2 style={{ margin: 0, fontSize: '26px', fontWeight: '800', color: '#0F172A' }}>UMKM DI JAWA BARAT</h2>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '22px', maxWidth: '1050px', margin: '0 auto' }}>
-            
+          <div className="split-card-container">
             {/* Card 1: Total UMKM */}
-            <div className="stat-card-animated">
-              <div className="stat-icon-wrapper">
-                <Building2 size={22} />
+            <div className="split-card">
+              <div className="face face1">
+                <div className="content">
+                  <div className="icon-box">
+                    <Building2 size={26} />
+                  </div>
+                  <h3>{umkmList.length > 0 ? `${umkmList.length.toLocaleString('id-ID')} Unit` : 'Memuat...'}</h3>
+                  <span>Total UMKM Terdata</span>
+                </div>
               </div>
-              <div style={{ fontSize: '0.84rem', fontWeight: '600', color: '#64748B', marginBottom: '6px' }}>
-                Total UMKM Terdata
-              </div>
-              <div className="stat-number-animated" style={{ fontSize: '1.65rem', fontWeight: '800', color: '#0F172A' }}>
-                {umkmList.length > 0 ? `${umkmList.length.toLocaleString('id-ID')} Unit` : 'Memuat Data...'}
-              </div>
-            </div>
-
-            {/* Card 2: Wilayah Sebaran */}
-            <div className="stat-card-animated">
-              <div className="stat-icon-wrapper">
-                <Map size={22} />
-              </div>
-              <div style={{ fontSize: '0.84rem', fontWeight: '600', color: '#64748B', marginBottom: '6px' }}>
-                Wilayah Sebaran
-              </div>
-              <div className="stat-number-animated" style={{ fontSize: '1.65rem', fontWeight: '800', color: '#0F172A' }}>
-                27 Kab / Kota
+              <div className="face face2">
+                <div className="content">
+                  <p>Jumlah unit usaha binaan yang terdaftar dan terverifikasi secara resmi di basis data SI-UMKM Jabar.</p>
+                  <a href="#peta-section">Lihat Persebaran</a>
+                </div>
               </div>
             </div>
 
-            {/* Card 3: Sektor Prioritas */}
-            <div className="stat-card-animated">
-              <div className="stat-icon-wrapper">
-                <Layers size={22} />
+            {/* Card 2: Wilayah Terjangkau */}
+            <div className="split-card">
+              <div className="face face1">
+                <div className="content">
+                  <div className="icon-box">
+                    <Map size={26} />
+                  </div>
+                  <h3>{Object.keys(dynamicDataWilayah).length > 0 ? `${Object.keys(dynamicDataWilayah).length} Kab/Kota` : '27 Wilayah'}</h3>
+                  <span>Wilayah Terjangkau</span>
+                </div>
               </div>
-              <div style={{ fontSize: '0.84rem', fontWeight: '600', color: '#64748B', marginBottom: '6px' }}>
-                Sektor Prioritas
-              </div>
-              <div className="stat-number-animated" style={{ fontSize: '1.65rem', fontWeight: '800', color: '#0F172A' }}>
-                4 Sektor Utama
+              <div className="face face2">
+                <div className="content">
+                  <p>Cakupan spasial komoditas pelaku usaha mikro di seluruh kabupaten dan kota se-Jawa Barat.</p>
+                  <a href="#peta-section">Eksplorasi Wilayah</a>
+                </div>
               </div>
             </div>
 
+            {/* Card 3: Sektor Terintegrasi */}
+            <div className="split-card">
+              <div className="face face1">
+                <div className="content">
+                  <div className="icon-box">
+                    <Layers size={26} />
+                  </div>
+                  <h3>5 Sektor Utama</h3>
+                  <span>Sektor Terintegrasi</span>
+                </div>
+              </div>
+              <div className="face face2">
+                <div className="content">
+                  <p>Mencakup komoditas Kuliner, Fashion, Kriya & Kerajinan, Agribisnis, serta Jasa & Mebel.</p>
+                  <a href="#peta-section">Filter Komoditas</a>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 
-        {/* Filter Bar Interaktif & Animatif (Jitter Motion Style) */}
-        <div className="jitter-filter-bar" style={{
+        {/* Filter Bar Interaktif */}
+        <div id="peta-section" className="jitter-filter-bar" style={{
           backgroundColor: '#FFFFFF',
           border: '1px solid #E2E8F0',
           borderRadius: '16px',
@@ -533,9 +633,8 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
           gap: '14px',
           boxShadow: '0 4px 20px -2px rgba(15, 23, 42, 0.05)'
         }}>
-          {/* Tombol Kategori Pill */}
           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-            {['Semua', 'Kuliner', 'Fashion', 'Kerajinan', 'Jasa'].map((kat) => (
+            {['Semua', 'Kuliner', 'Fashion', 'Kerajinan', 'Agribisnis', 'Jasa'].map((kat) => (
               <button
                 key={kat}
                 onClick={() => setFilterActive(kat)}
@@ -557,7 +656,6 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
             ))}
           </div>
 
-          {/* Form Pencarian & Dropdown Wilayah */}
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flex: '1', maxWidth: '580px' }}>
             <select
               value={selectedKabKota}
@@ -609,11 +707,11 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
               <div style={{ fontWeight: '700', fontSize: '0.95rem', color: '#0F172A' }}>Pemetaan Spasial Komoditas</div>
               <div style={{ fontSize: '0.74rem', color: '#64748B' }}>
-                {zoomLevel < 9 ? '*Mode Poligon Tematik (Perbesar/zoom peta untuk melihat detail titik UMKM)' : '*Arahkan kursor ke titik UMKM'}
+                {zoomLevel < 9 ? '*Arahkan kursor ke titik UMKM' : '*Klik pada titik UMKM untuk melihat detail'}
               </div>
             </div>
 
-            {/* Legenda */}
+            {/* Legenda Wilayah */}
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', padding: '8px 12px', backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '8px', marginBottom: '12px', fontSize: '0.75rem', color: '#334155' }}>
               {zoomLevel < 9 && KELOMPOK_MAPCHART.map((k) => (
                 <div key={k.warna} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -622,10 +720,11 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
                 </div>
               ))}
               {zoomLevel >= 9 && <>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#EAB308' }}></span><span><strong>Kuning:</strong> Aksesoris & Kriya</span></div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#255456' }}></span><span><strong>Hijau:</strong> Makanan & Minuman</span></div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#9333EA' }}></span><span><strong>Ungu:</strong> Fashion & Batik</span></div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#0284C7' }}></span><span><strong>Biru:</strong> Jasa, Mebel & Lainnya</span></div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: WARNA_SEKTOR['Kerajinan & Kriya'] }}></span><span><strong>Kuning:</strong> Kriya & Aksesoris</span></div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: WARNA_SEKTOR['Kuliner'] }}></span><span><strong>Hijau Tua:</strong> Kuliner</span></div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: WARNA_SEKTOR['Fashion'] }}></span><span><strong>Ungu:</strong> Fashion & Batik</span></div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: WARNA_SEKTOR['Agribisnis & Peternakan'] }}></span><span><strong>Hijau:</strong> Agribisnis</span></div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: WARNA_SEKTOR['Jasa & Lainnya'] }}></span><span><strong>Biru:</strong> Jasa & Mebel</span></div>
               </>}
             </div>
 
@@ -642,11 +741,11 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
                   <Pane name="wilayah" style={{ zIndex: 350 }}>
                   {zoomLevel < 9 ? (
                     <GeoJSON
-                      key="wilayah-berwarna"
+                      key={`wilayah-berwarna-${umkmList.length}`}
                       pane="wilayah"
                       data={geoData}
                       style={styleWilayah}
-                      onEachFeature={onEachWilayah}
+                      onEachFeature={handleEachWilayah}
                     />
                   ) : (
                     <GeoJSON
@@ -693,7 +792,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
 
                       <Popup>
                         <div style={{ fontSize: '0.85rem' }}>
-                          <h4 style={{ margin: '0 0 4px 0', color: '#255456' }}>{item.nama_usaha}</h4>
+                          <h4 style={{ margin: '0 0 4px 0', color: '#1B4143' }}>{item.nama_usaha}</h4>
                           <p style={{ margin: '0 0 6px 0', color: '#64748B', fontSize: '0.78rem' }}>{item.alamat || item.kabupaten_kota}</p>
                           <span style={{ display: 'inline-block', backgroundColor: markerColor, color: '#fff', padding: '2px 8px', borderRadius: '4px', fontSize: '0.72rem', fontWeight: '700' }}>
                             {item.kategori}
@@ -742,7 +841,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
                     </div>
                     <button
                       onClick={() => setSelectedUMKM(item)}
-                      style={{ backgroundColor: '#fff', border: '1px solid #CBD5E1', color: '#255456', fontSize: '0.76rem', fontWeight: '600', padding: '5px 10px', borderRadius: '6px', cursor: 'pointer', width: '100%' }}
+                      style={{ backgroundColor: '#fff', border: '1px solid #CBD5E1', color: '#1B4143', fontSize: '0.76rem', fontWeight: '600', padding: '5px 10px', borderRadius: '6px', cursor: 'pointer', width: '100%' }}
                     >
                       Lihat Profil Lengkap
                     </button>
@@ -771,10 +870,10 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
               <div style={{ backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '10px', padding: '14px', marginBottom: '20px' }}>
                 <div style={{ fontSize: '0.75rem', fontWeight: '700', color: '#475569', marginBottom: '4px' }}>KEUNGGULAN PRODUK:</div>
                 <div style={{ fontSize: '0.85rem', color: '#0F172A', fontStyle: 'italic' }}>
-                  "{getKeunggulanText(selectedUMKM.kategori)}"
+                  "{getKeunggulanText(normalisasiKategori(selectedUMKM.kategori))}"
                 </div>
               </div>
-              <button onClick={() => setSelectedUMKM(null)} style={{ width: '100%', backgroundColor: '#255456', color: '#FFFFFF', border: 'none', borderRadius: '8px', padding: '10px', fontWeight: '700', fontSize: '0.85rem', cursor: 'pointer' }}>
+              <button onClick={() => setSelectedUMKM(null)} style={{ width: '100%', backgroundColor: '#1B4143', color: '#FFFFFF', border: 'none', borderRadius: '8px', padding: '10px', fontWeight: '700', fontSize: '0.85rem', cursor: 'pointer' }}>
                 Tutup
               </button>
             </div>
@@ -785,7 +884,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
         <section ref={pelatihanSectionRef} style={{ marginBottom: '50px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '20px' }}>
             <h2 style={{ fontSize: '24px', fontWeight: '800', color: '#0F172A', margin: 0 }}>Pelatihan</h2>
-            <button onClick={handlePindahKePelatihan} style={{ background: 'none', border: 'none', color: '#255456', fontWeight: '700', fontSize: '0.88rem', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+            <button onClick={handlePindahKePelatihan} style={{ background: 'none', border: 'none', color: '#1B4143', fontWeight: '700', fontSize: '0.88rem', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
               Lihat Selengkapnya <ArrowRight size={16} />
             </button>
           </div>
@@ -796,7 +895,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
             onMouseLeave={() => setIsPelatihanHovered(false)}
             onTouchStart={() => setIsPelatihanHovered(true)}
             onTouchEnd={() => setIsPelatihanHovered(false)}
-            style={{ overflowX: 'auto', overflowY: 'hidden', scrollbarWidth: 'thin', scrollbarColor: '#255456 #E2E8F0' }}
+            style={{ overflowX: 'auto', overflowY: 'hidden', scrollbarWidth: 'thin', scrollbarColor: '#1B4143 #E2E8F0' }}
           >
             <div style={{ display: 'flex', gap: '18px', width: 'max-content', padding: '8px 2px 16px 2px', boxSizing: 'border-box' }}>
               {DAFTAR_PELATIHAN.map((item) => (
@@ -805,7 +904,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
                   style={{ flex: '0 0 min(280px, 82vw)', backgroundColor: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', overflow: 'hidden', display: 'flex', flexDirection: 'column', transition: 'transform 0.25s ease, box-shadow 0.25s ease', transform: 'translateY(0)', boxShadow: '0 2px 8px rgba(15,23,42,0.06)' }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.transform = 'translateY(-6px)';
-                    e.currentTarget.style.boxShadow = '0 14px 24px rgba(37,84,86,0.18)';
+                    e.currentTarget.style.boxShadow = '0 14px 24px rgba(27,65,67,0.18)';
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.transform = 'translateY(0)';
@@ -819,7 +918,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
                     <h3 style={{ margin: '0 0 16px', fontSize: '0.9rem', fontWeight: '700', color: '#0F172A' }}>{item.title}</h3>
                     <button
                       onClick={handlePindahKePelatihan}
-                      style={{ backgroundColor: '#F1F5F9', color: '#255456', border: 'none', borderRadius: '6px', padding: '8px 12px', fontSize: '0.78rem', fontWeight: '700', cursor: 'pointer', width: '100%' }}
+                      style={{ backgroundColor: '#F1F5F9', color: '#1B4143', border: 'none', borderRadius: '6px', padding: '8px 12px', fontSize: '0.78rem', fontWeight: '700', cursor: 'pointer', width: '100%' }}
                     >
                       Selengkapnya
                     </button>
@@ -831,14 +930,14 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
         </section>
 
         {/* Section Komunitas */}
-        <section style={{ backgroundColor: 'rgba(217,155,38,0.82)', backdropFilter: 'blur(14px)', border: '1px solid rgba(255,255,255,0.3)', boxShadow: '0 12px 32px rgba(37,84,86,0.18)', borderRadius: '20px', padding: '40px', color: '#FFFFFF', display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '30px', alignItems: 'center' }}>
+        <section style={{ backgroundColor: 'rgba(217,155,38,0.82)', backdropFilter: 'blur(14px)', border: '1px solid rgba(255,255,255,0.3)', boxShadow: '0 12px 32px rgba(27,65,67,0.18)', borderRadius: '20px', padding: '40px', color: '#FFFFFF', display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '30px', alignItems: 'center' }}>
           <div>
-            <h2 style={{ fontSize: '28px', fontWeight: '800', color: '#255456', margin: '0 0 12px' }}>Bergabung ke Komunitas</h2>
+            <h2 style={{ fontSize: '28px', fontWeight: '800', color: '#1B4143', margin: '0 0 12px' }}>Bergabung ke Komunitas</h2>
             <p style={{ fontSize: '14px', lineHeight: '1.6', margin: '0 0 24px', color: 'rgba(255,255,255,0.92)' }}>
               Terhubung dengan ribuan pelaku UMKM se-Jawa Barat. Berbagi pengalaman, tips bisnis, informasi pelatihan, dan peluang kolaborasi bersama komunitas yang aktif.
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '28px', fontSize: '0.86rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}><Users size={18} /><span>12.400+ anggota aktif dari seluruh Jawa Barat</span></div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}><Users size={18} /><span>12.000+ anggota aktif dari seluruh Jawa Barat</span></div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}><MessageSquare size={18} /><span>Sharing tips bisnis dan peluang usaha</span></div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}><Calendar size={18} /><span>Info pelatihan dan event terbaru</span></div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}><Radio size={18} /><span>Networking dan kolaborasi antar UMKM</span></div>
@@ -848,14 +947,14 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
               target="_blank"
               rel="noopener noreferrer"
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#255456';
+                e.currentTarget.style.backgroundColor = '#1B4143';
                 e.currentTarget.style.color = '#FFFFFF';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'rgba(37,84,86,0.45)';
+                e.currentTarget.style.backgroundColor = 'rgba(27,65,67,0.45)';
                 e.currentTarget.style.color = '#FFFFFF';
               }}
-              style={{ backgroundColor: 'rgba(37,84,86,0.45)', color: '#FFFFFF', textDecoration: 'none', padding: '12px 28px', borderRadius: '8px', fontWeight: '700', fontSize: '0.9rem', display: 'inline-flex', alignItems: 'center', transition: 'background-color 0.25s ease, color 0.25s ease' }}
+              style={{ backgroundColor: 'rgba(27,65,67,0.45)', color: '#FFFFFF', textDecoration: 'none', padding: '12px 28px', borderRadius: '8px', fontWeight: '700', fontSize: '0.9rem', display: 'inline-flex', alignItems: 'center', transition: 'background-color 0.25s ease, color 0.25s ease' }}
             >
               Gabung Sekarang
             </a>

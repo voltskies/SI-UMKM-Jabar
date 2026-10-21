@@ -1,17 +1,17 @@
+import os
 import requests
+from dotenv import load_dotenv
 
-EMAILJS_SERVICE_ID = "service_vr07rh"
-EMAILJS_TEMPLATE_ID = "template_318btwq"
-EMAILJS_PUBLIC_KEY = "BrC6NgRExKr6v1fz7"
-EMAILJS_PRIVATE_KEY = "zYpeOxs0DJs7daltfD0vk"
+load_dotenv()
+
+EMAILJS_SERVICE_ID = os.getenv("EMAILJS_SERVICE_ID", "service_vr07rh")
+EMAILJS_TEMPLATE_ID = os.getenv("EMAILJS_TEMPLATE_ID", "template_318btwq")
+EMAILJS_PUBLIC_KEY = os.getenv("EMAILJS_PUBLIC_KEY", "BrC6NgRExKr6v1fz7")
+EMAILJS_PRIVATE_KEY = os.getenv("EMAILJS_PRIVATE_KEY", "zYpeOxs0DJs7daltfD0vk")
 
 EMAILJS_API_URL = "https://api.emailjs.com/api/v1.0/email/send"
 
 def send_otp_email(to_email: str, otp_code: str):
-    """
-    Kirim email OTP melalui EmailJS via HTTPS Port 443.
-    Bisa kirim ke email publik mana pun tanpa terblokir firewall atau batasan domain.
-    """
     payload = {
         "service_id": EMAILJS_SERVICE_ID,
         "template_id": EMAILJS_TEMPLATE_ID,
@@ -19,6 +19,7 @@ def send_otp_email(to_email: str, otp_code: str):
         "accessToken": EMAILJS_PRIVATE_KEY,
         "template_params": {
             "email": to_email,
+            "to_email": to_email,
             "passcode": otp_code
         }
     }

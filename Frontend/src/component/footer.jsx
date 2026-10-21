@@ -52,10 +52,6 @@ export default function Footer() {
               <MapPin size={16} style={{ flexShrink: 0, marginTop: '2px' }} />
               <span>Jl. Soekarno-Hatta No. 705, Bandung</span>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Phone size={15} />
-              <span>(022) 7302775</span>
-            </div>
           </div>
         </div>
       </div>
