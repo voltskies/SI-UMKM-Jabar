@@ -29,7 +29,7 @@ export default function AdminApp({ user, onKeluar, onLogout, onKembali, setHalam
       };
 
   const halaman = {
-    dashboard: <DashboardAdmin go={go} />,
+    dashboard: <DashboardAdmin go={go} user={activeAdminUser} />,
     bantuan: <BantuanAdmin selectedId={nav.id} go={go} />,
     legalitas: <LegalitasAdmin selectedId={nav.id} />,
     akun: <AkunAdmin />,

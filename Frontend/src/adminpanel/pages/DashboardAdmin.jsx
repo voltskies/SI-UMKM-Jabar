@@ -5,7 +5,7 @@ import { Header, Card, Badge, Btn, StatCard, C, grid } from '../components/commo
 
 const API_BASE_URL = `http://${window.location.hostname || '127.0.0.1'}:8000`;
 
-export default function DashboardAdmin({ go }) {
+export default function DashboardAdmin({ go, user }) {
   const [bantuanList, setBantuanList] = useState([]);
   const [sertifList, setSertifList] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -41,7 +41,7 @@ export default function DashboardAdmin({ go }) {
     <>
       <Header
         crumbs={['Portal Layanan', 'Dashboard']}
-        title="Selamat Datang, Admin Dinas"
+        title={`Selamat Datang, ${user?.nama || 'Admin Dinas'}`}
         desc="Kelola pengajuan layanan UMKM dan pantau verifikasi berkas permohonan secara real-time."
         right={<Badge>{`Hari ini, ${hariIni}`}</Badge>}
       />

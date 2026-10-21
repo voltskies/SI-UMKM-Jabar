@@ -183,10 +183,10 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
     <div style={{ backgroundColor: '#F8FAFC', minHeight: '100vh', display: 'flex', flexDirection: 'column', fontFamily: 'Inter, system-ui, sans-serif' }}>
       
       {/* 1. Header / Navbar */}
-      <Navbar setHalaman={setHalaman} user={user} />
+      <Navbar setHalaman={setHalaman} user={user} mode="solid-sticky" />
 
       {/* 2. Konten Utama Form Bantuan */}
-      <main style={{ flex: 1, width: '100%', maxWidth: '900px', margin: '0 auto', padding: '40px 20px 60px 20px', boxSizing: 'border-box' }}>
+      <main style={{ flex: 1, width: '100%', maxWidth: '900px', margin: '0 auto', padding: '32px 20px 60px 20px', boxSizing: 'border-box' }}>
         
         {/* Tombol Navigasi Kembali */}
         <button
@@ -198,7 +198,7 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
             gap: '8px',
             background: 'none',
             border: 'none',
-            color: '#164E43',
+            color: '#255456',
             fontWeight: '700',
             fontSize: '0.9rem',
             cursor: 'pointer',
@@ -206,8 +206,8 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
             padding: 0,
             transition: 'color 0.15s ease'
           }}
-          onMouseEnter={(e) => (e.currentTarget.style.color = '#008848')}
-          onMouseLeave={(e) => (e.currentTarget.style.color = '#164E43')}
+          onMouseEnter={(e) => (e.currentTarget.style.color = '#255456')}
+          onMouseLeave={(e) => (e.currentTarget.style.color = '#255456')}
         >
           <ArrowLeft size={18} /> Kembali ke Halaman Utama
         </button>
@@ -255,7 +255,7 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
           <form onSubmit={handleSubmit}>
             {/* Bagian 1: Data Pemohon */}
             <div style={{ marginBottom: '28px' }}>
-              <h3 style={{ fontSize: '1.05rem', fontWeight: '700', color: '#164E43', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <h3 style={{ fontSize: '1.05rem', fontWeight: '700', color: '#255456', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <User size={18} /> 1. Informasi Pemohon
               </h3>
               
@@ -325,7 +325,7 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
 
             {/* Bagian 2: Data Usaha & Kebutuhan Bantuan */}
             <div style={{ marginBottom: '28px' }}>
-              <h3 style={{ fontSize: '1.05rem', fontWeight: '700', color: '#164E43', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <h3 style={{ fontSize: '1.05rem', fontWeight: '700', color: '#255456', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Building2 size={18} /> 2. Rincian Usaha & Kebutuhan Dana
               </h3>
 
@@ -414,7 +414,7 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
 
             {/* Bagian 3: Dokumen Pendukung */}
             <div style={{ marginBottom: '32px' }}>
-              <h3 style={{ fontSize: '1.05rem', fontWeight: '700', color: '#164E43', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <h3 style={{ fontSize: '1.05rem', fontWeight: '700', color: '#255456', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Upload size={18} /> 3. Berkas Persyaratan (Maks. 7 MB)
               </h3>
 
@@ -432,7 +432,7 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
                     style={{ fontSize: '0.78rem', width: '100%' }} 
                   />
                   {files.file_ktp && (
-                    <div style={{ fontSize: '0.76rem', color: '#16A34A', marginTop: '6px' }}>
+                    <div style={{ fontSize: '0.76rem', color: '#255456', marginTop: '6px' }}>
                       ✓ {files.file_ktp.name}
                     </div>
                   )}
@@ -450,7 +450,7 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
                     style={{ fontSize: '0.78rem', width: '100%' }} 
                   />
                   {files.file_kk && (
-                    <div style={{ fontSize: '0.76rem', color: '#16A34A', marginTop: '6px' }}>
+                    <div style={{ fontSize: '0.76rem', color: '#255456', marginTop: '6px' }}>
                       ✓ {files.file_kk.name}
                     </div>
                   )}
@@ -468,7 +468,7 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
                     style={{ fontSize: '0.78rem', width: '100%' }} 
                   />
                   {files.file_nib && (
-                    <div style={{ fontSize: '0.76rem', color: '#16A34A', marginTop: '6px' }}>
+                    <div style={{ fontSize: '0.76rem', color: '#255456', marginTop: '6px' }}>
                       ✓ {files.file_nib.name}
                     </div>
                   )}
@@ -486,7 +486,7 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
                     style={{ fontSize: '0.78rem', width: '100%' }} 
                   />
                   {files.file_proposal && (
-                    <div style={{ fontSize: '0.76rem', color: '#16A34A', marginTop: '6px' }}>
+                    <div style={{ fontSize: '0.76rem', color: '#255456', marginTop: '6px' }}>
                       ✓ {files.file_proposal.name}
                     </div>
                   )}
@@ -500,7 +500,7 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
               disabled={loading}
               style={{
                 width: '100%',
-                backgroundColor: loading ? '#94A3B8' : '#164E43',
+                backgroundColor: loading ? '#94A3B8' : '#255456',
                 color: '#FFFFFF',
                 border: 'none',
                 borderRadius: '10px',
@@ -509,7 +509,7 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
                 fontSize: '0.95rem',
                 cursor: loading ? 'not-allowed' : 'pointer',
                 transition: '0.2s',
-                boxShadow: '0 4px 14px rgba(22, 78, 67, 0.25)'
+                boxShadow: '0 4px 14px rgba(37, 84, 86, 0.25)'
               }}
             >
               {loading ? 'Mengunggah Berkas ke Supabase...' : 'Kirim Permohonan Bantuan Modal'}
@@ -542,7 +542,7 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
             textAlign: 'center',
             boxShadow: '0 20px 25px -5px rgba(0,0,0,0.2)'
           }}>
-            <div style={{ display: 'inline-flex', padding: '14px', backgroundColor: '#DCFCE7', borderRadius: '50%', color: '#16A34A', marginBottom: '16px' }}>
+            <div style={{ display: 'inline-flex', padding: '14px', backgroundColor: '#eaf1f1', borderRadius: '50%', color: '#255456', marginBottom: '16px' }}>
               <CheckCircle2 size={44} />
             </div>
 
@@ -555,12 +555,12 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
 
             <div style={{
               backgroundColor: '#F8FAFC',
-              border: '2px dashed #008848',
+              border: '2px dashed #255456',
               borderRadius: '8px',
               padding: '12px',
               fontSize: '1.15rem',
               fontWeight: '800',
-              color: '#008848',
+              color: '#255456',
               letterSpacing: '1px',
               marginBottom: '24px'
             }}>
@@ -574,7 +574,7 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
               }}
               style={{
                 width: '100%',
-                backgroundColor: '#164E43',
+                backgroundColor: '#255456',
                 color: '#FFFFFF',
                 border: 'none',
                 borderRadius: '8px',

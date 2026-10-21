@@ -23,7 +23,7 @@ export default function NotifikasiToast({ show, message, onClose, duration = 300
         position: 'fixed',
         bottom: '28px',
         right: '28px',
-        backgroundColor: '#164E43',
+        backgroundColor: '#255456',
         color: '#FFFFFF',
         padding: '14px 18px',
         borderRadius: '12px',
@@ -51,7 +51,7 @@ export default function NotifikasiToast({ show, message, onClose, duration = 300
       `}</style>
 
       {/* Ikon Sukses */}
-      <CheckCircle size={20} color="#4ADE80" style={{ flexShrink: 0 }} />
+      <CheckCircle size={20} color="#a6c6c7" style={{ flexShrink: 0 }} />
 
       {/* Pesan Notifikasi */}
       <span
