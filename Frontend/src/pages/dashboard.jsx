@@ -44,7 +44,6 @@ const KABUPATEN_KOTA_JABAR = [
   'Kota Cimahi', 'Kota Tasikmalaya', 'Kota Banjar'
 ];
 
-// Helper ekstraksi nama wilayah dari GeoJSON
 const namaWilayah = (f) => {
   const { NAME_2: n, TYPE_2: t } = f.properties || {};
   if (!n) return '';
@@ -52,7 +51,6 @@ const namaWilayah = (f) => {
   return t === 'Kabupaten' ? `Kabupaten ${n}` : n;
 };
 
-// Normalisasi nama wilayah untuk sinkronisasi database
 const bersihkanNamaWilayah = (str = '') => {
   return String(str)
     .toLowerCase()
@@ -61,7 +59,7 @@ const bersihkanNamaWilayah = (str = '') => {
     .trim();
 };
 
-// Palet warna per cluster wilayah
+// Per wilayah
 const KELOMPOK_MAPCHART = [
   { warna: '#cc3333', wilayah: ['bandung'] },
   { warna: '#762a83', wilayah: ['bogor', 'subang', 'cirebon', 'pangandaran'] },
@@ -222,7 +220,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
     fetchUMKM();
   }, []);
 
-  // Hitung data dominan dan rincian per wilayah secara real-time dari backend
+  // Hitung per wilayah
   const dynamicDataWilayah = useMemo(() => {
     const peta = {};
 
@@ -267,7 +265,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
     return peta;
   }, [umkmList]);
 
-  // Style poligon wilayah: Warna berdasarkan kelompok wilayah
+  // Style wilayah
   const styleWilayah = (feature) => ({
     weight: 0.8,
     opacity: 0.8,
@@ -276,7 +274,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
     fillOpacity: 0.55
   });
 
-  // Hover & Tooltip membaca data riil dari backend
+  // Hover
   const handleEachWilayah = (feature, layer) => {
     const nama = namaWilayah(feature);
     const key = bersihkanNamaWilayah(nama);
@@ -355,7 +353,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
   return (
     <div style={{ backgroundColor: '#F8FAFC', minHeight: '100vh', display: 'flex', flexDirection: 'column', fontFamily: 'Inter, system-ui, sans-serif' }}>
       
-      {/* CSS Animasi Split Hover Card (Adaptasi Style CodePen) */}
+      {/* Animasi card */}
       <style>{`
         .split-card-container {
           width: 100%;
@@ -552,7 +550,6 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
       {/* Main Content */}
       <main style={{ flex: 1, maxWidth: '1200px', width: '100%', margin: 'auto', padding: '0 20px 50px', boxSizing: 'border-box' }}>
         
-        {/* Ringkasan Data: Animasi Card Sliding Split (Hover Effect CodePen) */}
         <section style={{ marginBottom: '90px' }}>
           <div style={{ textAlign: 'center', marginBottom: '16px' }}>
             <span style={{ fontSize: '13px', fontWeight: '600', color: '#64748B', display: 'block', marginBottom: '6px' }}>Data Terkini Database</span>
@@ -619,7 +616,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
           </div>
         </section>
 
-        {/* Filter Bar Interaktif */}
+        {/* Filter Bar */}
         <div id="peta-section" className="jitter-filter-bar" style={{
           backgroundColor: '#FFFFFF',
           border: '1px solid #E2E8F0',
@@ -700,7 +697,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
           </div>
         </div>
 
-        {/* Map Section & List */}
+        {/* Map Section */}
         <div style={{ display: 'grid', gridTemplateColumns: '1.7fr 1fr', gap: '20px', alignItems: 'start', marginBottom: '50px' }}>
           
           <div style={{ backgroundColor: '#fff', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '16px' }}>

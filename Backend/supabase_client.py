@@ -4,11 +4,9 @@ from fastapi import UploadFile, HTTPException
 from supabase import create_client, Client
 from dotenv import load_dotenv
 
-# Muat variabel environment dari .env
 load_dotenv()
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
-# Utamakan secret key (service role), atau gunakan publishable/anon key jika secret tidak tersedia
 SUPABASE_KEY = os.getenv("SUPABASE_KEY") or os.getenv("SUPABASE_PUBLISHABLE_KEY")
 BUCKET_NAME = os.getenv("SUPABASE_BUCKET", "umkm-files")
 
@@ -18,7 +16,6 @@ if not SUPABASE_URL or not SUPABASE_KEY:
 # Inisialisasi koneksi ke Supabase Client
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# Format file yang diizinkan untuk diunggah (PDF, PNG, JPG/JPEG)
 ALLOWED_MIME_TYPES = ["application/pdf", "image/jpeg", "image/png", "image/jpg"]
 
 async def upload_file_to_supabase(file: UploadFile, folder: str = "berkas") -> str:
@@ -51,7 +48,7 @@ async def upload_file_to_supabase(file: UploadFile, folder: str = "berkas") -> s
             detail="Ukuran file terlalu besar! Maksimal ukuran file adalah 5 MB."
         )
 
-    # 3. Format penamaan berkas agar unik dan aman
+    # 3. Format penamaan berkas agar unik
     timestamp = int(time.time())
     file_ext = os.path.splitext(file.filename)[1].lower()
     clean_base_name = os.path.splitext(os.path.basename(file.filename))[0].replace(" ", "_")

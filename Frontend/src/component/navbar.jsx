@@ -31,7 +31,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
   const isDashboardMode = mode === 'dashboard';
   const isSolidSticky = mode === 'solid-sticky' || isDashboardMode;
 
-  // Pantau scroll dan resize layar
+  // resize
   useEffect(() => {
     const handleResize = () => {
       const mobile = window.innerWidth < 900;
@@ -267,7 +267,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
         right: 0,
         width: '100%',
         boxSizing: 'border-box',
-        // KUNCI LENGKUNG DI SEMUA PERANGKAT:
+        // lengkung
         borderBottomLeftRadius: '24px',
         borderBottomRightRadius: '24px',
         borderTopLeftRadius: '0px',
@@ -276,7 +276,6 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
         fontFamily: 'Inter, system-ui, sans-serif',
         zIndex: 1000
       }}>
-        {/* Brand / Logo (Dikunci agar teks tidak melipat) */}
         <div 
           onClick={() => setHalaman('dashboard')}
           style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', whiteSpace: 'nowrap' }}
@@ -286,7 +285,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
           </span>
         </div>
 
-        {/* Menu Navigasi Desktop (Hanya muncul jika layar > 900px) */}
+        {/* Menu dekstop*/}
         {!isMobile && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '28px', fontSize: '0.9rem', fontWeight: '500' }}>
             <span
@@ -364,7 +363,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
           </div>
         )}
         
-        {/* Bagian Kanan: Lonceng Notifikasi & Menu User */}
+        {/* lonceng */}
         <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '8px' : '16px' }} ref={userMenuRef}>
           <button
             type="button"
@@ -406,7 +405,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
             )}
           </button>
 
-          {/* Tombol Menu Profil */}
+          {/* Tombol profil*/}
           <div style={{ position: 'relative' }}>
             <button
               type="button"
@@ -445,7 +444,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
               </div>
             </button>
 
-            {/* Menu Dropdown Desktop */}
+            {/* dropdown dekstop*/}
             {!isMobile && dropdownUser && (
               <div style={{
                 position: 'absolute',
@@ -523,7 +522,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
         </div>
       </nav>
 
-      {/* ===== MENU DRAWER RESPONSIVE UNTUK MOBILE ===== */}
+      {/* untuk mobile */}
       {isMobile && mobileMenuOpen && (
         <div style={{
           position: 'fixed',
@@ -601,7 +600,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
         </div>
       )}
 
-      {/* ===== SIDEBAR NOTIFIKASI ===== */}
+      {/* sidebar notif*/}
       {sidebarNotifOpen && (
         <>
           <div

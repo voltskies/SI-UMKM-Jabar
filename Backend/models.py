@@ -16,7 +16,7 @@ class User(Base):
     role = Column(String(20), default="umum")  # umum / admin
     created_at = Column(DateTime, default=datetime.utcnow)
 
-    # Otomatis langsung aktif tanpa perlu OTP pendaftaran
+    # Otomatis
     is_verified = Column(Boolean, default=True, nullable=False)
     
     # Kolom OTP digunakan saat Lupa Password

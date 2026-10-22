@@ -86,9 +86,7 @@ class VerifikasiRequest(BaseModel):
     catatan_admin: Optional[str] = None
 
 
-# ==========================================
 # 1. UMUM & AUTENTIKASI PENGGUNA
-# ==========================================
 
 @app.get("/", tags=["Umum"], summary="Cek Kesiapan Server API")
 def read_root():
@@ -192,9 +190,7 @@ def login_user(payload: LoginUserRequest, db: Session = Depends(get_db)):
     }
 
 
-# ==========================================
 # 2. ALUR LUPA PASSWORD
-# ==========================================
 
 @app.post("/api/v1/auth/forgot-password", tags=["Umum"], summary="Kirim Kode OTP Lupa Password")
 def forgot_password(payload: ForgotPasswordRequest, db: Session = Depends(get_db)):
@@ -270,9 +266,7 @@ def reset_password(payload: ResetPasswordRequest, db: Session = Depends(get_db))
     }
 
 
-# ==========================================
 # 3. PELAKU UMKM DAN LAYANAN
-# ==========================================
 
 @app.get("/api/v1/umkm", tags=["Pelaku UMKM"], summary="Ambil Direktori Data UMKM")
 def get_all_umkm(
@@ -453,9 +447,7 @@ async def ajukan_sertifikasi(
     return {"status": "success", "nomor_registrasi": no_reg}
 
 
-# ==========================================
 # 4. UPLOAD STANDALONE
-# ==========================================
 
 @app.post("/api/pelatihan/upload", tags=["Pelatihan"], summary="Upload Mandiri Berkas Pelatihan")
 async def upload_berkas_pelatihan(file: UploadFile = File(...)):
@@ -477,9 +469,7 @@ async def upload_berkas_sertifikasi(file: UploadFile = File(...)):
     }
 
 
-# ==========================================
 # 5. ADMIN DINAS & AUTENTIKASI ADMIN
-# ==========================================
 
 @app.post("/api/v1/auth/admin/register", tags=["Admin Dinas"], status_code=status.HTTP_201_CREATED, summary="Registrasi Admin Dinas")
 def register_admin(payload: RegisterAdminRequest, db: Session = Depends(get_db)):

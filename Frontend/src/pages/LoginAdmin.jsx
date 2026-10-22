@@ -9,7 +9,6 @@ import bgLogin from '../assets/diskuk.jpg';
 
 const API_BASE_URL = 'http://127.0.0.1:8000';
 
-// Kredensial EmailJS Browser SDK (Port 443 HTTPS)
 const EMAILJS_SERVICE_ID = 'service_vr07rh';
 const EMAILJS_TEMPLATE_ID = 'template_318btwq';
 const EMAILJS_PUBLIC_KEY = 'BrC6NgRExKr6v1fz7';
@@ -135,7 +134,7 @@ export default function LoginAdmin({ setHalaman, onLoginSukses }) {
     }
   };
 
-  // Handler Lupa Password Admin Tahap 1: Kirim Kode OTP via EmailJS
+  // Handler Lupa Password Admin1
   const handleKirimOtpAdmin = async (e) => {
     e.preventDefault();
     const targetEmail = forgotEmail.trim().toLowerCase();
@@ -171,7 +170,7 @@ export default function LoginAdmin({ setHalaman, onLoginSukses }) {
     }
   };
 
-  // Handler Lupa Password Admin Tahap 2: Validasi OTP & Update Password ke Database
+  // Handler Lupa Password Admin2
   const handleResetPasswordAdmin = async (e) => {
     e.preventDefault();
     const targetEmail = forgotEmail.trim().toLowerCase();
@@ -328,7 +327,6 @@ export default function LoginAdmin({ setHalaman, onLoginSukses }) {
                   </button>
                 </Field>
 
-                {/* Baris Lupa Password (Persis di Bawah Input Password Seperti Form Pengguna) */}
                 {!isRegister && (
                   <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginTop: '-4px' }}>
                     <span
@@ -395,7 +393,7 @@ export default function LoginAdmin({ setHalaman, onLoginSukses }) {
         </div>
       </div>
 
-      {/* MODAL POP-UP LUPA PASSWORD ADMIN (Identik dengan Modal Pengguna) */}
+      {/* MODAL POP-UP LUPA PASSWORD ADMIN */}
       {showForgotModal && (
         <div style={{
           position: 'fixed',
