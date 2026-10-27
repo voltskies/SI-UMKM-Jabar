@@ -9,14 +9,20 @@ load_dotenv()
 DB_USER = os.getenv("DB_USER", "root")
 DB_PASSWORD = os.getenv("DB_PASSWORD", "")
 DB_HOST = os.getenv("DB_HOST", "localhost")
-DB_PORT = os.getenv("DB_PORT", "3306")
+DB_PORT = os.getenv("DB_PORT", "4000")
 DB_NAME = os.getenv("DB_NAME", "db_egov")
 
-DATABASE_URL = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+DATABASE_URL = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}?ssl_verify_cert=true&ssl_verify_identity=true"
 
 engine = create_engine(
     DATABASE_URL,
-    pool_pre_ping=True
+    pool_pre_ping=True,
+    connect_args={
+        "ssl": {
+            "ssl_verify_cert": True,
+            "ssl_verify_identity": True
+        }
+    }
 )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
