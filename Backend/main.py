@@ -621,3 +621,5 @@ def get_semua_user(db: Session = Depends(get_db)):
             "instansi": "Pelaku UMKM Jawa Barat" if u.role == "umum" else "Dinas"
         })
     return {"status": "success", "data": data}
+
+app = app
