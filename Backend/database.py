@@ -1,21 +1,27 @@
 import os
 from sqlalchemy import create_engine
+from sqlalchemy.engine import URL
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from dotenv import load_dotenv
 
 load_dotenv()
 
-DB_USER = os.getenv("DB_USER", "root")
-DB_PASSWORD = os.getenv("DB_PASSWORD", "")
-DB_HOST = os.getenv("DB_HOST", "localhost")
-DB_PORT = os.getenv("DB_PORT", "4000")
-DB_NAME = os.getenv("DB_NAME", "db_egov")
-
-DATABASE_URL = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}?ssl_verify_cert=true&ssl_verify_identity=true"
+db_url = URL.create(
+    drivername="mysql+pymysql",
+    username=os.getenv("DB_USER", "root").strip(),
+    password=os.getenv("DB_PASSWORD", "").strip(),
+    host=os.getenv("DB_HOST", "localhost").strip(),
+    port=int(os.getenv("DB_PORT", 4000)),
+    database=os.getenv("DB_NAME", "db_egov").strip(),
+    query={
+        "ssl_verify_cert": "true",
+        "ssl_verify_identity": "true"
+    }
+)
 
 engine = create_engine(
-    DATABASE_URL,
+    db_url,
     pool_pre_ping=True,
     connect_args={
         "ssl": {
