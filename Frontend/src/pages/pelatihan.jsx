@@ -55,7 +55,7 @@ export default function Pelatihan({ onKembali, onPilihPelatihan, setHalaman, use
       judul: 'Pelatihan Digitalisasi dan Pemasaran Online',
       kuota: 250,
       peserta: 180,
-      banner: fotoPelatihan1,
+      banner: '/pelatihan1.jpeg',
       tag: 'Pemasaran & E-Commerce',
       penyelenggara: 'Dinas KUK Jawa Barat',
       deskripsi: 'Strategi optimasi media sosial, live selling, dan onboarding marketplace untuk ekspansi pasar produk UMKM Jawa Barat.'
@@ -66,7 +66,7 @@ export default function Pelatihan({ onKembali, onPilihPelatihan, setHalaman, use
       judul: 'Pelatihan Manajemen Keuangan dan Administrasi Kas Usaha',
       kuota: 150,
       peserta: 95,
-      banner: fotoPelatihan2,
+      banner: '/pelatihan2.jpg',
       tag: 'Tata Kelola Kas',
       penyelenggara: 'Pusat Layanan Usaha Terpadu (PLUT)',
       deskripsi: 'Penyusunan laporan arus kas sederhana, pemisahan keuangan pribadi dan modal usaha, serta mitigasi kredit pembiayaan.'
@@ -77,7 +77,7 @@ export default function Pelatihan({ onKembali, onPilihPelatihan, setHalaman, use
       judul: 'Pelatihan Legalitas Perizinan NIB dan Standarisasi Sertifikasi Halal',
       kuota: 300,
       peserta: 240,
-      banner: fotoPelatihan3,
+      banner: '/pelatihan3.jpg',
       tag: 'NIB & Sertifikasi Halal',
       penyelenggara: 'Dinas Penanaman Modal & KUK',
       deskripsi: 'Fasilitasi teknis pengurusan Nomor Induk Berusaha (NIB) berbasis OSS, SPP-IRT, serta panduan sertifikasi halal self-declare.'
@@ -88,7 +88,7 @@ export default function Pelatihan({ onKembali, onPilihPelatihan, setHalaman, use
       judul: 'Pelatihan Inovasi Mutu dan Kurasi Standardisasi Kemasan Produk',
       kuota: 120,
       peserta: 70,
-      banner: fotoPelatihan4,
+      banner: '/pelatihan4.jpg',
       tag: 'Kemasan & Nilai Tambah',
       penyelenggara: 'Balai Standardisasi Industri Jabar',
       deskripsi: 'Peningkatan daya tarik kemasan komoditas kriya dan makanan olahan agar higienis, berdaya saing ritel modern, dan ramah lingkungan.'

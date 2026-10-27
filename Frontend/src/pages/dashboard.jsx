@@ -205,7 +205,8 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
 
   const fetchUMKM = async () => {
     try {
-      const res = await axios.get('http://127.0.0.1:8000/api/v1/umkm');
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://si-umkm-jabar.vercel.app';
+      const res = await axios.get(`${API_BASE_URL}/api/v1/umkm`);
       const resData = res.data;
       const dataArray = Array.isArray(resData)
         ? resData
@@ -957,7 +958,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
             </a>
           </div>
           <div style={{ height: '270px', borderRadius: '14px', overflow: 'hidden', border: '3px solid rgba(255,255,255,0.3)' }}>
-            <img src="/src/assets/komunitas_umkm_jabar.jpg" alt="Komunitas UMKM" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            <img src="/komunitas_umkm_jabar.jpg" alt="Komunitas UMKM" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           </div>
         </section>
 
