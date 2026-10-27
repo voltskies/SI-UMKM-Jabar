@@ -1,19 +1,25 @@
 \documentclass[conference]{IEEEtran}
 \IEEEoverridecommandlockouts
-
 \usepackage{cite}
 \usepackage{amsmath,amssymb,amsfonts}
 \usepackage{algorithmic}
 \usepackage{graphicx}
+\usepackage[space]{grffile}
 \usepackage{textcomp}
 \usepackage{xcolor}
 \usepackage{booktabs}
-\usepackage[caption=false,font=footnotesize]{subfig}
+\usepackage{subcaption}
 \usepackage{url}
-\usepackage[space]{grffile}
-\usepackage{placeins}
+\usepackage{dblfloatfix}
 
 \graphicspath{{image_tex/}}
+
+% Toleransi float layout dua kolom IEEE
+\renewcommand{\topfraction}{0.95}
+\renewcommand{\dbltopfraction}{0.95}
+\renewcommand{\textfraction}{0.05}
+\renewcommand{\floatpagefraction}{0.85}
+\renewcommand{\dblfloatpagefraction}{0.85}
 
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
@@ -22,22 +28,21 @@
 
 \title{SI-UMKM Jabar: Rancang Bangun Sistem Informasi dan Layanan Terpadu UMKM Jawa Barat}
 
-\author{
-    \IEEEauthorblockN{1\textsuperscript{st} Vania Rahmawati}
-    \IEEEauthorblockA{\textit{PSDKU Lamongan D3 Teknik Informatika} \\
-    \textit{Politeknik Elektronika Negeri Surabaya}\\
-    Lamongan, Jawa Timur, Indonesia}
-    \and
-    \IEEEauthorblockN{2\textsuperscript{nd} Reva Fadillah Susetya}
-    \IEEEauthorblockA{\textit{PSDKU Lamongan D3 Teknik Informatika} \\
-    \textit{Politeknik Elektronika Negeri Surabaya}\\
-    Lamongan, Jawa Timur, Indonesia}
+\author{\IEEEauthorblockN{1\textsuperscript{st} Vania Rahmawati}
+\IEEEauthorblockA{\textit{PSDKU Lamongan D3 Teknik Informatika} \\
+\textit{Politeknik Elektronika Negeri Surabaya}\\
+Lamongan, Jawa Timur, Indonesia}
+\and
+\IEEEauthorblockN{2\textsuperscript{nd} Reva Fadillah Susetya}
+\IEEEauthorblockA{\textit{PSDKU Lamongan D3 Teknik Informatika} \\
+\textit{Politeknik Elektronika Negeri Surabaya}\\
+Lamongan, Jawa Timur, Indonesia}
 }
 
 \maketitle
 
 \begin{abstract}
-Sektor Usaha Mikro, Kecil, dan Menengah (UMKM) memegang peranan krusial dalam pertumbuhan ekonomi Jawa Barat. Namun, publikasi data UMKM saat ini masih terfragmentasi dan disajikan dalam format tabular statis, sementara alur pelayanan pengajuan program bantuan, perizinan, dan pelatihan masih berjalan secara terpisah tanpa mekanisme pelacakan yang terpadu. Penelitian ini bertujuan merancang dan mengimplementasikan SI-UMKM Jabar, sebuah platform e-governance terpadu berbasis web yang memadukan visualisasi geografis interaktif dan layanan mandiri pelaku usaha. Sistem dibangun dengan arsitektur RESTful API menggunakan framework FastAPI dan basis data MySQL, yang mendukung digitalisasi verifikasi berkas secara langsung oleh administrator. Evaluasi performa sistem melalui uji beban multi-skala dari 50 hingga 500 Virtual Users (VUs) menunjukkan backend mampu beroperasi optimal pada rentang 50--300 VUs dengan rata-rata latensi rendah antara 192 ms hingga 271 ms, throughput mencapai 616,96 req/s, serta tingkat kegagalan respon 0,00\%. Namun, titik jenuh tercapai pada beban puncak 500 VUs dengan peningkatan latensi rata-rata menjadi 407 ms dan error rate mencapai 60,25\%. Selain keandalan arsitektur, evaluasi penerimaan sistem diuji menggunakan pendekatan Technology Acceptance Model (TAM) pada variabel persepsi kebermanfaatan dan kemudahan penggunaan dengan tingkat penerimaan sebesar [XX,XX]\%. Platform ini diharapkan dapat mempercepat alur birokrasi layanan serta mempermudah pemetaan potensi sebaran UMKM secara transparan dan terukur.
+Sektor Usaha Mikro, Kecil, dan Menengah (UMKM) memegang peranan krusial dalam pertumbuhan ekonomi Jawa Barat. Namun, publikasi data UMKM saat ini masih terfragmentasi dan disajikan dalam format tabular statis, sementara alur pelayanan pengajuan program bantuan, perizinan, dan pelatihan masih berjalan secara terpisah tanpa mekanisme pelacakan yang terpadu. Penelitian ini bertujuan merancang dan mengimplementasikan SI-UMKM Jabar, sebuah platform e-governance terpadu berbasis web yang memadukan visualisasi geografis interaktif dan layanan mandiri pelaku usaha. Sistem dibangun dengan arsitektur RESTful API menggunakan framework FastAPI dan basis data MySQL, yang mendukung digitalisasi verifikasi berkas secara langsung oleh administrator. Evaluasi performa sistem melalui uji beban multi-skala dari 50 hingga 500 Virtual Users (VUs) menunjukkan backend mampu beroperasi optimal pada rentang 50--300 VUs dengan rata-rata latensi rendah antara 192 ms hingga 271 ms, throughput mencapai 616,96 req/s, serta tingkat kegagalan respon 0,00\%. Namun, titik jenuh tercapai pada beban puncak 500 VUs dengan peningkatan latensi rata-rata menjadi 407 ms dan error rate mencapai 60,25\%. Platform ini diharapkan dapat mempercepat alur birokrasi layanan serta mempermudah pemetaan potensi sebaran UMKM secara transparan dan terukur.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -46,103 +51,141 @@ SI-UMKM Jabar, E-Governance, FastAPI, Pemetaan UMKM, REST API, ReactJS, TAM
 
 \section{Pendahuluan}
 \subsection{Latar Belakang}
-Sektor Usaha Mikro, Kecil, dan Menengah (UMKM) merupakan penopang utama stabilitas ekonomi daerah Jawa Barat dengan populasi lebih dari 7,05 juta unit usaha~\cite{kurniawan2023, amin2024}. Perkembangan transparansi data pemerintah daerah melalui portal data terbuka mendorong optimalisasi tata kelola dan pemanfaatan informasi publik secara lebih luas~\cite{kurniawan2023, firmansyah2023}. Namun, penyediaan data terbuka tersebut belum sepenuhnya diimbangi oleh saluran partisipasi yang interaktif serta keterpaduan tindak lanjut layanan administrasi~\cite{firmansyah2023, subowo2023}. Publikasi data yang masih disajikan secara tabular statis menyulitkan para pelaku usaha, mitra bisnis, maupun penyalur barang dalam membaca potensi sebaran niaga secara kontekstual~\cite{kurniawan2023, amin2024, insologi2022}.
+Sektor Usaha Mikro, Kecil, dan Menengah (UMKM) merupakan penopang utama stabilitas ekonomi daerah Jawa Barat dengan populasi lebih dari 7,05 juta unit usaha [1], [2]. Perkembangan transparansi data pemerintah daerah melalui portal data terbuka mendorong optimalisasi tata kelola dan pemanfaatan informasi publik secara lebih luas [1], [3]. Namun, penyediaan data terbuka tersebut belum sepenuhnya diimbangi oleh saluran partisipasi yang interaktif serta keterpaduan tindak lanjut layanan administrasi [3], [4]. Publikasi data yang masih disajikan secara tabular statis menyulitkan para pelaku usaha, mitra bisnis, maupun penyalur barang dalam membaca potensi sebaran niaga secara kontekstual [1], [2], [5].
 
-Kondisi tersebut diperberat oleh saluran pengurusan program UMKM yang masih berjalan terpisah-pisah, mulai dari permohonan bantuan sarana modal, registrasi kurasi pelatihan, hingga perizinan legalitas~\cite{amin2024, subowo2023}. Ketiadaan pintu layanan terpusat membuat proses pengajuan minim fasilitas pelacakan status (\textit{tracking}) serta rentan terhadap kesalahan input data persyaratan administratif~\cite{firmansyah2023, subowo2023}. Pemanfaatan sistem informasi geografis interaktif yang dipadukan dengan layanan perizinan mandiri terbukti efektif mempercepat transparansi rantai layanan sektor publik~\cite{insologi2022, jtt2021}. Untuk menjawab persoalan ini, dibutuhkan keterpaduan sistem yang menyatukan transparansi data spasial dengan standarisasi alur pengajuan layanan publik dalam satu platform terpusat.
+Kondisi tersebut diperberat oleh saluran pengurusan program UMKM yang masih berjalan terpisah-pisah, mulai dari permohonan bantuan sarana modal, registrasi kurasi pelatihan, hingga perizinan legalitas [2], [4]. Ketiadaan pintu layanan terpusat membuat proses pengajuan minim fasilitas pelacakan status (\textit{tracking}) serta rentan terhadap kesalahan input data persyaratan administratif [3], [4]. Pemanfaatan sistem informasi geografis interaktif yang dipadukan dengan layanan perizinan mandiri terbukti efektif mempercepat transparansi rantai layanan sektor publik [5], [7]. Untuk menjawab persoalan ini, dibutuhkan keterpaduan sistem yang menyatukan transparansi data spasial dengan standarisasi alur pengajuan layanan publik dalam satu platform terpusat.
 
-Berdasarkan permasalahan tersebut, penelitian ini mengusulkan SI-UMKM Jabar sebagai platform terintegrasi berbasis web yang memadukan visualisasi peta sebaran kategori usaha berkode warna dan digitalisasi layanan mandiri. Sistem menghubungkan pemohon secara langsung dengan panel verifikasi administrator melalui arsitektur backend FastAPI berkecepatan tinggi, integrasi formulir terstruktur, serta pelacakan status pengajuan secara \textit{real-time}. Untuk memastikan keandalan konkurensi layanan ketika diakses masyarakat secara massal, pengujian performa backend dilakukan secara komprehensif menggunakan simulasi beban bertahap Postman dari skala 50, 100, 200, 300, hingga 500 pengguna simultan (Virtual Users). Parameter evaluasi mencakup throughput transaksi, rata-rata latensi, respon persentil (P90, P95, P99), persentase error request, serta utilisasi perangkat keras (CPU dan RAM). Selain itu, untuk mengukur tingkat kesiapan dan penerimaan teknologi dari perspektif pengguna akhir, evaluasi kegunaan sistem disiapkan menggunakan instrumen \textit{Technology Acceptance Model} (TAM) yang berfokus pada persepsi kemudahan (\textit{perceived ease of use}) serta kemanfaatan sistem (\textit{perceived usefulness})~\cite{justindo2021}.
+Berdasarkan permasalahan tersebut, penelitian ini mengusulkan SI-UMKM Jabar sebagai platform terintegrasi berbasis web yang memadukan visualisasi peta sebaran kategori usaha berkode warna dan digitalisasi layanan mandiri. Sistem menghubungkan pemohon secara langsung dengan panel verifikasi administrator melalui arsitektur backend FastAPI berkecepatan tinggi, integrasi formulir terstruktur, serta pelacakan status pengajuan secara \textit{real-time}. Untuk memastikan keandalan konkurensi layanan ketika diakses masyarakat secara massal, pengujian performa backend dilakukan secara komprehensif menggunakan simulasi beban bertahap Postman dari skala 50, 100, 200, 300, hingga 500 pengguna simultan (\textit{Virtual Users}). Parameter evaluasi mencakup \textit{throughput} transaksi, rata-rata latensi, respon persentil (P90, P95, P99), persentase \textit{error request}, serta utilisasi perangkat keras (CPU dan RAM).
 
-\section{Architecture System}
-Arsitektur SI-UMKM Jabar dirancang berbasis pemisahan klien dan server (\textit{client-server separation}) untuk menjamin independensi antarmuka pengguna dan logika pemrosesan data melalui protokol RESTful API standar~\cite{jtt2021}, seperti ditampilkan pada Fig.~\ref{fig:arsitektur}.
+\section{Literature Review}
+Sebagai basis referensi empiris layanan daerah, penelitian ini merujuk pada portal resmi Dinas Koperasi dan Usaha Kecil (DISKUK) Provinsi Jawa Barat [8]. Portal tersebut menyediakan direktori program pembinaan, publikasi agenda UMKM, serta kanal informasi kebijakan pemerintah provinsi. Kendati demikian, penyediaan informasi dan fasilitas layanan publik pada portal eksisting masih bersifat satu arah dan terpisah antarsubdirektorat. Pelaku usaha belum memperoleh akses terpadu untuk memantau status berkas perizinan secara \textit{real-time}, dan visualisasi sebaran pelaku usaha belum terintegrasi secara dinamis ke dalam pemetaan tematik spasial 27 kabupaten/kota.
 
-\begin{figure}[!htbp]
-    \centering
-    \includegraphics[width=\columnwidth,height=0.34\textheight,keepaspectratio]{gambar 1.jpg}
-    \caption{Desain Arsitektur Sistem SI-UMKM Jabar.}\label{fig:arsitektur}
+Melihat keterbatasan tersebut, SI-UMKM Jabar dikembangkan sebagai bentuk eskalasi fungsional dan teknologis dari model layanan DISKUK yang ada:
+\begin{enumerate}[label=\alph*.]
+    \item \textbf{Single-Window Service}: Mengonsolidasikan alur pengajuan fasilitasi sarana, legalitas, dan kurasi pelatihan ke dalam satu akun terpadu pemohon yang terhubung langsung ke panel verifikasi admin.
+    \item \textbf{Transformasi Peta Spasial Dinamis}: Mengonversi data direktori wilayah ke dalam peta interaktif berbasis kode warna sebaran komoditas 27 kabupaten/kota untuk memudahkan analisis potensi ekonomi daerah.
+    \item \textbf{Real-Time Tracking}: Menyediakan fitur pelacakan status audit berkas bagi pelaku usaha secara transparan, didukung arsitektur RESTful API performa tinggi berbasis FastAPI serta penyimpanan berkas proposal pada \textit{cloud storage}.
+\end{enumerate}
+
+\section{Architecture \& Design System}
+Arsitektur SI-UMKM Jabar dirancang dengan mengadopsi prinsip pemisahan tanggung jawab antara antarmuka klien dan \textit{client-server separation} yang terhubung melalui antarmuka pertukaran data standar berbasis RESTful API, seperti ditampilkan pada Fig. 1. Struktur sistem dikelompokkan ke dalam empat lapisan fungsional utama, yaitu \textit{stakeholder layer}, \textit{frontend client layer}, lapisan logika bisnis dan API, serta lapisan penyimpanan data. Lapisan pengguna mengakomodasi tiga entitas utama dengan hak akses terisolasi, yang mencakup masyarakat umum untuk eksplorasi direktori niaga, pelaku UMKM untuk pengajuan layanan mandiri, serta fasilitator dinas sebagai administrator verifikator. Pada lapisan klien, antarmuka dibangun menggunakan arsitektur \textit{Single Page Application} (SPA) berbasis pustaka ReactJS guna memastikan transisi tampilan yang responsif tanpa \textit{full page reload}.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.47\textwidth,height=6.2cm,keepaspectratio]{"gambar 1.jpg"}
+\caption{Desain Arsitektur Sistem SI-UMKM Jabar.}
+\label{fig:arch}
 \end{figure}
 
-\section{Design System}
-Implementasi antarmuka front-end mengadopsi struktur perancangan desain terpadu yang memadukan komponen interaktif portal publik dan panel verifikasi internal dinas (Fig.~\ref{fig:design_system}).
+Komunikasi data antara antarmuka pengguna dan basis data diproses oleh lapisan backend berkinerja tinggi berbasis framework asinkron FastAPI. Lapisan ini mengintegrasikan mekanisme pengamanan rute melalui otentikasi \textit{stateless} JSON Web Token (JWT) berbasis peran, validasi skema data masukan secara ketat menggunakan model Pydantic, pemetaan relasi entitas melalui SQLAlchemy ORM, serta pemrosesan dokumen biner perizinan via Python multipart form parser. Untuk menjaga efisiensi I/O basis data saat melayani lonjakan request, sistem menerapkan strategi pemisahan penyimpanan. Seluruh data terstruktur dan log status pengajuan dikelola di dalam basis data relasional MySQL, sedangkan file fisik berkas legalitas dan proposal usaha dialokasikan secara terpisah pada Supabase Object Storage yang terhubung melalui rujukan URL aman.
 
-\begin{figure}[!htbp]
-    \centering
-    \includegraphics[width=\columnwidth,height=0.20\textheight,keepaspectratio]{gambar 2.jpg}
-    \caption{Design System Antarmuka SI-UMKM Jabar.}\label{fig:design_system}
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.47\textwidth,height=6.2cm,keepaspectratio]{"gambar 2.jpg"}
+\caption{Design System Antarmuka SI-UMKM Jabar.}
+\label{fig:design}
 \end{figure}
+
+Implementasi antarmuka frontend mengadopsi struktur perancangan \textit{design system} berbasis komponen modular guna menjamin konsistensi visual dan kemudahan navigasi pengguna, seperti diilustrasikan pada Fig. 2. Sistem antarmuka ini dibagi ke dalam dua lingkungan kerja utama, yaitu portal layanan mandiri publik dan panel audit verifikasi internal dinas. Portal publik menyediakan antarmuka visualisasi spasial 27 kabupaten/kota di Jawa Barat berbasis kode warna zonasi wilayah dan titik persebaran komoditas usaha secara interaktif, direktori katalog produk, serta modul pengajuan program fasilitasi yang dilengkapi fitur pelacakan status audit berkas secara \textit{real-time}. Sementara itu, panel internal dinas menyediakan tata letak dasbor verifikator yang mencakup tabel manajemen antrean berkas, fitur pratinjau dokumen persyaratan secara langsung, modul validasi persetujuan maupun penolakan bersyarat dengan catatan evaluasi terintegrasi, serta modul ekspor rekapitulasi data layanan untuk kebutuhan pelaporan administratif.
 
 \section{Flagship}
-Fitur unggulan platform menghadirkan visualisasi spasial interaktif 27 kabupaten/kota berbasis kode warna zonasi wilayah dan pengelompokan titik komoditas UMKM terverifikasi guna mempermudah akses informasi geografis secara akurat~\cite{insologi2022} (Fig.~\ref{fig:flagship}).
+Fitur unggulan platform menghadirkan visualisasi spasial interaktif 27 kabupaten/kota berbasis kode warna zonasi wilayah dan pengelompokan titik komoditas UMKM terverifikasi guna mempermudah akses informasi geografis secara akurat [5] (Fig. 3).
 
-\begin{figure}[!htbp]
-    \centering
-    \includegraphics[width=\columnwidth,height=0.18\textheight,keepaspectratio]{gambar 3.png}
-    \caption{Tampilan Antarmuka Layanan Unggulan SI-UMKM Jabar.}\label{fig:flagship}
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.47\textwidth,height=4.6cm,keepaspectratio]{"gambar 3.png"}
+\caption{Tampilan Antarmuka Layanan Unggulan SI-UMKM Jabar.}
+\label{fig:map}
 \end{figure}
 
 \section{Alur}
-Alur operasional sistem terbagi menjadi dua proses bisnis utama: alur mandiri oleh pemohon layanan (Fig.~\ref{fig:flow_pemohon}) dan alur audit berkas oleh administrator verifikator (Fig.~\ref{fig:flow_admin}). Tahapan pengajuan dimulai dari seleksi layanan, validasi akun, pengunggahan berkas legalitas, hingga penerbitan status registrasi. Administrator dinas kemudian memvalidasi dokumen dengan opsi persetujuan atau penolakan bersyarat disertai catatan evaluasi terintegrasi.
+Alur operasional sistem terbagi menjadi dua proses bisnis utama: alur mandiri oleh pemohon layanan (Fig. 4) dan alur audit berkas oleh administrator verifikator (Fig. 5). Tahapan pengajuan dimulai dari seleksi layanan, validasi akun, pengunggahan berkas legalitas, hingga penerbitan status registrasi. Administrator dinas kemudian memvalidasi dokumen dengan opsi persetujuan atau penolakan bersyarat disertai catatan evaluasi terintegrasi.
 
-\begin{figure}[!htbp]
-    \centering
-    \includegraphics[width=0.82\columnwidth,height=0.22\textheight,keepaspectratio]{gambar 4.jpg}
-    \caption{Flowchart Pemohon Layanan.}\label{fig:flow_pemohon}
-\end{figure}
-
-\begin{figure}[!htbp]
-    \centering
-    \includegraphics[width=0.82\columnwidth,height=0.22\textheight,keepaspectratio]{gambar 5.jpg}
-    \caption{Flowchart Verifikator Administrator.}\label{fig:flow_admin}
+\begin{figure}[htbp]
+\centering
+\begin{subfigure}[b]{0.23\textwidth}
+  \centering
+  \includegraphics[width=\textwidth,height=5.2cm,keepaspectratio]{"gambar 4.jpg"}
+  \caption{Flowchart Pemohon.}
+  \label{fig:flow_user}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.23\textwidth}
+  \centering
+  \includegraphics[width=\textwidth,height=5.2cm,keepaspectratio]{"gambar 5.jpg"}
+  \caption{Flowchart Verifikator.}
+  \label{fig:flow_admin}
+\end{subfigure}
+\caption{Alur Operasional: (a) Pemohon Layanan dan (b) Verifikator Admin.}
+\label{fig:flowcharts}
 \end{figure}
 
 \section{Pengujian}
-Pengujian kinerja dilakukan terhadap endpoint direktori UMKM (\textit{GET /api/v1/umkm}) menggunakan simulasi konkurensi bertingkat pada rentang 50 hingga 500 Virtual Users (VUs). Grafik pengujian beban pada Fig.~\ref{fig:postman_vus} dan rincian kuantitatif pada Table~\ref{tab:load_testing_results} menunjukkan backend beroperasi stabil hingga 300 VUs dengan throughput puncak 616,96 req/s dan tingkat kesalahan 0,00\%. Pada beban ekstrem 500 VUs, sistem mencapai ambang kapasitas layanan. Di samping evaluasi konkurensi jaringan, pengukuran tingkat penerimaan pengguna melalui model TAM mengonfirmasi kesiapan integrasi aplikasi dalam operasional pelayanan publik harian~\cite{justindo2021}.
-
-\begin{figure}[!htbp]
-    \centering
-    \subfloat[50 VUs.]{\includegraphics[width=0.48\columnwidth]{vus50.png}\label{fig:vus50}}
-    \hfill
-    \subfloat[100 VUs.]{\includegraphics[width=0.48\columnwidth]{vus100.png}\label{fig:vus100}}
-    
-    \vspace{0.1cm}
-    
-    \subfloat[200 VUs.]{\includegraphics[width=0.48\columnwidth]{vus200.png}\label{fig:vus200}}
-    \hfill
-    \subfloat[300 VUs.]{\includegraphics[width=0.48\columnwidth]{vus300.png}\label{fig:vus300}}
-    
-    \vspace{0.1cm}
-    
-    \subfloat[500 VUs.]{\includegraphics[width=0.52\columnwidth]{vus500.png}\label{fig:vus500}}
-    \caption{Hasil Pengujian Beban Kinerja Endpoint API pada Skala 50 hingga 500 Virtual Users.}\label{fig:postman_vus}
-\end{figure}
+Pengujian kinerja dilakukan terhadap endpoint direktori UMKM (\texttt{GET /api/v1/umkm}) menggunakan simulasi konkurensi bertingkat pada rentang 50 hingga 500 \textit{Virtual Users} (VUs). Grafik pengujian beban pada Fig. 6 dan rincian kuantitatif pada Table I menunjukkan backend beroperasi stabil hingga 300 VUs dengan throughput puncak 616,96 req/s dan tingkat kesalahan 0,00\%. Pada beban ekstrem 500 VUs, sistem mencapai ambang kapasitas layanan.
 
 \begin{table*}[!t]
+\caption{Hasil Pengujian Beban Kinerja Endpoint API Direktori UMKM (\texttt{GET /api/v1/umkm})}
+\label{tab:loadtest}
 \centering
-\caption{Hasil Pengujian Beban Kinerja Endpoint API Direktori UMKM (\textit{GET /api/v1/umkm})}\label{tab:load_testing_results}
-\resizebox{\textwidth}{!}{%
 \begin{tabular}{cccccccccc}
 \toprule
-\textbf{Virtual Users} & \textbf{Total Req.} & \textbf{Throughput (req/s)} & \textbf{Avg. Latency (ms)} & \textbf{P90 (ms)} & \textbf{P95 (ms)} & \textbf{P99 (ms)} & \textbf{Error (\%)} & \textbf{Peak CPU (\%)} & \textbf{Peak RAM (\%)} \\ 
+\textbf{Virtual Users} & \textbf{Total Req.} & \textbf{Throughput (req/s)} & \textbf{Avg. Latency (ms)} & \textbf{P90 (ms)} & \textbf{P95 (ms)} & \textbf{P99 (ms)} & \textbf{Error (\%)} & \textbf{Peak CPU (\%)} & \textbf{Peak RAM (\%)} \\
 \midrule
-50 VU   & 12.627 & 208,47 & 192 & 404   & 445   & 517   & 0,00  & 44,0 & 91,3 \\
-100 VU  & 20.896 & 345,26 & 217 & 430   & 487   & 749   & 0,00  & 60,2 & 94,0 \\
-200 VU  & 31.226 & 515,97 & 257 & 488   & 590   & 858   & 0,02  & 55,3 & 94,3 \\
-300 VU  & 37.336 & 616,96 & 271 & 458   & 535   & 886   & 0,00  & 59,0 & 93,2 \\
-500 VU  & 400    & 6,59   & 407 & 1.266 & 1.292 & 1.434 & 60,25 & 30,3 & 89,1 \\ 
+50 VU  & 12.627 & 208,47 & 192 & 404   & 445   & 517   & 0,00  & 44,0 & 91,3 \\
+100 VU & 20.896 & 345,26 & 217 & 430   & 487   & 749   & 0,00  & 60,2 & 94,0 \\
+200 VU & 31.226 & 515,97 & 257 & 488   & 590   & 858   & 0,02  & 55,3 & 94,3 \\
+300 VU & 37.336 & 616,96 & 271 & 458   & 535   & 886   & 0,00  & 59,0 & 93,2 \\
+500 VU & 400    & 6,59   & 407 & 1.266 & 1.292 & 1.434 & 60,25 & 30,3 & 89,1 \\
 \bottomrule
-\end{tabular}%
-}
+\end{tabular}
 \end{table*}
 
-\FloatBarrier
+\begin{figure*}[!t]
+\centering
+\begin{subfigure}[b]{0.31\textwidth}
+   \includegraphics[width=\textwidth]{vus50.png}
+   \caption{50 VUs.}
+   \label{fig:50vu}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.31\textwidth}
+   \includegraphics[width=\textwidth]{vus100.png}
+   \caption{100 VUs.}
+   \label{fig:100vu}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.31\textwidth}
+   \includegraphics[width=\textwidth]{vus200.png}
+   \caption{200 VUs.}
+   \label{fig:200vu}
+\end{subfigure}
 
+\vspace{1.5mm}
+\begin{subfigure}[b]{0.31\textwidth}
+   \includegraphics[width=\textwidth]{vus300.png}
+   \caption{300 VUs.}
+   \label{fig:300vu}
+\end{subfigure}
+\hspace{8mm}
+\begin{subfigure}[b]{0.31\textwidth}
+   \includegraphics[width=\textwidth]{vus500.png}
+   \caption{500 VUs.}
+   \label{fig:500vu}
+\end{subfigure}
+\caption{Hasil Pengujian Beban Kinerja Endpoint API pada Skala 50 hingga 500 Virtual Users.}
+\label{fig:loadtest}
+\end{figure*}
+
+\section*{References}
 \begin{thebibliography}{00}
-\bibitem{kurniawan2023} A.~S.~R. Kurniawan, ``Rancang Bangun Sistem Informasi Pengelolaan dan Pemetaan Data UMKM Berbasis Web,'' \textit{Jurnal Inovasi Komputer (JIK)}, vol.~7, no.~2, hlm. 88--96, 2023.
-\bibitem{amin2024} M.~F. Amin, ``Strategi Digitalisasi Pelaku Usaha Mikro Kecil Menengah dalam Meningkatkan Daya Saing Perekonomian Daerah,'' \textit{Jurnal Ekonomi dan Kewirausahaan (JEI)}, vol.~14, no.~1, hlm. 45--56, 2024.
-\bibitem{firmansyah2023} R.~Firmansyah dan E.~Utami, ``Rancang Bangun Sistem Informasi Pelayanan Publik Berbasis Web Menggunakan Pendekatan Framework Modern,'' \textit{Jurnal Informatika dan Sistem Komputer (JITET)}, vol.~11, no.~2, hlm. 201--210, 2023.
-\bibitem{subowo2023} H.~Subowo, ``Implementasi E-Government dalam Peningkatan Kualitas Layanan Administrasi Publik pada Instansi Pemerintahan Daerah,'' \textit{CosmoGov: Jurnal Ilmu Pemerintahan}, vol.~9, no.~1, hlm. 35--48, 2023.
-\bibitem{insologi2022} M.~I. Wahyuddin, D.~K. Utami, dan A.~Nugroho, ``Sistem Informasi Geografis Pemetaan Lokasi Usaha Mikro Kecil Menengah (UMKM),'' \textit{INSOLOGI: Jurnal Sains dan Teknologi}, vol.~1, no.~6, hlm. 750--759, 2022.
-\bibitem{justindo2021} D.~A. Puspitasari dan N.~L. Chusna, ``Analisis Penerimaan Sistem Informasi Menggunakan Technology Acceptance Model (TAM),'' \textit{JUSTINDO (Jurnal Sistem dan Teknologi Informasi Indonesia)}, vol.~6, no.~2, hlm. 77--85, 2021.
-\bibitem{jtt2021} F.~M. Al-Faruq dan S.~Nurlela, ``Rancang Bangun Aplikasi Pelayanan Masyarakat Berbasis Web Menggunakan RESTful API,'' \textit{Jurnal Teknologi Terpadu (JTT)}, vol.~7, no.~1, hlm. 35--43, 2021.
+\bibitem{b1} A. S. R. Kurniawan, ``Rancang Bangun Sistem Informasi Pengelolaan dan Pemetaan Data UMKM Berbasis Web,'' \textit{Jurnal Inovasi Komputer (JIK)}, vol. 7, no. 2, hlm. 88--96, 2023.
+\bibitem{b2} M. F. Amin, ``Strategi Digitalisasi Pelaku Usaha Mikro Kecil Menengah dalam Meningkatkan Daya Saing Perekonomian Daerah,'' \textit{Jurnal Ekonomi dan Kewirausahaan (JEI)}, vol. 14, no. 1, hlm. 45--56, 2024.
+\bibitem{b3} R. Firmansyah dan E. Utami, ``Rancang Bangun Sistem Informasi Pelayanan Publik Berbasis Web Menggunakan Pendekatan Framework Modern,'' \textit{Jurnal Informatika dan Sistem Komputer (JITET)}, vol. 11, no. 2, hlm. 201--210, 2023.
+\bibitem{b4} H. Subowo, ``Implementasi E-Government dalam Peningkatan Kualitas Layanan Administrasi Publik pada Instansi Pemerintahan Daerah,'' \textit{CosmoGov: Jurnal Ilmu Pemerintahan}, vol. 9, no. 1, hlm. 35--48, 2023.
+\bibitem{b5} M. I. Wahyuddin, D. K. Utami, dan A. Nugroho, ``Sistem Informasi Geografis Pemetaan Lokasi Usaha Mikro Kecil Menengah (UMKM),'' \textit{INSOLOGI: Jurnal Sains dan Teknologi}, vol. 1, no. 6, hlm. 750--759, 2022.
+\bibitem{b6} D. A. Puspitasari dan N. L. Chusna, ``Analisis Penerimaan Sistem Informasi Menggunakan Technology Acceptance Model (TAM),'' \textit{JUSTINDO (Jurnal Sistem dan Teknologi Informasi Indonesia)}, vol. 6, no. 2, hlm. 77--85, 2021.
+\bibitem{b7} F. M. Al-Faruq dan S. Nurlela, ``Rancang Bangun Aplikasi Pelayanan Masyarakat Berbasis Web Menggunakan RESTful API,'' \textit{Jurnal Teknologi Terpadu (JTT)}, vol. 7, no. 1, hlm. 35--43, 2021.
+\bibitem{b8} Dinas Koperasi dan Usaha Kecil Provinsi Jawa Barat, ``Portal Resmi Dinas Koperasi dan Usaha Kecil Provinsi Jawa Barat,'' \textit{DISKUK Jabar}, 2024. [Daring]. Tersedia: \url{https://diskuk.jabarprov.go.id/}.
 \end{thebibliography}
 
-\end{document}
+\end{document}.

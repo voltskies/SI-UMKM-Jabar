@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.9.30)  15 OCT 2026 08:29
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.9.30)  27 OCT 2026 12:50
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -212,6 +212,9 @@ File: pdftex.def 2025/09/29 v1.2d Graphics/color driver for pdftex
 ))
 \Gin@req@height=\dimen181
 \Gin@req@width=\dimen182
+) (D:\MikTEX\tex/latex/grffile\grffile.sty
+Package: grffile 2019/11/11 v2.1 Extended file name support for graphics (legacy)
+Package grffile Info: This package is an empty stub for compatibility on input line 40.
 ) (D:\MikTEX\tex/latex/base\textcomp.sty
 Package: textcomp 2024/04/24 v2.1b Standard LaTeX package
 ) (D:\MikTEX\tex/latex/xcolor\xcolor.sty
@@ -249,8 +252,10 @@ Package: booktabs 2020/01/12 v1.61803398 Publication quality tables
 \@thisruleclass=\count308
 \@lastruleclass=\count309
 \@thisrulewidth=\dimen195
-) (D:\MikTEX\tex/latex/subfig\subfig.sty
-Package: subfig 2005/06/28 ver: 1.3 subfig package
+) (D:\MikTEX\tex/latex/caption\subcaption.sty
+Package: subcaption 2023/07/28 v1.6b Sub-captions (AR)
+ (D:\MikTEX\tex/latex/caption\caption.sty
+Package: caption 2023/08/05 v3.6o Customizing captions (AR)
  (D:\MikTEX\tex/latex/caption\caption3.sty
 Package: caption3 2023/07/31 v2.4d caption3 kernel (AR)
 \caption@tempdima=\dimen196
@@ -265,61 +270,70 @@ Package caption Info: Unknown document class (or package),
 (caption)             standard defaults will be used.
 Package caption Info: \@makecaption = \long macro:#1#2->\ifx \@captype \@IEEEtablestring \footnotesize \bgroup \par \centering \@IEEEtabletopskipstrut {\normalfont \footnotesize #1}\\{\normalfont \footnotesize \scshape #2}\par \addvspace {0.5\baselineskip }\egroup \@IEEEtablecaptionsepspace \else \@IEEEfigurecaptionsepspace \setbox \@tempboxa \hbox {\normalfont \footnotesize {#1.}\nobreakspace \nobreakspace #2}\ifdim \wd \@tempboxa >\hsize \setbox \@tempboxa \hbox {\normalfont \footnotesize {#1.}\nobreakspace \nobreakspace }\parbox [t]{\hsize }{\normalfont \footnotesize \noindent \unhbox \@tempboxa #2}\else \ifCLASSOPTIONconference \hbox to\hsize {\normalfont \footnotesize \hfil \box \@tempboxa \hfil }\else \hbox to\hsize {\normalfont \footnotesize \box \@tempboxa \hfil }\fi \fi \fi  on input line 1175.
 )
-\c@KVtest=\count310
-\sf@farskip=\skip57
-\sf@captopadj=\dimen260
-\sf@capskip=\skip58
-\sf@nearskip=\skip59
-\c@subfigure=\count311
-\c@subfigure@save=\count312
-\c@lofdepth=\count313
-\c@subtable=\count314
-\c@subtable@save=\count315
-\c@lotdepth=\count316
-\sf@top=\skip60
-\sf@bottom=\skip61
+
+Package caption Warning: Unknown document class (or package),
+(caption)                standard defaults will be used.
+See the caption package documentation for explanation.
+
+\c@caption@flags=\count310
+\c@continuedfloat=\count311
+)
+Package caption Info: New subtype `subfigure' on input line 238.
+\c@subfigure=\count312
+Package caption Info: New subtype `subtable' on input line 238.
+\c@subtable=\count313
 ) (D:\MikTEX\tex/latex/url\url.sty
 \Urlmuskip=\muskip18
 Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
-) (D:\MikTEX\tex/latex/grffile\grffile.sty
-Package: grffile 2019/11/11 v2.1 Extended file name support for graphics (legacy)
-Package grffile Info: This package is an empty stub for compatibility on input line 40.
-) (D:\MikTEX\tex/latex/placeins\placeins.sty
-Package: placeins 2005/04/18  v 2.2
+) (D:\MikTEX\tex/latex/dblfloatfix\dblfloatfix.sty
+Package: dblfloatfix 2012/12/31 v1.0a (JAW)
+ (D:\MikTEX\tex/latex/base\fixltx2e.sty
+Package: fixltx2e 2016/12/29 v2.1a fixes to LaTeX (obsolete)
+Applying: [2015/01/01] Old fixltx2e package on input line 46.
+
+
+Package fixltx2e Warning: fixltx2e is not required with releases after 2015
+(fixltx2e)                All fixes are now in the LaTeX kernel.
+(fixltx2e)                See the latexrelease package for details.
+
+Already applied: [0000/00/00] Old fixltx2e package on input line 53.
+)
+\@dblbotnum=\count314
+\c@dblbotnumber=\count315
 ) (D:\MikTEX\tex/latex/l3backend\l3backend-pdftex.def
 File: l3backend-pdftex.def 2025-10-09 L3 backend support: PDF output (pdfTeX)
-\l__color_backend_stack_int=\count317
+\l__color_backend_stack_int=\count316
 ) (umkm.aux)
 \openout1 = `umkm.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 21.
-LaTeX Font Info:    ... okay on input line 21.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 21.
-LaTeX Font Info:    ... okay on input line 21.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 21.
-LaTeX Font Info:    ... okay on input line 21.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 21.
-LaTeX Font Info:    ... okay on input line 21.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 21.
-LaTeX Font Info:    ... okay on input line 21.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 21.
-LaTeX Font Info:    ... okay on input line 21.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 21.
-LaTeX Font Info:    ... okay on input line 21.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 27.
+LaTeX Font Info:    ... okay on input line 27.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 27.
+LaTeX Font Info:    ... okay on input line 27.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 27.
+LaTeX Font Info:    ... okay on input line 27.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 27.
+LaTeX Font Info:    ... okay on input line 27.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 27.
+LaTeX Font Info:    ... okay on input line 27.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 27.
+LaTeX Font Info:    ... okay on input line 27.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 27.
+LaTeX Font Info:    ... okay on input line 27.
 
 -- Lines per column: 56 (exact).
 (D:\MikTEX\tex/context/base/mkii\supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count318
-\scratchdimen=\dimen261
+\scratchcounter=\count317
+\scratchdimen=\dimen260
 \scratchbox=\box57
-\nofMPsegments=\count319
-\nofMParguments=\count320
+\nofMPsegments=\count318
+\nofMParguments=\count319
 \everyMPshowfont=\toks24
-\MPscratchCnt=\count321
-\MPscratchDim=\dimen262
-\MPnumerator=\count322
-\makeMPintoPDFobject=\count323
+\MPscratchCnt=\count320
+\MPscratchDim=\dimen261
+\MPnumerator=\count321
+\makeMPintoPDFobject=\count322
 \everyMPtoPDFconversion=\toks25
 ) (D:\MikTEX\tex/latex/epstopdf-pkg\epstopdf-base.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
@@ -328,106 +342,110 @@ Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 48
 File: epstopdf-sys.cfg 2021/03/18 v2.0 Configuration of epstopdf for MiKTeX
 ))
 Package caption Info: Begin \AtBeginDocument code.
-Package caption Info: subfig package v1.3 is loaded.
 Package caption Info: End \AtBeginDocument code.
-LaTeX Font Info:    Calculating math sizes for size <11> on input line 37.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 37.
+LaTeX Font Info:    Calculating math sizes for size <11> on input line 42.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 42.
  (D:\MikTEX\tex/latex/amsfonts\umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 37.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 42.
  (D:\MikTEX\tex/latex/amsfonts\umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-Underfull \hbox (badness 6691) in paragraph at lines 39--41
+Underfull \hbox (badness 6691) in paragraph at lines 44--46
 []\OT1/ptm/b/it/9 Abstract\OT1/ptm/b/n/9 ---Sektor Us-aha Mikro, Ke-cil, dan Menen-gah
  []
 
 
-Underfull \hbox (badness 1975) in paragraph at lines 39--41
+Underfull \hbox (badness 1975) in paragraph at lines 44--46
 \OT1/ptm/b/n/9 (UMKM) memegang per-anan kru-sial dalam per-tum-buhan
  []
 
 
-Underfull \hbox (badness 2368) in paragraph at lines 43--45
+Underfull \hbox (badness 2368) in paragraph at lines 48--50
 []\OT1/ptm/b/it/9 Index Terms\OT1/ptm/b/n/9 ---SI-UMKM Jabar, E-Governance, FastAPI,
- []
-
-<image_tex/gambar 1.jpg, id=1, 1544.77126pt x 2412.01125pt>
-File: image_tex/gambar 1.jpg Graphic file (type jpg)
-<use image_tex/gambar 1.jpg>
-Package pdftex.def Info: image_tex/gambar 1.jpg  used on input line 60.
-(pdftex.def)             Requested size: 146.30693pt x 228.44417pt.
-<image_tex/gambar 2.jpg, id=3, 1027.84pt x 770.88pt>
-File: image_tex/gambar 2.jpg Graphic file (type jpg)
-<use image_tex/gambar 2.jpg>
-Package pdftex.def Info: image_tex/gambar 2.jpg  used on input line 69.
-(pdftex.def)             Requested size: 179.18462pt x 134.38846pt.
-
-Underfull \hbox (badness 1371) in paragraph at lines 74--75
-\OT1/ptm/m/n/10 in-ter-ak-tif 27 kabu-paten/kota berba-sis kode warna zonasi
  []
 
 [1{C:/Users/LENOVO/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}{D:/MikTEX/fonts/enc/dvips/base/8r.enc}
 
 
 ]
+<image_tex/gambar 1.jpg, id=9, 1544.77126pt x 2412.01125pt>
+File: image_tex/gambar 1.jpg Graphic file (type jpg)
+<use image_tex/gambar 1.jpg>
+Package pdftex.def Info: image_tex/gambar 1.jpg  used on input line 75.
+(pdftex.def)             Requested size: 112.97714pt x 176.40291pt.
+
+Underfull \hbox (badness 1931) in paragraph at lines 80--81
+\OT1/ptm/m/n/10 mekanisme penga-manan rute melalui oten-tikasi \OT1/ptm/m/it/10 state-less
+ []
+
+<image_tex/gambar 2.jpg, id=11, 1027.84pt x 770.88pt>
+File: image_tex/gambar 2.jpg Graphic file (type jpg)
+<use image_tex/gambar 2.jpg>
+Package pdftex.def Info: image_tex/gambar 2.jpg  used on input line 84.
+(pdftex.def)             Requested size: 235.20627pt x 176.40471pt.
+
+Underfull \hbox (badness 1371) in paragraph at lines 92--93
+\OT1/ptm/m/n/10 in-ter-ak-tif 27 kabu-paten/kota berba-sis kode warna zonasi
+ []
+
 <image_tex/gambar 3.png, id=12, 606.46574pt x 277.035pt>
 File: image_tex/gambar 3.png Graphic file (type png)
 <use image_tex/gambar 3.png>
-Package pdftex.def Info: image_tex/gambar 3.png  used on input line 78.
-(pdftex.def)             Requested size: 252.00247pt x 115.11533pt.
+Package pdftex.def Info: image_tex/gambar 3.png  used on input line 96.
+(pdftex.def)             Requested size: 242.51721pt x 110.78244pt.
 <image_tex/gambar 4.jpg, id=13, 521.95pt x 1798.72pt>
 File: image_tex/gambar 4.jpg Graphic file (type jpg)
 <use image_tex/gambar 4.jpg>
-Package pdftex.def Info: image_tex/gambar 4.jpg  used on input line 87.
-(pdftex.def)             Requested size: 42.89574pt x 147.82535pt.
+Package pdftex.def Info: image_tex/gambar 4.jpg  used on input line 108.
+(pdftex.def)             Requested size: 42.9276pt x 147.93513pt.
 <image_tex/gambar 5.jpg, id=14, 722.7pt x 1734.48pt>
 File: image_tex/gambar 5.jpg Graphic file (type jpg)
 <use image_tex/gambar 5.jpg>
-Package pdftex.def Info: image_tex/gambar 5.jpg  used on input line 93.
-(pdftex.def)             Requested size: 61.59961pt x 147.83907pt.
-
-Underfull \hbox (badness 3260) in paragraph at lines 98--99
+Package pdftex.def Info: image_tex/gambar 5.jpg  used on input line 115.
+(pdftex.def)             Requested size: 61.64372pt x 147.94493pt.
+[2 <./image_tex/gambar 1.jpg> <./image_tex/gambar 2.jpg>]
+LaTeX Font Info:    Trying to load font information for OT1+pcr on input line 124.
+ (D:\MikTEX\tex/latex/psnfss\ot1pcr.fd
+File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
+)
+Underfull \hbox (badness 3260) in paragraph at lines 124--125
 []\OT1/ptm/m/n/10 Pengujian kin-erja di-lakukan ter-hadap end-point di-rek-
  []
 
 
-Underfull \hbox (badness 1616) in paragraph at lines 98--99
-\OT1/ptm/m/n/10 tori UMKM (\OT1/ptm/m/it/10 GET /api/v1/umkm\OT1/ptm/m/n/10 ) meng-gu-nakan sim-u-lasi
+Overfull \hbox (53.99721pt too wide) in paragraph at lines 130--141
+ [][] 
  []
 
-<image_tex/vus50.png, id=15, 554.07pt x 443.256pt>
+<image_tex/vus50.png, id=19, 554.07pt x 443.256pt>
 File: image_tex/vus50.png Graphic file (type png)
 <use image_tex/vus50.png>
-Package pdftex.def Info: image_tex/vus50.png  used on input line 102.
-(pdftex.def)             Requested size: 120.95892pt x 96.76587pt.
-<image_tex/vus100.png, id=16, 548.0475pt x 438.438pt>
+Package pdftex.def Info: image_tex/vus50.png  used on input line 146.
+(pdftex.def)             Requested size: 159.95874pt x 127.96603pt.
+<image_tex/vus100.png, id=20, 548.0475pt x 438.438pt>
 File: image_tex/vus100.png Graphic file (type png)
 <use image_tex/vus100.png>
-Package pdftex.def Info: image_tex/vus100.png  used on input line 104.
-(pdftex.def)             Requested size: 120.95892pt x 96.76439pt.
-<image_tex/vus200.png, id=17, 559.49025pt x 447.47176pt>
+Package pdftex.def Info: image_tex/vus100.png  used on input line 152.
+(pdftex.def)             Requested size: 159.95874pt x 127.96663pt.
+<image_tex/vus200.png, id=21, 559.49025pt x 447.47176pt>
 File: image_tex/vus200.png Graphic file (type png)
 <use image_tex/vus200.png>
-Package pdftex.def Info: image_tex/vus200.png  used on input line 108.
-(pdftex.def)             Requested size: 120.95892pt x 96.73712pt.
-<image_tex/vus300.png, id=18, 558.888pt x 446.8695pt>
+Package pdftex.def Info: image_tex/vus200.png  used on input line 158.
+(pdftex.def)             Requested size: 159.95874pt x 127.92679pt.
+<image_tex/vus300.png, id=22, 558.888pt x 446.8695pt>
 File: image_tex/vus300.png Graphic file (type png)
 <use image_tex/vus300.png>
-Package pdftex.def Info: image_tex/vus300.png  used on input line 110.
-(pdftex.def)             Requested size: 120.95892pt x 96.7092pt.
-<image_tex/vus500.png, id=19, 556.479pt x 445.06274pt>
+Package pdftex.def Info: image_tex/vus300.png  used on input line 165.
+(pdftex.def)             Requested size: 159.95874pt x 127.8978pt.
+<image_tex/vus500.png, id=23, 556.479pt x 445.06274pt>
 File: image_tex/vus500.png Graphic file (type png)
 <use image_tex/vus500.png>
-Package pdftex.def Info: image_tex/vus500.png  used on input line 114.
-(pdftex.def)             Requested size: 131.04108pt x 104.80028pt.
+Package pdftex.def Info: image_tex/vus500.png  used on input line 171.
+(pdftex.def)             Requested size: 159.95874pt x 127.93077pt.
 
-LaTeX Font Warning: Font shape `OT1/ptm/m/scit' undefined
-(Font)              using `OT1/ptm/m/it' instead on input line 120.
-
-[2 <./image_tex/gambar 1.jpg> <./image_tex/gambar 2.jpg> <./image_tex/gambar 3.png> <./image_tex/gambar 4.jpg> <./image_tex/gambar 5.jpg>]
-Underfull \hbox (badness 4096) in paragraph at lines 145--146
+Underfull \hbox (badness 4096) in paragraph at lines 187--188
 \OT1/ptm/m/n/8 Masyarakat Berba-sis Web Meng-gu-nakan REST-ful API,'' \OT1/ptm/m/it/8 Ju-r-nal
  []
 
@@ -442,24 +460,24 @@ Before submitting the final camera ready copy, remember to:
  uses only Type 1 fonts and that every step in the generation
  process uses the appropriate paper size.
 
-[3 <./image_tex/vus50.png> <./image_tex/vus100.png> <./image_tex/vus200.png> <./image_tex/vus300.png> <./image_tex/vus500.png>] (umkm.aux)
+[3 <./image_tex/gambar 3.png> <./image_tex/gambar 4.jpg> <./image_tex/gambar 5.jpg>] [4 <./image_tex/vus50.png> <./image_tex/vus100.png> <./image_tex/vus200.png> <./image_tex/vus300.png> <./image_tex/vus500.png>] (umkm.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-12-24>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 5525 strings out of 467871
- 89400 string characters out of 5435208
- 508729 words of memory out of 5000000
- 34342 multiletter control sequences out of 15000+600000
- 669220 words of font info for 121 fonts, out of 8000000 for 9000
+ 6065 strings out of 467871
+ 99137 string characters out of 5435208
+ 514233 words of memory out of 5000000
+ 34872 multiletter control sequences out of 15000+600000
+ 670196 words of font info for 123 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 57i,11n,65p,1578b,373s stack positions out of 10000i,1000n,20000p,200000b,200000s
-<D:/MikTEX/fonts/type1/urw/times/utmb8a.pfb><D:/MikTEX/fonts/type1/urw/times/utmbi8a.pfb><D:/MikTEX/fonts/type1/urw/times/utmr8a.pfb><D:/MikTEX/fonts/type1/urw/times/utmri8a.pfb>
-Output written on umkm.pdf (3 pages, 1219798 bytes).
+ 67i,11n,77p,1351b,478s stack positions out of 10000i,1000n,20000p,200000b,200000s
+<D:/MikTEX/fonts/type1/urw/courier/ucrr8a.pfb><D:/MikTEX/fonts/type1/urw/times/utmb8a.pfb><D:/MikTEX/fonts/type1/urw/times/utmbi8a.pfb><D:/MikTEX/fonts/type1/urw/times/utmr8a.pfb><D:/MikTEX/fonts/type1/urw/times/utmri8a.pfb>
+Output written on umkm.pdf (4 pages, 1232998 bytes).
 PDF statistics:
- 53 PDF objects out of 1000 (max. 8388607)
+ 61 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  51 words of extra memory for PDF output out of 10000 (max. 10000000)
 
