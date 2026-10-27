@@ -4,10 +4,7 @@ import { Users, Search, ArrowLeft, ExternalLink } from 'lucide-react';
 import Navbar from '../component/navbar';
 import Footer from '../component/footer';
 
-import fotoPelatihan1 from '../assets/pelatihan1.jpeg';
-import fotoPelatihan2 from '../assets/pelatihan2.jpg';
-import fotoPelatihan3 from '../assets/pelatihan3.jpg';
-import fotoPelatihan4 from '../assets/pelatihan4.jpg';
+
 import fotoPelatihan5 from '../assets/pelatihan5.jpg';
 import fotoPelatihan6 from '../assets/pelatihan6.jpg';
 
