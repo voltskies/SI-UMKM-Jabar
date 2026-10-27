@@ -3,7 +3,8 @@ import axios from 'axios';
 import { HandCoins, ShieldCheck, ClipboardList, BellRing } from 'lucide-react';
 import { Header, Card, Badge, Btn, StatCard, C, grid } from '../components/common';
 
-const API_BASE_URL = `http://${window.location.hostname || '127.0.0.1'}:8000`;
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://si-umkm-jabar.vercel.app';
+axios.get(`${API_BASE_URL}/api/v1/umkm`)
 
 export default function DashboardAdmin({ go, user }) {
   const [bantuanList, setBantuanList] = useState([]);
