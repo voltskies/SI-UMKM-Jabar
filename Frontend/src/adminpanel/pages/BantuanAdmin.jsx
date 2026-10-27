@@ -4,7 +4,7 @@ import { Header, Card, Chips, SearchBox, DataTable, Badge, Btn, C, rp } from '..
 import BantuanDetail from '../components/BantuanDetail';
 
 const FILTER = ['Semua', 'Menunggu Verifikasi', 'Diproses', 'Perlu Perbaikan', 'Disetujui', 'Ditolak'];
-const API_BASE_URL = `http://${window.location.hostname || '127.0.0.1'}:8000`;
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://si-umkm-jabar.vercel.app';
 
 export default function BantuanAdmin({ selectedId, go }) {
   const [data, setData] = useState([]);
