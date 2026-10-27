@@ -15,22 +15,22 @@ const DAFTAR_PELATIHAN = [
   {
     id: 1,
     title: 'Pelatihan Digitalisasi dan Pemasaran Online',
-    image: '/src/assets/pelatihan1.jpeg'
+    image: '/pelatihan1.jpeg'
   },
   {
     id: 2,
     title: 'Pelatihan Manajemen Keuangan Administrasi',
-    image: '/src/assets/pelatihan2.jpg'
+    image: '/pelatihan2.jpg'
   },
   {
     id: 3,
     title: 'Pelatihan Legalitas dan Standarisasi Produk',
-    image: '/src/assets/pelatihan3.jpg'
+    image: '/pelatihan3.jpg'
   },
   {
     id: 4,
     title: 'Pelatihan Inovasi dan Kualitas Produk',
-    image: '/src/assets/pelatihan4.jpg'
+    image: '/pelatihan4.jpg'
   }
 ];
 
