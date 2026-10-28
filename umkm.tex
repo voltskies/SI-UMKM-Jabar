@@ -28,21 +28,16 @@
 
 \title{SI-UMKM Jabar: Rancang Bangun Sistem Informasi dan Layanan Terpadu UMKM Jawa Barat}
 
-\author{\IEEEauthorblockN{1\textsuperscript{st} Vania Rahmawati}
-\IEEEauthorblockA{\textit{PSDKU Lamongan D3 Teknik Informatika} \\
-\textit{Politeknik Elektronika Negeri Surabaya}\\
-Lamongan, Jawa Timur, Indonesia}
-\and
-\IEEEauthorblockN{2\textsuperscript{nd} Reva Fadillah Susetya}
-\IEEEauthorblockA{\textit{PSDKU Lamongan D3 Teknik Informatika} \\
-\textit{Politeknik Elektronika Negeri Surabaya}\\
-Lamongan, Jawa Timur, Indonesia}
+\author{\IEEEauthorblockN{Vania Rahmawati\textsuperscript{1}, Reva Fadillah Susetya\textsuperscript{2}}
+\IEEEauthorblockA{\textit{PSDKU Lamongan D3 Teknik Informatika, Politeknik Elektronika Negeri Surabaya} \\
+Lamongan, Jawa Timur, Indonesia \\
+Email: \textsuperscript{1}vania07@it.student.pens.ac.id, \textsuperscript{2}reva@it.student.pens.ac.id}
 }
 
 \maketitle
 
 \begin{abstract}
-Sektor Usaha Mikro, Kecil, dan Menengah (UMKM) memegang peranan krusial dalam pertumbuhan ekonomi Jawa Barat. Namun, publikasi data UMKM saat ini masih terfragmentasi dan disajikan dalam format tabular statis, sementara alur pelayanan pengajuan program bantuan, perizinan, dan pelatihan masih berjalan secara terpisah tanpa mekanisme pelacakan yang terpadu. Penelitian ini bertujuan merancang dan mengimplementasikan SI-UMKM Jabar, sebuah platform e-governance terpadu berbasis web yang memadukan visualisasi geografis interaktif dan layanan mandiri pelaku usaha. Sistem dibangun dengan arsitektur RESTful API menggunakan framework FastAPI dan basis data MySQL, yang mendukung digitalisasi verifikasi berkas secara langsung oleh administrator. Evaluasi performa sistem melalui uji beban multi-skala dari 50 hingga 500 Virtual Users (VUs) menunjukkan backend mampu beroperasi optimal pada rentang 50--300 VUs dengan rata-rata latensi rendah antara 192 ms hingga 271 ms, throughput mencapai 616,96 req/s, serta tingkat kegagalan respon 0,00\%. Namun, titik jenuh tercapai pada beban puncak 500 VUs dengan peningkatan latensi rata-rata menjadi 407 ms dan error rate mencapai 60,25\%. Platform ini diharapkan dapat mempercepat alur birokrasi layanan serta mempermudah pemetaan potensi sebaran UMKM secara transparan dan terukur.
+Sektor Usaha Mikro, Kecil, dan Menengah (UMKM) memegang peranan krusial dalam pertumbuhan ekonomi Jawa Barat. Namun, publikasi data UMKM saat ini masih terfragmentasi dan disajikan dalam format tabular statis, sementara alur pelayanan pengajuan program bantuan, perizinan, dan pelatihan masih berjalan secara terpisah tanpa mekanisme pelacakan yang terpadu. Penelitian ini bertujuan merancang dan mengimplementasikan SI-UMKM Jabar, sebuah platform e-governance terpadu berbasis web yang memadukan visualisasi geografis interaktif dan layanan mandiri pelaku usaha. Sistem dibangun dengan arsitektur RESTful API menggunakan framework FastAPI dan basis data MySQL, yang mendukung digitalisasi verifikasi berkas secara langsung oleh administrator. Evaluasi performa sistem melalui uji beban multi-skala dari 50 hingga 500 Virtual Users (VUs) menunjukkan backend mampu beroperasi optimal pada rentang 50--300 VUs dengan rata-rata latensi rendah antara 192 ms hingga 271 ms, throughput mencapai 616,96 req/s, serta tingkat kegagalan respon 0,00\%. Namun, titik jenuh tercapai pada beban puncak 500 VUs dengan peningkatan latensi rata-rata menjadi 407 ms dan error rate mencapai 60,25\%. Selain keandalan arsitektur, evaluasi penerimaan sistem diuji menggunakan pendekatan Technology Acceptance Model (TAM) pada variabel persepsi kebermanfaatan dan kemudahan penggunaan dengan tingkat penerimaan sebesar [XX,XX]\%. Platform ini diharapkan dapat mempercepat alur birokrasi layanan serta mempermudah pemetaan potensi sebaran UMKM secara transparan dan terukur.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -61,7 +56,7 @@ Berdasarkan permasalahan tersebut, penelitian ini mengusulkan SI-UMKM Jabar seba
 Sebagai basis referensi empiris layanan daerah, penelitian ini merujuk pada portal resmi Dinas Koperasi dan Usaha Kecil (DISKUK) Provinsi Jawa Barat [8]. Portal tersebut menyediakan direktori program pembinaan, publikasi agenda UMKM, serta kanal informasi kebijakan pemerintah provinsi. Kendati demikian, penyediaan informasi dan fasilitas layanan publik pada portal eksisting masih bersifat satu arah dan terpisah antarsubdirektorat. Pelaku usaha belum memperoleh akses terpadu untuk memantau status berkas perizinan secara \textit{real-time}, dan visualisasi sebaran pelaku usaha belum terintegrasi secara dinamis ke dalam pemetaan tematik spasial 27 kabupaten/kota.
 
 Melihat keterbatasan tersebut, SI-UMKM Jabar dikembangkan sebagai bentuk eskalasi fungsional dan teknologis dari model layanan DISKUK yang ada:
-\begin{enumerate}[label=\alph*.]
+\begin{enumerate}
     \item \textbf{Single-Window Service}: Mengonsolidasikan alur pengajuan fasilitasi sarana, legalitas, dan kurasi pelatihan ke dalam satu akun terpadu pemohon yang terhubung langsung ke panel verifikasi admin.
     \item \textbf{Transformasi Peta Spasial Dinamis}: Mengonversi data direktori wilayah ke dalam peta interaktif berbasis kode warna sebaran komoditas 27 kabupaten/kota untuk memudahkan analisis potensi ekonomi daerah.
     \item \textbf{Real-Time Tracking}: Menyediakan fitur pelacakan status audit berkas bagi pelaku usaha secara transparan, didukung arsitektur RESTful API performa tinggi berbasis FastAPI serta penyimpanan berkas proposal pada \textit{cloud storage}.
@@ -73,7 +68,7 @@ Arsitektur SI-UMKM Jabar dirancang dengan mengadopsi prinsip pemisahan tanggung 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.47\textwidth,height=6.2cm,keepaspectratio]{"gambar 1.jpg"}
-\caption{Desain Arsitektur Sistem SI-UMKM Jabar.}
+\caption{Arsitektur Sistem.}
 \label{fig:arch}
 \end{figure}
 
@@ -188,4 +183,4 @@ Pengujian kinerja dilakukan terhadap endpoint direktori UMKM (\texttt{GET /api/v
 \bibitem{b8} Dinas Koperasi dan Usaha Kecil Provinsi Jawa Barat, ``Portal Resmi Dinas Koperasi dan Usaha Kecil Provinsi Jawa Barat,'' \textit{DISKUK Jabar}, 2024. [Daring]. Tersedia: \url{https://diskuk.jabarprov.go.id/}.
 \end{thebibliography}
 
-\end{document}.
+\end{document}
