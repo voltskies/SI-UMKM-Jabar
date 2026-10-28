@@ -343,9 +343,12 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
       else if (filterActive === 'Agribisnis') matchesCategory = kat.includes('agribisnis') || kat.includes('tani') || kat.includes('ternak');
       else if (filterActive === 'Jasa') matchesCategory = kat.includes('jasa') || kat.includes('industri') || kat.includes('mebel') || kat.includes('dekorasi');
 
+      const targetWilayah = bersihkanNamaWilayah(selectedKabKota);
+      const dataWilayah = bersihkanNamaWilayah(kab);
       const matchesKabKota =
         selectedKabKota === 'Semua Wilayah' ||
-        kab.includes(selectedKabKota.toLowerCase());
+        dataWilayah.includes(targetWilayah) ||
+        targetWilayah.includes(dataWilayah);
 
       return matchesSearch && matchesCategory && matchesKabKota;
     });
@@ -584,7 +587,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
                   <div className="icon-box">
                     <Map size={26} />
                   </div>
-                  <h3>{dataUmkm && dataUmkm.length > 0 ? `${new Set(dataUmkm.map(u => u.kabupaten_kota)).size} Kab/Kota` : '27 Kab/Kota'}</h3>
+                  <h3>{umkmList.length > 0 ? `${new Set(umkmList.map(u => bersihkanNamaWilayah(u.kabupaten_kota))).size} Kab/Kota` : '27 Kab/Kota'}</h3>
                   <span>Wilayah Terjangkau</span>
                 </div>
               </div>
