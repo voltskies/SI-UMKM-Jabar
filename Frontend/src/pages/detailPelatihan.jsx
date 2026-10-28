@@ -21,9 +21,16 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
   if (!pelatihan) return null;
 
   const envUrl = import.meta.env.VITE_API_URL;
-  const API_BASE_URL = (envUrl && !envUrl.includes('127.0.0.1') && !envUrl.includes('localhost'))? envUrl : 'https://si-umkm-jabar.vercel.app';
+  let cleanUrl = (envUrl && !envUrl.includes('127.0.0.1') && !envUrl.includes('localhost'))? envUrl : 'https://si-umkm-jabar.vercel.app';
+
+  if (cleanUrl.startsWith('http://')) {
+    cleanUrl = cleanUrl.replace('http://', 'https://');
+  }
+
+  const API_BASE_URL = cleanUrl;
   const shareUrl = window.location.href;
   const shareTitle = `Ayo ikuti pelatihan UMKM Jabar: "${pelatihan.judul || pelatihan.title}" dari ${pelatihan.penyelenggara || 'Dinas KUK Jawa Barat'}!`;
+
   // Fungsi Salin Link
   const handleSalinLink = () => {
     navigator.clipboard.writeText(shareUrl);
