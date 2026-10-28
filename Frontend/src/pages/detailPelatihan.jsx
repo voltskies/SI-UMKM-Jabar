@@ -21,7 +21,7 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
   if (!pelatihan) return null;
 
   const envUrl = import.meta.env.VITE_API_URL;
-  let cleanUrl = (envUrl && !envUrl.includes('127.0.0.1') && !envUrl.includes('localhost'))? envUrl : 'https://si-umkm-jabar.vercel.app';
+  let cleanUrl = (envUrl && !envUrl.includes('127.0.0.1') && !envUrl.includes('localhost')) ? envUrl : 'https://si-umkm-jabar.vercel.app';
 
   if (cleanUrl.startsWith('http://')) {
     cleanUrl = cleanUrl.replace('http://', 'https://');
@@ -60,7 +60,7 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
       }
     }
 
-    if (!currentUser || !currentUser.id) {
+    if (!currentUser || (!currentUser.id && !currentUser.nik && !currentUser.email)) {
       alert('Silakan masuk ke akun Anda terlebih dahulu untuk mendaftar pelatihan ini.');
       if (typeof onArahkanLogin === 'function') {
         onArahkanLogin();
@@ -74,7 +74,14 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
 
     try {
       const formData = new FormData();
-      formData.append('user_id', currentUser.id);
+      // Mengirimkan identifier user dan field profil lengkap untuk mencegah NOT NULL constraint di TiDB
+      formData.append('user_id', currentUser.id || currentUser.nik || '');
+      formData.append('nama_lengkap', currentUser.nama || currentUser.nama_lengkap || '');
+      formData.append('email', currentUser.email || '');
+      formData.append('nomor_whatsapp', currentUser.nomor_whatsapp || currentUser.no_wa || currentUser.telepon || '');
+      formData.append('nik', currentUser.nik || '');
+      
+      // Informasi pelatihan
       formData.append('id_pelatihan', pelatihan.id || 1);
       formData.append('judul_pelatihan', pelatihan.judul || pelatihan.title || 'Pelatihan UMKM Jabar');
       formData.append('kategori', pelatihan.kategori || 'Fasilitasi UMKM');
@@ -84,15 +91,36 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
         formData.append('file_syarat', berkasSyarat);
       }
 
-      const response = await axios.post(`${API_BASE_URL}/api/v1/layanan/pendaftaran-pelatihan`, formData);
+      const response = await axios.post(`${API_BASE_URL}/api/v1/layanan/pendaftaran-pelatihan`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
 
-      if (response.data.status === 'success') {
+      if (response.data.status === 'success' || response.status === 200 || response.status === 201) {
         setSuksesMsg(response.data.message || 'Pendaftaran pelatihan berhasil disimpan!');
       }
     } catch (err) {
-      console.error('Pendaftaran gagal:', err);
-      const pesan = err.response?.data?.detail || 'Gagal menghubungi server backend. Pastikan server FastAPI aktif.';
-      setErrorMsg(typeof pesan === 'string' ? pesan : JSON.stringify(pesan));
+      console.error('Pendaftaran gagal detail:', err);
+      // Ekstraksi pesan error presisi dari backend FastAPI
+      const errRes = err.response?.data;
+      let pesan = 'Gagal memproses pendaftaran ke server.';
+      
+      if (errRes) {
+        if (typeof errRes.detail === 'string') {
+          pesan = errRes.detail;
+        } else if (Array.isArray(errRes.detail)) {
+          pesan = errRes.detail.map(d => `${d.loc ? d.loc.join('.') + ': ' : ''}${d.msg}`).join(', ');
+        } else if (errRes.message) {
+          pesan = errRes.message;
+        } else {
+          pesan = JSON.stringify(errRes);
+        }
+      } else if (err.message) {
+        pesan = err.message;
+      }
+      
+      setErrorMsg(pesan);
     } finally {
       setLoading(false);
     }
