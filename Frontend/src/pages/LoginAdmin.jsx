@@ -8,7 +8,10 @@ import {
 import bgLogin from '../assets/diskuk.jpg';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://si-umkm-jabar.vercel.app';
-const res = await axios.post(`${API_BASE_URL}/api/v1/auth/login-admin`, payload);
+const res = await axios.post(`${API_BASE_URL}/api/v1/auth/login-admin`, {
+  email: email.trim().toLowerCase(),
+  password: password
+});
 
 const EMAILJS_SERVICE_ID = 'service_vr07rh';
 const EMAILJS_TEMPLATE_ID = 'template_318btwq';
