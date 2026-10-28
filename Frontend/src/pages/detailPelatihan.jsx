@@ -20,10 +20,10 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
 
   if (!pelatihan) return null;
 
-  const API_BASE_URL = `http://${window.location.hostname || '127.0.0.1'}:8000`;
+  const envUrl = import.meta.env.VITE_API_URL;
+  const API_BASE_URL = (envUrl && !envUrl.includes('127.0.0.1') && !envUrl.includes('localhost'))? envUrl : 'https://si-umkm-jabar.vercel.app';
   const shareUrl = window.location.href;
   const shareTitle = `Ayo ikuti pelatihan UMKM Jabar: "${pelatihan.judul || pelatihan.title}" dari ${pelatihan.penyelenggara || 'Dinas KUK Jawa Barat'}!`;
-
   // Fungsi Salin Link
   const handleSalinLink = () => {
     navigator.clipboard.writeText(shareUrl);
