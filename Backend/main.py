@@ -439,44 +439,63 @@ async def ajukan_sertifikasi(
     if not re.fullmatch(r"^\d{16}$", nik):
         raise HTTPException(status_code=400, detail="NIK harus 16 digit angka.")
 
-    user = db.query(models.User).filter(models.User.nik == nik).first()
-    if not user:
-        user = models.User(
-            nik=nik,
-            nama_lengkap=nama_lengkap,
-            email=email,
-            password=hash_password("default12345"),
-            nomor_whatsapp=nomor_whatsapp,
-            role="umum",
-            is_verified=True
+    try:
+        user = db.query(models.User).filter(models.User.nik == nik).first()
+        if not user:
+            # Ambil ID terakhir user jika tabel users juga belum auto-increment
+            last_u = db.query(models.User).order_by(models.User.id.desc()).first()
+            next_user_id = (last_u.id + 1) if (last_u and last_u.id) else 1
+
+            user = models.User(
+                id=next_user_id,
+                nik=nik,
+                nama_lengkap=nama_lengkap,
+                email=email,
+                password=hash_password("default12345"),
+                nomor_whatsapp=nomor_whatsapp,
+                role="umum",
+                is_verified=True
+            )
+            db.add(user)
+            db.commit()
+            db.refresh(user)
+
+        # Upload berkas ke Supabase
+        url_ktp = await upload_file_to_supabase(file_ktp, folder="sertifikasi")
+        url_foto_produk = await upload_file_to_supabase(file_foto_produk, folder="sertifikasi")
+        url_pendukung = await upload_file_to_supabase(file_dokumen_pendukung, folder="sertifikasi") if file_dokumen_pendukung else None
+
+        # Generate manual ID untuk mengatasi masalah default value kolom id pada TiDB
+        last_sertif = db.query(models.PengajuanSertifikasi).order_by(models.PengajuanSertifikasi.id.desc()).first()
+        next_sertif_id = (last_sertif.id + 1) if (last_sertif and last_sertif.id) else 1
+
+        no_reg = f"SRT-2026-{uuid.uuid4().hex[:4].upper()}"
+        sertifikasi = models.PengajuanSertifikasi(
+            id=next_sertif_id,
+            nomor_registrasi=no_reg,
+            user_id=user.id,
+            nama_usaha=nama_usaha,
+            nama_produk=nama_produk,
+            jenis_sertifikasi=jenis_sertifikasi,
+            deskripsi_produk=deskripsi_produk,
+            nib=nib or "",
+            file_ktp=url_ktp or "",
+            file_foto_produk=url_foto_produk or "",
+            file_dokumen_pendukung=url_pendukung or "",
+            status="Menunggu Verifikasi"
         )
-        db.add(user)
+        db.add(sertifikasi)
         db.commit()
-        db.refresh(user)
+        db.refresh(sertifikasi)
 
-    url_ktp = await upload_file_to_supabase(file_ktp, folder="sertifikasi")
-    url_foto_produk = await upload_file_to_supabase(file_foto_produk, folder="sertifikasi")
-    url_pendukung = await upload_file_to_supabase(file_dokumen_pendukung, folder="sertifikasi") if file_dokumen_pendukung else None
+        return {"status": "success", "message": "Pengajuan sertifikasi berhasil!", "nomor_registrasi": no_reg}
 
-    no_reg = f"SRT-2026-{uuid.uuid4().hex[:4].upper()}"
-    sertifikasi = models.PengajuanSertifikasi(
-        nomor_registrasi=no_reg,
-        user_id=user.id,
-        nama_usaha=nama_usaha,
-        nama_produk=nama_produk,
-        jenis_sertifikasi=jenis_sertifikasi,
-        deskripsi_produk=deskripsi_produk,
-        nib=nib,
-        file_ktp=url_ktp,
-        file_foto_produk=url_foto_produk,
-        file_dokumen_pendukung=url_pendukung,
-        status="Menunggu Verifikasi"
-    )
-    db.add(sertifikasi)
-    db.commit()
-    db.refresh(sertifikasi)
-    return {"status": "success", "nomor_registrasi": no_reg}
-
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        print(f"Error Pengajuan Sertifikasi: {str(e)}")
+        raise HTTPException(status_code=400, detail=f"Gagal memproses pendaftaran sertifikasi: {str(e)}")
 
 # 4. UPLOAD STANDALONE
 
