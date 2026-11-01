@@ -455,7 +455,7 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
                   boxShadow: '0 4px 14px rgba(37, 84, 86, 0.25)'
                 }}
               >
-                {loading ? 'Mengunggah Berkas ke Supabase Storage...' : 'Kirim Permohonan Sertifikasi'}
+                {loading ? 'Mengunggah Berkas...' : 'Kirim Permohonan Sertifikasi'}
               </button>
             </form>
           </div>

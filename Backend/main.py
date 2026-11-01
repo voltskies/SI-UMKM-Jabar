@@ -461,9 +461,12 @@ async def ajukan_sertifikasi(
             db.refresh(user)
 
         # Upload berkas ke Supabase
-        url_ktp = await upload_file_to_supabase(file_ktp, folder="sertifikasi")
-        url_foto_produk = await upload_file_to_supabase(file_foto_produk, folder="sertifikasi")
-        url_pendukung = await upload_file_to_supabase(file_dokumen_pendukung, folder="sertifikasi") if file_dokumen_pendukung else None
+        tugas_upload = [
+            upload_file_to_supabase(file_ktp, folder="sertifikasi"),
+            upload_file_to_supabase(file_foto_produk, folder="sertifikasi"),
+            upload_file_to_supabase(file_dokumen_pendukung, folder="sertifikasi") if file_dokumen_pendukung else asyncio.sleep(0, result=None)
+        ]
+        url_ktp, url_foto_produk, url_pendukung = await asyncio.gather(*tugas_upload)
 
         # Generate manual ID untuk mengatasi masalah default value kolom id pada TiDB
         last_sertif = db.query(models.PengajuanSertifikasi).order_by(models.PengajuanSertifikasi.id.desc()).first()
