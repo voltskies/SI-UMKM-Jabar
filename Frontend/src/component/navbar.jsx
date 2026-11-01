@@ -184,7 +184,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
           });
 
         // Riwayat Pendaftaran Pelatihan Pengguna
-        listPelatihan.forEach((p) => {
+       listPelatihan.forEach((p) => {
           items.push({
             id: `user-pelatihan-${p.id}`,
             key: `user-pelatihan-${p.id}|${p.status}`,
@@ -194,7 +194,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
             waktu: p.tanggal_daftar ? new Date(p.tanggal_daftar).toLocaleDateString('id-ID') : 'Terkini',
             status: p.status || 'Terdaftar',
             targetHalaman: 'pelatihan',
-            perluPerhatian: false
+            perluPerhatian: true
           });
         });
       }
@@ -499,14 +499,6 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
                       onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                     >
                       Pelatihan Saya
-                    </div>
-                    <div 
-                      onClick={() => { setDropdownUser(false); setHalaman('admin'); }}
-                      style={{ padding: '8px 10px', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px', color: '#1B4143', fontWeight: '600' }}
-                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#eef4f4'}
-                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                    >
-                      <Shield size={14} /> Panel Admin Dinas
                     </div>
                     <button
                       type="button"
