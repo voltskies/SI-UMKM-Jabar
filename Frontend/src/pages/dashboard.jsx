@@ -587,7 +587,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
                   <div className="icon-box">
                     <Map size={26} />
                   </div>
-                  <h3>{umkmList.length > 0 ? `${new Set(umkmList.map(u => bersihkanNamaWilayah(u.kabupaten_kota))).size} / 27 Kab/Kota` : '27 Kab/Kota'}</h3>
+                  <h3>{umkmList.length > 0 ? `${new Set(umkmList.map(u => u.kabupaten_kota || u.nama_kabupaten_kota)).size} Kab/Kota` : '27 Kab/Kota'}</h3>
                   <span>Wilayah Terjangkau</span>
                 </div>
               </div>
