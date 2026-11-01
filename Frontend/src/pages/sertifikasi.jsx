@@ -160,14 +160,25 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
         setNomorSukses(noReg);
       }
     } catch (err) {
-      console.error('Gagal mengajukan sertifikasi:', err);
-      const detailMsg = err.response?.data?.detail;
-      const pesan = Array.isArray(detailMsg)
-        ? detailMsg.map((d) => d.msg).join(', ')
-        : detailMsg || 'Terjadi kesalahan saat memproses pendaftaran sertifikasi.';
-      setErrorForm(typeof pesan === 'string' ? pesan : JSON.stringify(pesan));
-    } finally {
-      setLoading(false);
+      console.error("Detail error pendaftaran sertifikasi:", err);
+      const errRes = err.response?.data;
+      let pesan = "Terjadi kesalahan saat memproses pendaftaran sertifikasi.";
+
+      if (errRes) {
+        if (typeof errRes.detail === "string") {
+          pesan = errRes.detail;
+        } else if (Array.isArray(errRes.detail)) {
+          pesan = errRes.detail.map((d) => `${d.loc ? d.loc.join('.') + ': ' : ''}${d.msg}`).join(', ');
+        } else if (errRes.message) {
+          pesan = errRes.message;
+        } else {
+          pesan = JSON.stringify(errRes);
+        }
+      } else if (err.message) {
+        pesan = err.message;
+      }
+
+      setErrorMsg(pesan);
     }
   };
 
