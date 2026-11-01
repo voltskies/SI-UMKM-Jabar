@@ -26,12 +26,12 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
   const sudahMuatPertama = useRef(false);
   const sedangFetch = useRef(false);
 
-  const API_BASE_URL = `http://${window.location.hostname || '127.0.0.1'}:8000`;
+  const API_BASE_URL = import.meta.env.VITE_API_URL || `http://${window.location.hostname || '127.0.0.1'}:8000`;
   const storageKey = user ? `notif_dibaca_${user.role}_${user.id}` : null;
   const isDashboardMode = mode === 'dashboard';
   const isSolidSticky = mode === 'solid-sticky' || isDashboardMode;
 
-  // resize
+  // resize listener
   useEffect(() => {
     const handleResize = () => {
       const mobile = window.innerWidth < 900;
@@ -98,15 +98,18 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
       const ambil = (path) =>
         axios.get(`${API_BASE_URL}${path}`).then((r) => r.data?.data || []).catch(() => null);
 
-      const [dataBantuan, dataSertifikasi] = await Promise.all([
+      // Ambil bantuan, sertifikasi, dan riwayat pendaftaran pelatihan
+      const [dataBantuan, dataSertifikasi, dataPelatihan] = await Promise.all([
         ambil('/api/v1/admin/pengajuan'),
-        ambil('/api/v1/admin/sertifikasi')
+        ambil('/api/v1/admin/sertifikasi'),
+        user.id ? ambil(`/api/v1/layanan/pendaftaran-pelatihan/user/${user.id}`) : Promise.resolve([])
       ]);
 
-      if (dataBantuan === null && dataSertifikasi === null) return;
+      if (dataBantuan === null && dataSertifikasi === null && dataPelatihan === null) return;
 
       const listBantuan = dataBantuan || [];
       const listSertifikasi = dataSertifikasi || [];
+      const listPelatihan = dataPelatihan || [];
 
       if (user.role === 'admin') {
         listBantuan
@@ -141,6 +144,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
             });
           });
       } else {
+        // Notifikasi untuk pengguna Pelaku UMKM
         listBantuan
           .filter((b) => b.user_id === user.id)
           .forEach((b) => {
@@ -178,6 +182,21 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
               perluPerhatian: s.status !== 'Menunggu Verifikasi'
             });
           });
+
+        // Riwayat Pendaftaran Pelatihan Pengguna
+        listPelatihan.forEach((p) => {
+          items.push({
+            id: `user-pelatihan-${p.id}`,
+            key: `user-pelatihan-${p.id}|${p.status}`,
+            tipe: 'pelatihan',
+            judul: `Pelatihan: ${p.judul_pelatihan}`,
+            pesan: `Pendaftaran terkirim. Penyelenggara: ${p.penyelenggara || 'Dinas KUK Jabar'}. Status: ${p.status}.`,
+            waktu: p.tanggal_daftar ? new Date(p.tanggal_daftar).toLocaleDateString('id-ID') : 'Terkini',
+            status: p.status || 'Terdaftar',
+            targetHalaman: 'pelatihan',
+            perluPerhatian: false
+          });
+        });
       }
 
       const baru = items.filter((n) => n.perluPerhatian && !keyTerlihat.current.has(n.key));
@@ -211,9 +230,14 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
     };
     const timer = setInterval(cek, POLL_INTERVAL_MS);
     document.addEventListener('visibilitychange', cek);
+
+    // Listener custom event agar data notifikasi refresh instan saat selesai pendaftaran
+    window.addEventListener('update_notifikasi', cek);
+
     return () => {
       clearInterval(timer);
       document.removeEventListener('visibilitychange', cek);
+      window.removeEventListener('update_notifikasi', cek);
     };
   }, [user, fetchNotifikasiReal]);
 
@@ -243,7 +267,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
   };
 
   const getStatusIcon = (status) => {
-    if (status === 'Disetujui' || status === 'Selesai') return <CheckCircle2 size={16} color="#1B4143" />;
+    if (status === 'Disetujui' || status === 'Selesai' || status === 'Terdaftar') return <CheckCircle2 size={16} color="#1B4143" />;
     if (status === 'Ditolak' || status === 'Perlu Perbaikan') return <AlertCircle size={16} color="#DC2626" />;
     return <Clock size={16} color="#D97706" />;
   };
@@ -267,7 +291,6 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
         right: 0,
         width: '100%',
         boxSizing: 'border-box',
-        // lengkung
         borderBottomLeftRadius: '24px',
         borderBottomRightRadius: '24px',
         borderTopLeftRadius: '0px',
@@ -285,7 +308,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
           </span>
         </div>
 
-        {/* Menu dekstop*/}
+        {/* Menu Desktop */}
         {!isMobile && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '28px', fontSize: '0.9rem', fontWeight: '500' }}>
             <span
@@ -363,7 +386,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
           </div>
         )}
         
-        {/* lonceng */}
+        {/* Lonceng & Profil */}
         <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '8px' : '16px' }} ref={userMenuRef}>
           <button
             type="button"
@@ -405,7 +428,6 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
             )}
           </button>
 
-          {/* Tombol profil*/}
           <div style={{ position: 'relative' }}>
             <button
               type="button"
@@ -444,7 +466,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
               </div>
             </button>
 
-            {/* dropdown dekstop*/}
+            {/* Dropdown Desktop */}
             {!isMobile && dropdownUser && (
               <div style={{
                 position: 'absolute',
@@ -522,7 +544,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
         </div>
       </nav>
 
-      {/* untuk mobile */}
+      {/* Menu Mobile */}
       {isMobile && mobileMenuOpen && (
         <div style={{
           position: 'fixed',
@@ -600,7 +622,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
         </div>
       )}
 
-      {/* sidebar notif*/}
+      {/* Sidebar Drawer Notifikasi */}
       {sidebarNotifOpen && (
         <>
           <div

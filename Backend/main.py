@@ -347,6 +347,17 @@ async def daftar_pelatihan(
             detail=f"Gagal menyimpan pendaftaran ke database: {str(e)}"
         )
 
+@app.get("/api/v1/layanan/pendaftaran-pelatihan/user/{user_id}", tags=["Pelaku UMKM"], summary="Ambil Riwayat Pelatihan User")
+def get_riwayat_pelatihan(user_id: int, db: Session = Depends(get_db)):
+    try:
+        data = db.query(models.PendaftaranPelatihan).filter(
+            models.PendaftaranPelatihan.user_id == user_id
+        ).order_by(models.PendaftaranPelatihan.id.desc()).all()
+        return {"status": "success", "data": data}
+    except Exception as e:
+        return {"status": "error", "message": str(e), "data": []}
+
+
 @app.post("/api/v1/layanan/pengajuan-bantuan", tags=["Pelaku UMKM"], status_code=status.HTTP_201_CREATED, summary="Ajukan Bantuan")
 async def ajukan_bantuan(
     nik: str = Form(...),
