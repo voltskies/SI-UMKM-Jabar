@@ -311,7 +311,11 @@ async def daftar_pelatihan(
                 print(f"Warning upload supabase gagal: {up_err}")
                 url_berkas = None
 
+        last_item = db.query(models.PendaftaranPelatihan).order_by(models.PendaftaranPelatihan.id.desc()).first()
+        next_id = (last_item.id + 1) if (last_item and last_item.id) else 1
+
         pendaftaran = models.PendaftaranPelatihan(
+            id=next_id,
             user_id=user_id,
             id_pelatihan=id_pelatihan,
             judul_pelatihan=judul_pelatihan,
