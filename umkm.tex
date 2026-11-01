@@ -14,7 +14,6 @@
 
 \graphicspath{{image_tex/}}
 
-% Toleransi float layout dua kolom IEEE
 \renewcommand{\topfraction}{0.95}
 \renewcommand{\dbltopfraction}{0.95}
 \renewcommand{\textfraction}{0.05}
@@ -86,7 +85,7 @@ Implementasi antarmuka frontend mengadopsi struktur perancangan \textit{design s
 \section{Flagship}
 Fitur unggulan platform menghadirkan visualisasi spasial interaktif 27 kabupaten/kota berbasis kode warna zonasi wilayah dan pengelompokan titik komoditas UMKM terverifikasi guna mempermudah akses informasi geografis secara akurat [5] (Fig. 3).
 
-\begin{figure}[htbp]
+\begin{figure}[!]
 \centering
 \includegraphics[width=0.47\textwidth,height=4.6cm,keepaspectratio]{"gambar 3.png"}
 \caption{Tampilan Antarmuka Layanan Unggulan SI-UMKM Jabar.}
@@ -118,7 +117,7 @@ Alur operasional sistem terbagi menjadi dua proses bisnis utama: alur mandiri ol
 \section{Pengujian}
 Pengujian kinerja dilakukan terhadap endpoint direktori UMKM (\texttt{GET /api/v1/umkm}) menggunakan simulasi konkurensi bertingkat pada rentang 50 hingga 500 \textit{Virtual Users} (VUs). Grafik pengujian beban pada Fig. 6 dan rincian kuantitatif pada Table I menunjukkan backend beroperasi stabil hingga 300 VUs dengan throughput puncak 616,96 req/s dan tingkat kesalahan 0,00\%. Pada beban ekstrem 500 VUs, sistem mencapai ambang kapasitas layanan.
 
-\begin{table*}[!t]
+\begin{table*}[!b]
 \caption{Hasil Pengujian Beban Kinerja Endpoint API Direktori UMKM (\texttt{GET /api/v1/umkm})}
 \label{tab:loadtest}
 \centering
