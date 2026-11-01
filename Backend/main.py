@@ -379,46 +379,72 @@ async def ajukan_bantuan(
     if not re.fullmatch(r"^\d{16}$", nik):
         raise HTTPException(status_code=400, detail="NIK harus 16 digit angka.")
 
-    user = db.query(models.User).filter(models.User.nik == nik).first()
-    if not user:
-        user = models.User(
-            nik=nik,
-            nama_lengkap=nama_lengkap,
-            email=email,
-            password=hash_password("default12345"),
-            nomor_whatsapp=nomor_whatsapp,
-            role="umum",
-            is_verified=True
+    try:
+        # 1. Cek atau buat user baru dengan ID manual
+        user = db.query(models.User).filter(models.User.nik == nik).first()
+        if not user:
+            last_u = db.query(models.User).order_by(models.User.id.desc()).first()
+            next_user_id = (last_u.id + 1) if (last_u and last_u.id) else 1
+
+            user = models.User(
+                id=next_user_id,
+                nik=nik,
+                nama_lengkap=nama_lengkap,
+                email=email,
+                password=hash_password("default12345"),
+                nomor_whatsapp=nomor_whatsapp,
+                role="umum",
+                is_verified=True
+            )
+            db.add(user)
+            db.commit()
+            db.refresh(user)
+
+        # 2. Upload berkas secara paralel menggunakan asyncio.gather agar cepat dan tidak timeout
+        tugas_upload = [
+            upload_file_to_supabase(file_ktp, folder="bantuan"),
+            upload_file_to_supabase(file_kk, folder="bantuan") if file_kk else asyncio.sleep(0, result=None),
+            upload_file_to_supabase(file_nib, folder="bantuan") if file_nib else asyncio.sleep(0, result=None),
+            upload_file_to_supabase(file_proposal, folder="bantuan") if file_proposal else asyncio.sleep(0, result=None)
+        ]
+        url_ktp, url_kk, url_nib, url_proposal = await asyncio.gather(*tugas_upload)
+
+        # 3. Generate sequential ID manual untuk tabel pengajuan_bantuan di TiDB
+        last_bantuan = db.query(models.PengajuanBantuan).order_by(models.PengajuanBantuan.id.desc()).first()
+        next_bantuan_id = (last_bantuan.id + 1) if (last_bantuan and last_bantuan.id) else 1
+
+        no_pengajuan = f"ONT-2026-{uuid.uuid4().hex[:4].upper()}"
+        pengajuan = models.PengajuanBantuan(
+            id=next_bantuan_id,
+            nomor_pengajuan=no_pengajuan,
+            user_id=user.id,
+            nama_usaha=nama_usaha,
+            kategori_usaha=kategori_usaha,
+            nib=nib or "",
+            jumlah_dana=str(jumlah_dana),
+            tujuan_penggunaan=tujuan_penggunaan,
+            file_ktp=url_ktp or "",
+            file_kk=url_kk or "",
+            file_nib=url_nib or "",
+            file_proposal=url_proposal or "",
+            status="Menunggu Verifikasi"
         )
-        db.add(user)
+        db.add(pengajuan)
         db.commit()
-        db.refresh(user)
+        db.refresh(pengajuan)
 
-    url_ktp = await upload_file_to_supabase(file_ktp, folder="bantuan")
-    url_kk = await upload_file_to_supabase(file_kk, folder="bantuan") if file_kk else None
-    url_nib = await upload_file_to_supabase(file_nib, folder="bantuan") if file_nib else None
-    url_proposal = await upload_file_to_supabase(file_proposal, folder="bantuan") if file_proposal else None
+        return {
+            "status": "success",
+            "message": "Permohonan bantuan berhasil diajukan!",
+            "nomor_pengajuan": no_pengajuan
+        }
 
-    no_pengajuan = f"ONT-2026-{uuid.uuid4().hex[:4].upper()}"
-    pengajuan = models.PengajuanBantuan(
-        nomor_pengajuan=no_pengajuan,
-        user_id=user.id,
-        nama_usaha=nama_usaha,
-        kategori_usaha=kategori_usaha,
-        nib=nib,
-        jumlah_dana=jumlah_dana,
-        tujuan_penggunaan=tujuan_penggunaan,
-        file_ktp=url_ktp,
-        file_kk=url_kk,
-        file_nib=url_nib,
-        file_proposal=url_proposal,
-        status="Menunggu Verifikasi"
-    )
-    db.add(pengajuan)
-    db.commit()
-    db.refresh(pengajuan)
-
-    return {"status": "success", "nomor_pengajuan": no_pengajuan}
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        print(f"Error Pengajuan Bantuan: {str(e)}")
+        raise HTTPException(status_code=400, detail=f"Gagal memproses permohonan bantuan: {str(e)}")
 
 
 @app.post("/api/v1/layanan/pengajuan-sertifikasi", tags=["Pelaku UMKM"], status_code=status.HTTP_201_CREATED, summary="Ajukan Sertifikasi")
