@@ -125,15 +125,21 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
         return;
       }
 
-      // Susun ke FormData untuk dikirim langsung ke backend FastAPI
       const dataPayload = new FormData();
       dataPayload.append('nik', cleanNik);
       dataPayload.append('nama_lengkap', formData.nama_lengkap.trim());
       dataPayload.append('email', formData.email.trim());
       dataPayload.append('nomor_whatsapp', formData.nomor_whatsapp.trim());
       dataPayload.append('nama_usaha', formData.nama_usaha.trim());
+      
+      // Mengirim kategori/sektor usaha agar cocok dengan backend
+      dataPayload.append('kategori_usaha', formData.kategori_usaha);
       dataPayload.append('sektor_usaha', formData.kategori_usaha);
+
+      // Mengirim jumlah nominal dana agar lolos validasi 'jumlah_dana: Field required'
+      dataPayload.append('jumlah_dana', nominalClean);
       dataPayload.append('nominal_bantuan', nominalClean);
+
       dataPayload.append('tujuan_penggunaan', formData.tujuan_penggunaan.trim());
       
       if (formData.nib && formData.nib.trim()) {
