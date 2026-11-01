@@ -32,8 +32,10 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
   const [errorMsg, setErrorMsg] = useState('');
   const [suksesNomor, setSuksesNomor] = useState(null);
 
-  // Basis URL backend dinamis mengikuti host browser aktif
-  const API_BASE_URL = `http://${window.location.hostname || '127.0.0.1'}:8000`;
+  // Basis URL backend yang aman untuk production HTTPS Vercel
+  const API_BASE_URL = import.meta.env.VITE_API_URL 
+    ? import.meta.env.VITE_API_URL.replace(/:8000$/, '').replace(/^http:\/\//i, 'https://')
+    : 'https://si-umkm-jabar.vercel.app';
 
   const MAX_FILE_SIZE = 7 * 1024 * 1024; // 7 MB dalam satuan bytes
 
@@ -115,65 +117,72 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
     try {
       setLoading(true);
 
-      // 1. Upload berkas ke Supabase Storage via endpoint FastAPI yang sudah kita buat
-      const fileEntries = [
-        { key: 'file_ktp', file: files.file_ktp },
-        { key: 'file_kk', file: files.file_kk },
-        { key: 'file_nib', file: files.file_nib },
-        { key: 'file_proposal', file: files.file_proposal }
-      ];
-
-      for (const item of fileEntries) {
-        if (item.file) {
-          const formUpload = new FormData();
-          formUpload.append('file', item.file);
-
-          try {
-            await axios.post(`${API_BASE_URL}/api/pelatihan/upload`, formUpload, {
-              headers: { 'Content-Type': 'multipart/form-data' }
-            });
-          } catch (uploadErr) {
-            console.warn(`Gagal upload ${item.key} ke Supabase:`, uploadErr);
-          }
-        }
+      // Bersihkan karakter non-digit dari nominal bantuan
+      const nominalClean = Number(String(formData.jumlah_dana).replace(/\D/g, '')) || 0;
+      if (nominalClean <= 0) {
+        setErrorMsg('Nominal bantuan yang diajukan harus berupa angka yang valid.');
+        setLoading(false);
+        return;
       }
 
-      // 2. Kirim data pendaftaran bantuan dalam bentuk FormData (sesuai ekspektasi backend FastAPI)
+      // Susun ke FormData untuk dikirim langsung ke backend FastAPI
       const dataPayload = new FormData();
       dataPayload.append('nik', cleanNik);
       dataPayload.append('nama_lengkap', formData.nama_lengkap.trim());
       dataPayload.append('email', formData.email.trim());
       dataPayload.append('nomor_whatsapp', formData.nomor_whatsapp.trim());
       dataPayload.append('nama_usaha', formData.nama_usaha.trim());
-      dataPayload.append('kategori_usaha', formData.kategori_usaha);
-      dataPayload.append('jumlah_dana', formData.jumlah_dana.trim());
+      dataPayload.append('sektor_usaha', formData.kategori_usaha);
+      dataPayload.append('nominal_bantuan', nominalClean);
       dataPayload.append('tujuan_penggunaan', formData.tujuan_penggunaan.trim());
+      
       if (formData.nib && formData.nib.trim()) {
         dataPayload.append('nib', formData.nib.trim());
       }
 
-      // Lampirkan file asli agar parameter Form/UploadFile di FastAPI terpenuhi
+      // Lampirkan berkas ke payload form
       dataPayload.append('file_ktp', files.file_ktp);
-      if (files.file_kk) dataPayload.append('file_kk', files.file_kk);
-      if (files.file_nib) dataPayload.append('file_nib', files.file_nib);
-      if (files.file_proposal) dataPayload.append('file_proposal', files.file_proposal);
+      if (files.file_kk) {
+        dataPayload.append('file_kk', files.file_kk);
+      }
+      if (files.file_nib) {
+        dataPayload.append('file_nib', files.file_nib);
+      }
+      if (files.file_proposal) {
+        dataPayload.append('file_proposal', files.file_proposal);
+      }
 
-      const res = await axios.post(`${API_BASE_URL}/api/v1/layanan/pengajuan-bantuan`, dataPayload);
+      const targetUrl = `${API_BASE_URL}/api/v1/layanan/pengajuan-bantuan`;
+      const res = await axios.post(targetUrl, dataPayload, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
 
-      if (res.data.status === 'success' || res.status === 200) {
-        setSuksesNomor(res.data.nomor_pengajuan || `BANTUAN-${Date.now()}`);
+      if (res.data?.status === 'success' || res.status === 200 || res.status === 201) {
+        setSuksesNomor(res.data.nomor_pengajuan || `BNT-${Date.now()}`);
+
+        // Trigger sinkronisasi notifikasi navbar
+        window.dispatchEvent(new Event('update_notifikasi'));
       }
     } catch (err) {
       console.error("Gagal mengirim bantuan:", err);
-      if (err.response && err.response.data) {
-        const detail = err.response.data.detail;
-        const pesan = Array.isArray(detail)
-          ? detail.map((d) => d.msg).join(', ')
-          : detail;
-        setErrorMsg(pesan || 'Gagal memproses permohonan bantuan.');
-      } else {
-        setErrorMsg('Gagal terhubung ke server backend. Pastikan server Uvicorn menyala.');
+      const errRes = err.response?.data;
+      let pesan = 'Gagal memproses permohonan bantuan.';
+
+      if (errRes) {
+        if (typeof errRes.detail === 'string') {
+          pesan = errRes.detail;
+        } else if (Array.isArray(errRes.detail)) {
+          pesan = errRes.detail.map((d) => `${d.loc ? d.loc.join('.') + ': ' : ''}${d.msg}`).join(', ');
+        } else if (errRes.message) {
+          pesan = errRes.message;
+        } else {
+          pesan = JSON.stringify(errRes);
+        }
+      } else if (err.message) {
+        pesan = err.message;
       }
+
+      setErrorMsg(pesan);
     } finally {
       setLoading(false);
     }
@@ -206,7 +215,7 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
             padding: 0,
             transition: 'color 0.15s ease'
           }}
-          onMouseEnter={(e) => (e.currentTarget.style.color = '#255456')}
+          onMouseEnter={(e) => (e.currentTarget.style.color = '#1B4143')}
           onMouseLeave={(e) => (e.currentTarget.style.color = '#255456')}
         >
           <ArrowLeft size={18} /> Kembali ke Halaman Utama
