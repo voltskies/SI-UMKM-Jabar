@@ -146,11 +146,14 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
       }
 
       // Kirim langsung ke backend FastAPI
-      const res = await axios.post(`${API_BASE_URL}/api/v1/layanan/pengajuan-sertifikasi`, formData, {
+      // 1. Pastikan URL selalu menggunakan HTTPS di production agar tidak kena Mixed Content Blocked
+      const targetUrl = `${API_BASE_URL.replace(/^http:\/\//i, 'https://')}/api/v1/layanan/pengajuan-sertifikasi`;
+
+      const res = await axios.post(targetUrl, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
 
-      if (res.data.status === 'success') {
+      if (res.data?.status === 'success' || res.status === 201) {
         const noReg = res.data.nomor_registrasi;
         setDataLegalitas({ 
           status: 'diajukan', 
@@ -158,6 +161,9 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
           catatanAdmin: '' 
         });
         setNomorSukses(noReg);
+
+        // 2. Trigger real-time agar lonceng notifikasi di Navbar langsung update
+        window.dispatchEvent(new Event('update_notifikasi'));
       }
     } catch (err) {
       console.error("Detail error pendaftaran sertifikasi:", err);
@@ -178,7 +184,19 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
         pesan = err.message;
       }
 
-      setErrorMsg(pesan);
+      // 3. Mengamankan panggilan setter agar tidak crash ReferenceError
+      if (typeof setErrorMsg === 'function') {
+        setErrorMsg(pesan);
+      } else if (typeof setError === 'function') {
+        setError(pesan);
+      } else if (typeof setPesanError === 'function') {
+        setPesanError(pesan);
+      }
+    } finally {
+      // 4. Matikan state loading agar tombol tidak stuck di "Mengunggah Berkas..."
+      if (typeof setLoading === 'function') {
+        setLoading(false);
+      }
     }
   };
 
