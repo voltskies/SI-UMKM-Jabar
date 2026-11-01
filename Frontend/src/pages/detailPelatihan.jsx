@@ -74,18 +74,11 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
 
     try {
       const formData = new FormData();
-      // Mengirimkan identifier user dan field profil lengkap untuk mencegah NOT NULL constraint di TiDB
-      formData.append('user_id', currentUser.id || currentUser.nik || '');
-      formData.append('nama_lengkap', currentUser.nama || currentUser.nama_lengkap || '');
-      formData.append('email', currentUser.email || '');
-      formData.append('nomor_whatsapp', currentUser.nomor_whatsapp || currentUser.no_wa || currentUser.telepon || '');
-      formData.append('nik', currentUser.nik || '');
-      
-      // Informasi pelatihan
-      formData.append('id_pelatihan', pelatihan.id || 1);
+      formData.append('user_id', parseInt(currentUser.id, 10));
+      formData.append('id_pelatihan', parseInt(pelatihan.id || 1, 10));
       formData.append('judul_pelatihan', pelatihan.judul || pelatihan.title || 'Pelatihan UMKM Jabar');
       formData.append('kategori', pelatihan.kategori || 'Fasilitasi UMKM');
-      formData.append('penyelenggara', pelatihan.penyelenggara || 'Dinas KUK Provinsi Jawa Barat');
+      formData.append('penyelenggara', pelatihan.penyelenggara || 'Dinas KUK Jawa Barat');
 
       if (berkasSyarat) {
         formData.append('file_syarat', berkasSyarat);

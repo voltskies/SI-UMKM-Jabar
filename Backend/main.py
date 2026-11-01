@@ -283,6 +283,7 @@ def get_all_umkm(
     return {"status": "success", "total": len(data), "data": data}
 
 
+
 @app.post("/api/v1/layanan/pendaftaran-pelatihan", tags=["Pelaku UMKM"], status_code=status.HTTP_201_CREATED, summary="Daftar Pelatihan")
 async def daftar_pelatihan(
     user_id: int = Form(...),
@@ -293,39 +294,54 @@ async def daftar_pelatihan(
     file_syarat: Optional[UploadFile] = File(None),
     db: Session = Depends(get_db)
 ):
-    sudah_daftar = db.query(models.PendaftaranPelatihan).filter(
-        models.PendaftaranPelatihan.user_id == user_id,
-        models.PendaftaranPelatihan.id_pelatihan == id_pelatihan
-    ).first()
+    try:
+        sudah_daftar = db.query(models.PendaftaranPelatihan).filter(
+            models.PendaftaranPelatihan.user_id == user_id,
+            models.PendaftaranPelatihan.id_pelatihan == id_pelatihan
+        ).first()
 
-    if sudah_daftar:
-        raise HTTPException(status_code=400, detail="Anda sudah mendaftar di pelatihan ini.")
+        if sudah_daftar:
+            raise HTTPException(status_code=400, detail="Anda sudah mendaftar di pelatihan ini.")
 
-    url_berkas = None
-    if file_syarat:
-        url_berkas = await upload_file_to_supabase(file_syarat, folder="pelatihan")
+        url_berkas = None
+        if file_syarat:
+            try:
+                url_berkas = await upload_file_to_supabase(file_syarat, folder="pelatihan")
+            except Exception as up_err:
+                print(f"Warning upload supabase gagal: {up_err}")
+                url_berkas = None
 
-    pendaftaran = models.PendaftaranPelatihan(
-        user_id=user_id,
-        id_pelatihan=id_pelatihan,
-        judul_pelatihan=judul_pelatihan,
-        kategori=kategori,
-        penyelenggara=penyelenggara,
-        metode_belajar="Daring Terpadu & Mandiri",
-        status="Terdaftar",
-        file_syarat=url_berkas
-    )
-    db.add(pendaftaran)
-    db.commit()
-    db.refresh(pendaftaran)
+        pendaftaran = models.PendaftaranPelatihan(
+            user_id=user_id,
+            id_pelatihan=id_pelatihan,
+            judul_pelatihan=judul_pelatihan,
+            kategori=kategori or "Fasilitasi UMKM",
+            penyelenggara=penyelenggara or "Dinas KUK Jawa Barat",
+            metode_belajar="Daring Terpadu & Mandiri",
+            status="Terdaftar",
+            file_syarat=url_berkas or ""
+        )
+        
+        db.add(pendaftaran)
+        db.commit()
+        db.refresh(pendaftaran)
+        
+        return {
+            "status": "success",
+            "message": "Pendaftaran pelatihan berhasil dikirim!",
+            "data": pendaftaran
+        }
 
-    return {
-        "status": "success",
-        "message": "Berhasil mendaftar pelatihan.",
-        "file_url": url_berkas,
-        "data": pendaftaran
-    }
-
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        print(f"DEBUG DB ERROR: {str(e)}")
+        # Mengembalikan error database secara jelas ke frontend daripada crash 500
+        raise HTTPException(
+            status_code=400,
+            detail=f"Gagal menyimpan pendaftaran ke database: {str(e)}"
+        )
 
 @app.post("/api/v1/layanan/pengajuan-bantuan", tags=["Pelaku UMKM"], status_code=status.HTTP_201_CREATED, summary="Ajukan Bantuan")
 async def ajukan_bantuan(
