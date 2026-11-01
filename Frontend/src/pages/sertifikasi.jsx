@@ -38,7 +38,11 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
   const [errorForm, setErrorForm] = useState('');
   const [nomorSukses, setNomorSukses] = useState(null);
 
-  const API_BASE_URL = `http://${window.location.hostname || '127.0.0.1'}:8000`;
+  // Menggunakan URL environment atau fallback ke domain backend HTTPS Vercel
+  const API_BASE_URL = import.meta.env.VITE_API_URL 
+    ? import.meta.env.VITE_API_URL.replace(/:8000$/, '').replace(/^http:\/\//i, 'https://')
+    : 'https://si-umkm-jabar.vercel.app';
+
   const MAX_FILE_SIZE = 7 * 1024 * 1024; // 7 MB
 
   const handleKembaliKeDashboard = () => {
@@ -145,9 +149,8 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
         formData.append('file_dokumen_pendukung', files.file_dokumen_pendukung);
       }
 
-      // Kirim langsung ke backend FastAPI
-      // 1. Pastikan URL selalu menggunakan HTTPS di production agar tidak kena Mixed Content Blocked
-      const targetUrl = `${API_BASE_URL.replace(/^http:\/\//i, 'https://')}/api/v1/layanan/pengajuan-sertifikasi`;
+      // Endpoint backend target HTTPS
+      const targetUrl = `${API_BASE_URL}/api/v1/layanan/pengajuan-sertifikasi`;
 
       const res = await axios.post(targetUrl, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
@@ -162,7 +165,7 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
         });
         setNomorSukses(noReg);
 
-        // 2. Trigger real-time agar lonceng notifikasi di Navbar langsung update
+        // Memicu sinkronisasi notifikasi navbar seketika
         window.dispatchEvent(new Event('update_notifikasi'));
       }
     } catch (err) {
@@ -184,19 +187,10 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
         pesan = err.message;
       }
 
-      // 3. Mengamankan panggilan setter agar tidak crash ReferenceError
-      if (typeof setErrorMsg === 'function') {
-        setErrorMsg(pesan);
-      } else if (typeof setError === 'function') {
-        setError(pesan);
-      } else if (typeof setPesanError === 'function') {
-        setPesanError(pesan);
-      }
+      // Tampilkan error ke state errorForm yang ditampilkan pada layar
+      setErrorForm(pesan);
     } finally {
-      // 4. Matikan state loading agar tombol tidak stuck di "Mengunggah Berkas..."
-      if (typeof setLoading === 'function') {
-        setLoading(false);
-      }
+      setLoading(false);
     }
   };
 
@@ -313,8 +307,6 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
           /* VIEW 2: FORM PENDAFTARAN */
           <div style={{ backgroundColor: '#FFFFFF', borderRadius: '16px', border: '1px solid #E2E8F0', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.05)', padding: '36px' }}>
             <div style={{ borderBottom: '1px solid #E2E8F0', paddingBottom: '20px', marginBottom: '24px' }}>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', backgroundColor: '#eaf1f1', color: '#255456', padding: '4px 12px', borderRadius: '999px', fontSize: '0.78rem', fontWeight: '700', marginBottom: '8px' }}>
-              </div>
               <h1 style={{ margin: 0, fontSize: '1.5rem', fontWeight: '800', color: '#0F172A' }}>
                 Form Permohonan Sertifikasi UMKM
               </h1>
