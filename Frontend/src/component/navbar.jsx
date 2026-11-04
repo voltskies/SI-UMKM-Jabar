@@ -31,7 +31,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
   const isDashboardMode = mode === 'dashboard';
   const isSolidSticky = mode === 'solid-sticky' || isDashboardMode;
 
-  // resize listener
+  // Resize listener
   useEffect(() => {
     const handleResize = () => {
       const mobile = window.innerWidth < 768;
@@ -184,7 +184,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
           });
 
         // Riwayat Pendaftaran Pelatihan Pengguna
-       listPelatihan.forEach((p) => {
+        listPelatihan.forEach((p) => {
           items.push({
             id: `user-pelatihan-${p.id}`,
             key: `user-pelatihan-${p.id}|${p.status}`,
@@ -291,7 +291,6 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
         right: 0,
         width: '100%',
         boxSizing: 'border-box',
-        // lengkung
         borderBottomLeftRadius: '24px',
         borderBottomRightRadius: '24px',
         borderTopLeftRadius: '0px',
@@ -442,7 +441,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
             )}
           </button>
 
-          {/* Tombol profil*/}
+          {/* Tombol Profil */}
           <div style={{ position: 'relative' }}>
             <button
               type="button"
@@ -507,20 +506,12 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
                   <>
                     <div style={{ borderBottom: '1px solid #F1F5F9', paddingBottom: '10px', marginBottom: '8px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.72rem', color: '#1B4143', fontWeight: '700' }}>
-                        <UserCheck size={14} /> Terverifikasi ({user.role})
+                        <UserCheck size={14} /> Terverifikasi ({user.role})[cite: 18]
                       </div>
                       <div style={{ fontWeight: '700', fontSize: '0.92rem', marginTop: '4px', color: '#0F172A' }}>
-                        {user.nama || user.nama_lengkap}
+                        {user.nama || user.nama_lengkap}[cite: 18]
                       </div>
-                      <div style={{ fontSize: '0.78rem', color: '#64748B' }}>{user.email}</div>
-                    </div>
-                    <div 
-                      onClick={() => { setDropdownUser(false); setHalaman('pelatihan'); }}
-                      style={{ padding: '8px 10px', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem' }}
-                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F8FAFC'}
-                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                    >
-                      Pelatihan Saya
+                      <div style={{ fontSize: '0.78rem', color: '#64748B' }}>{user.email}</div>[cite: 18]
                     </div>
                     <button
                       type="button"
@@ -532,9 +523,9 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
                         if (onLogout) onLogout();
                         else window.location.reload();
                       }}
-                      style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '8px', background: 'none', border: 'none', color: '#DC2626', padding: '8px 10px', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '600', marginTop: '4px' }}
+                      style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '8px', background: 'none', border: 'none', color: '#DC2626', padding: '8px 10px', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '600' }}
                     >
-                      <LogOut size={15} /> Keluar Akun
+                      <LogOut size={15} /> Keluar Akun[cite: 18]
                     </button>
                   </>
                 ) : (
