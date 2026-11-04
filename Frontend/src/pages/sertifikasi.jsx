@@ -45,6 +45,18 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
 
   const MAX_FILE_SIZE = 7 * 1024 * 1024; // 7 MB
 
+  // Style input konsisten agar selalu berlatar putih dan teks kontras gelap
+  const inputStyle = {
+    width: '100%',
+    padding: '10px 12px',
+    borderRadius: '8px',
+    border: '1px solid #CBD5E1',
+    fontSize: '0.85rem',
+    backgroundColor: '#FFFFFF',
+    color: '#0F172A',
+    boxSizing: 'border-box'
+  };
+
   const handleKembaliKeDashboard = () => {
     if (typeof setHalaman === 'function') {
       setHalaman('dashboard');
@@ -333,21 +345,54 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
                 <div className="responsive-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
                   <div>
                     <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#334155', marginBottom: '6px' }}>NIK *</label>
-                    <input type="text" name="nik" maxLength={16} required value={dataPemohon.nik} onChange={handleInputPemohon} placeholder="16 digit sesuai KTP" style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.85rem', boxSizing: 'border-box' }} />
+                    <input 
+                      type="text" 
+                      name="nik" 
+                      maxLength={16} 
+                      required 
+                      value={dataPemohon.nik} 
+                      onChange={handleInputPemohon} 
+                      placeholder="16 digit sesuai KTP" 
+                      style={inputStyle} 
+                    />
                   </div>
                   <div>
                     <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#334155', marginBottom: '6px' }}>Nama Lengkap *</label>
-                    <input type="text" name="nama_lengkap" required value={dataPemohon.nama_lengkap} onChange={handleInputPemohon} placeholder="Nama sesuai KTP" style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.85rem', boxSizing: 'border-box' }} />
+                    <input 
+                      type="text" 
+                      name="nama_lengkap" 
+                      required 
+                      value={dataPemohon.nama_lengkap} 
+                      onChange={handleInputPemohon} 
+                      placeholder="Nama sesuai KTP" 
+                      style={inputStyle} 
+                    />
                   </div>
                 </div>
                 <div className="responsive-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                   <div>
                     <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#334155', marginBottom: '6px' }}>Email Aktif *</label>
-                    <input type="email" name="email" required value={dataPemohon.email} onChange={handleInputPemohon} placeholder="nama@gmail.com" style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.85rem', boxSizing: 'border-box' }} />
+                    <input 
+                      type="email" 
+                      name="email" 
+                      required 
+                      value={dataPemohon.email} 
+                      onChange={handleInputPemohon} 
+                      placeholder="nama@gmail.com" 
+                      style={inputStyle} 
+                    />
                   </div>
                   <div>
                     <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#334155', marginBottom: '6px' }}>Nomor WhatsApp *</label>
-                    <input type="text" name="nomor_whatsapp" required value={dataPemohon.nomor_whatsapp} onChange={handleInputPemohon} placeholder="08xxxxxxxxxx" style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.85rem', boxSizing: 'border-box' }} />
+                    <input 
+                      type="text" 
+                      name="nomor_whatsapp" 
+                      required 
+                      value={dataPemohon.nomor_whatsapp} 
+                      onChange={handleInputPemohon} 
+                      placeholder="08xxxxxxxxxx" 
+                      style={inputStyle} 
+                    />
                   </div>
                 </div>
               </div>
@@ -360,18 +405,39 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
                 <div className="responsive-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
                   <div>
                     <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#334155', marginBottom: '6px' }}>Nama Usaha / Merek Dagang *</label>
-                    <input type="text" name="nama_usaha" required value={dataPemohon.nama_usaha} onChange={handleInputPemohon} placeholder="Misal: Keripik Singkong Barokah" style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.85rem', boxSizing: 'border-box' }} />
+                    <input 
+                      type="text" 
+                      name="nama_usaha" 
+                      required 
+                      value={dataPemohon.nama_usaha} 
+                      onChange={handleInputPemohon} 
+                      placeholder="Misal: Keripik Singkong Barokah" 
+                      style={inputStyle} 
+                    />
                   </div>
                   <div>
                     <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#334155', marginBottom: '6px' }}>Nama Produk yang Diajukan *</label>
-                    <input type="text" name="nama_produk" required value={dataPemohon.nama_produk} onChange={handleInputPemohon} placeholder="Misal: Keripik Pedas Rasa Jeruk" style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.85rem', boxSizing: 'border-box' }} />
+                    <input 
+                      type="text" 
+                      name="nama_produk" 
+                      required 
+                      value={dataPemohon.nama_produk} 
+                      onChange={handleInputPemohon} 
+                      placeholder="Misal: Keripik Pedas Rasa Jeruk" 
+                      style={inputStyle} 
+                    />
                   </div>
                 </div>
 
                 <div className="responsive-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
                   <div>
                     <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#334155', marginBottom: '6px' }}>Jenis Sertifikasi yang Diajukan *</label>
-                    <select name="jenis_sertifikasi" value={dataPemohon.jenis_sertifikasi} onChange={handleInputPemohon} style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.85rem', backgroundColor: '#FFF', boxSizing: 'border-box' }}>
+                    <select 
+                      name="jenis_sertifikasi" 
+                      value={dataPemohon.jenis_sertifikasi} 
+                      onChange={handleInputPemohon} 
+                      style={{ ...inputStyle, cursor: 'pointer' }}
+                    >
                       <option value="Sertifikasi Halal">Sertifikasi Halal (BPJPH)</option>
                       <option value="Izin Edar BPOM">Izin Edar BPOM</option>
                       <option value="SPP-PIRT">Sertifikat Produksi Pangan Industri Rumah Tangga (P-IRT)</option>
@@ -381,13 +447,28 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
                   </div>
                   <div>
                     <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#334155', marginBottom: '6px' }}>Nomor Induk Berusaha (NIB)</label>
-                    <input type="text" name="nib" value={dataPemohon.nib} onChange={handleInputPemohon} placeholder="Opsional / jika ada" style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.85rem', boxSizing: 'border-box' }} />
+                    <input 
+                      type="text" 
+                      name="nib" 
+                      value={dataPemohon.nib} 
+                      onChange={handleInputPemohon} 
+                      placeholder="Opsional / jika ada" 
+                      style={inputStyle} 
+                    />
                   </div>
                 </div>
 
                 <div>
                   <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#334155', marginBottom: '6px' }}>Deskripsi Singkat Komposisi / Produk *</label>
-                  <textarea name="deskripsi_produk" required rows={3} value={dataPemohon.deskripsi_produk} onChange={handleInputPemohon} placeholder="Uraikan komposisi bahan baku, proses pengolahan, atau izin edar yang telah dimiliki sebelumnya..." style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.85rem', resize: 'vertical', boxSizing: 'border-box' }} />
+                  <textarea 
+                    name="deskripsi_produk" 
+                    required 
+                    rows={3} 
+                    value={dataPemohon.deskripsi_produk} 
+                    onChange={handleInputPemohon} 
+                    placeholder="Uraikan komposisi bahan baku, proses pengolahan, atau izin edar yang telah dimiliki sebelumnya..." 
+                    style={{ ...inputStyle, resize: 'vertical' }} 
+                  />
                 </div>
               </div>
 
@@ -408,7 +489,7 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
                       accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" 
                       required 
                       onChange={handleFileChange} 
-                      style={{ fontSize: '0.78rem', width: '100%' }} 
+                      style={{ fontSize: '0.78rem', width: '100%', color: '#334155' }} 
                     />
                     {files.file_ktp && (
                       <div style={{ fontSize: '0.76rem', color: '#255456', marginTop: '6px' }}>✓ {files.file_ktp.name}</div>
@@ -425,7 +506,7 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
                       accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" 
                       required 
                       onChange={handleFileChange} 
-                      style={{ fontSize: '0.78rem', width: '100%' }} 
+                      style={{ fontSize: '0.78rem', width: '100%', color: '#334155' }} 
                     />
                     {files.file_foto_produk && (
                       <div style={{ fontSize: '0.76rem', color: '#255456', marginTop: '6px' }}>✓ {files.file_foto_produk.name}</div>
@@ -441,7 +522,7 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
                       name="file_dokumen_pendukung" 
                       accept=".pdf,application/pdf" 
                       onChange={handleFileChange} 
-                      style={{ fontSize: '0.78rem', width: '100%' }} 
+                      style={{ fontSize: '0.78rem', width: '100%', color: '#334155' }} 
                     />
                     {files.file_dokumen_pendukung && (
                       <div style={{ fontSize: '0.76rem', color: '#255456', marginTop: '6px' }}>✓ {files.file_dokumen_pendukung.name}</div>
