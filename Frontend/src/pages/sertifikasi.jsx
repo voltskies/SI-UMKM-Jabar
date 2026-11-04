@@ -2,7 +2,8 @@ import { useState } from 'react';
 import axios from 'axios';
 import {
   Award, ArrowLeft, CheckCircle2, Circle, Clock,
-  FileText, XCircle, Mail, ShieldCheck, Upload
+  FileText, XCircle, Mail, ShieldCheck, Upload,
+  User, Building2, FileCheck
 } from 'lucide-react';
 
 import Navbar from '../component/navbar';
@@ -54,7 +55,8 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
     fontSize: '0.85rem',
     backgroundColor: '#FFFFFF',
     color: '#0F172A',
-    boxSizing: 'border-box'
+    boxSizing: 'border-box',
+    textAlign: 'left'
   };
 
   const handleKembaliKeDashboard = () => {
@@ -227,7 +229,7 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
       
       <Navbar setHalaman={setHalaman} user={user} />
 
-      <main style={{ flex: 1, width: '100%', maxWidth: '840px', margin: '0 auto', padding: '96px 20px 60px 20px', boxSizing: 'border-box' }}>
+      <main style={{ flex: 1, width: '100%', maxWidth: '900px', margin: '0 auto', padding: '96px 20px 60px 20px', boxSizing: 'border-box', textAlign: 'left' }}>
         
         <button
           type="button"
@@ -252,14 +254,14 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
         {/* VIEW 1: STATUS DASHBOARD */}
         {view === 'dashboard' ? (
           <div>
-            <div style={{ marginBottom: '28px' }}>
+            <div style={{ marginBottom: '28px', textAlign: 'left' }}>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', backgroundColor: '#eaf1f1', color: '#255456', padding: '4px 12px', borderRadius: '999px', fontSize: '0.78rem', fontWeight: '700', marginBottom: '8px' }}>
                 <ShieldCheck size={14} /> Pendaftaran Legalitas & Standardisasi Usaha
               </div>
-              <h1 style={{ margin: '0 0 6px', fontSize: 'clamp(26px, 4vw, 34px)', fontWeight: '800', color: '#0F172A' }}>
+              <h1 style={{ margin: '0 0 6px', fontSize: 'clamp(26px, 4vw, 34px)', fontWeight: '800', color: '#0F172A', textAlign: 'left' }}>
                 Legalitas & Sertifikasi UMKM
               </h1>
-              <p style={{ margin: 0, fontSize: '0.88rem', color: '#64748B' }}>
+              <p style={{ margin: 0, fontSize: '0.88rem', color: '#64748B', textAlign: 'left' }}>
                 Pantau permohonan sertifikasi Halal, BPOM, NIB, dan izin edar resmi dari Dinas KUK Jawa Barat.
               </p>
             </div>
@@ -298,7 +300,7 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
 
             {/* STATUS: DIAJUKAN */}
             {dataLegalitas.status === 'diajukan' && (
-              <div className="responsive-form-card" style={{ backgroundColor: '#FFFFFF', borderRadius: '16px', border: '1px solid #E2E8F0', padding: '28px' }}>
+              <div className="responsive-form-card" style={{ backgroundColor: '#FFFFFF', borderRadius: '16px', border: '1px solid #E2E8F0', padding: '28px', textAlign: 'left' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px', flexWrap: 'wrap', gap: '8px' }}>
                   <div>
                     <h4 style={{ margin: '0 0 4px', fontSize: '1.05rem', fontWeight: '800', color: '#0F172A' }}>Pengajuan Legalitas Berhasil</h4>
@@ -316,35 +318,36 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
             )}
           </div>
         ) : (
-          /* VIEW 2: FORM PENDAFTARAN */
-          <div className="responsive-form-card" style={{ backgroundColor: '#FFFFFF', borderRadius: '16px', border: '1px solid #E2E8F0', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.05)', padding: '36px' }}>
-            <div style={{ borderBottom: '1px solid #E2E8F0', paddingBottom: '20px', marginBottom: '24px' }}>
+          /* VIEW 2: FORM PENDAFTARAN (RATA KIRI KONSISTEN) */
+          <div className="responsive-form-card" style={{ backgroundColor: '#FFFFFF', borderRadius: '16px', border: '1px solid #E2E8F0', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.05)', padding: '36px', textAlign: 'left' }}>
+            <div style={{ borderBottom: '1px solid #E2E8F0', paddingBottom: '20px', marginBottom: '28px', textAlign: 'left' }}>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', backgroundColor: '#eaf1f1', color: '#255456', padding: '4px 12px', borderRadius: '999px', fontSize: '0.78rem', fontWeight: '700', marginBottom: '8px' }}>
+                <FileCheck size={14} /> Standarisasi Mutu & Legalitas Usaha
               </div>
-              <h1 style={{ margin: 0, fontSize: 'clamp(24px, 4vw, 30px)', fontWeight: '800', color: '#0F172A' }}>
+              <h1 style={{ margin: '0 0 6px', fontSize: 'clamp(24px, 4vw, 30px)', fontWeight: '800', color: '#0F172A', textAlign: 'left' }}>
                 Form Permohonan Sertifikasi UMKM
               </h1>
-              <p style={{ margin: '6px 0 0', fontSize: '0.85rem', color: '#64748B' }}>
+              <p style={{ margin: 0, fontSize: '0.88rem', color: '#64748B', lineHeight: '1.5', textAlign: 'left' }}>
                 Lengkapi identitas penanggung jawab dan rincian produk yang akan diajukan standardisasi.
               </p>
             </div>
 
             {errorForm && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', backgroundColor: '#FEF2F2', border: '1px solid #F87171', color: '#991B1B', padding: '12px 16px', borderRadius: '8px', marginBottom: '24px', fontSize: '0.85rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', backgroundColor: '#FEF2F2', border: '1px solid #F87171', color: '#991B1B', padding: '12px 16px', borderRadius: '8px', marginBottom: '24px', fontSize: '0.85rem', textAlign: 'left' }}>
                 <XCircle size={18} />
                 <span>{errorForm}</span>
               </div>
             )}
 
-            <form onSubmit={handleSubmitForm}>
+            <form onSubmit={handleSubmitForm} style={{ textAlign: 'left' }}>
               {/* Bagian 1: Data Pemohon */}
-              <div style={{ marginBottom: '28px' }}>
-                <h3 style={{ fontSize: '1rem', fontWeight: '700', color: '#255456', marginBottom: '14px' }}>
-                  1. Informasi Pemilik Usaha
+              <div style={{ marginBottom: '28px', textAlign: 'left' }}>
+                <h3 style={{ fontSize: '1.05rem', fontWeight: '700', color: '#255456', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px', textAlign: 'left' }}>
+                  <User size={18} /> 1. Informasi Pemilik Usaha
                 </h3>
-                <div className="responsive-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#334155', marginBottom: '6px' }}>NIK *</label>
+                <div className="responsive-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px', textAlign: 'left' }}>
+                  <div style={{ textAlign: 'left' }}>
+                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#334155', marginBottom: '6px', textAlign: 'left' }}>NIK *</label>
                     <input 
                       type="text" 
                       name="nik" 
@@ -356,8 +359,8 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
                       style={inputStyle} 
                     />
                   </div>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#334155', marginBottom: '6px' }}>Nama Lengkap *</label>
+                  <div style={{ textAlign: 'left' }}>
+                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#334155', marginBottom: '6px', textAlign: 'left' }}>Nama Lengkap *</label>
                     <input 
                       type="text" 
                       name="nama_lengkap" 
@@ -369,9 +372,9 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
                     />
                   </div>
                 </div>
-                <div className="responsive-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#334155', marginBottom: '6px' }}>Email Aktif *</label>
+                <div className="responsive-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', textAlign: 'left' }}>
+                  <div style={{ textAlign: 'left' }}>
+                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#334155', marginBottom: '6px', textAlign: 'left' }}>Email Aktif *</label>
                     <input 
                       type="email" 
                       name="email" 
@@ -382,8 +385,8 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
                       style={inputStyle} 
                     />
                   </div>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#334155', marginBottom: '6px' }}>Nomor WhatsApp *</label>
+                  <div style={{ textAlign: 'left' }}>
+                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#334155', marginBottom: '6px', textAlign: 'left' }}>Nomor WhatsApp *</label>
                     <input 
                       type="text" 
                       name="nomor_whatsapp" 
@@ -398,13 +401,13 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
               </div>
 
               {/* Bagian 2: Data Usaha & Produk */}
-              <div style={{ marginBottom: '28px' }}>
-                <h3 style={{ fontSize: '1rem', fontWeight: '700', color: '#255456', marginBottom: '14px' }}>
-                  2. Rincian Usaha & Produk
+              <div style={{ marginBottom: '28px', textAlign: 'left' }}>
+                <h3 style={{ fontSize: '1.05rem', fontWeight: '700', color: '#255456', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px', textAlign: 'left' }}>
+                  <Building2 size={18} /> 2. Rincian Usaha & Produk
                 </h3>
-                <div className="responsive-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#334155', marginBottom: '6px' }}>Nama Usaha / Merek Dagang *</label>
+                <div className="responsive-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px', textAlign: 'left' }}>
+                  <div style={{ textAlign: 'left' }}>
+                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#334155', marginBottom: '6px', textAlign: 'left' }}>Nama Usaha / Merek Dagang *</label>
                     <input 
                       type="text" 
                       name="nama_usaha" 
@@ -415,8 +418,8 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
                       style={inputStyle} 
                     />
                   </div>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#334155', marginBottom: '6px' }}>Nama Produk yang Diajukan *</label>
+                  <div style={{ textAlign: 'left' }}>
+                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#334155', marginBottom: '6px', textAlign: 'left' }}>Nama Produk yang Diajukan *</label>
                     <input 
                       type="text" 
                       name="nama_produk" 
@@ -429,9 +432,9 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
                   </div>
                 </div>
 
-                <div className="responsive-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#334155', marginBottom: '6px' }}>Jenis Sertifikasi yang Diajukan *</label>
+                <div className="responsive-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px', textAlign: 'left' }}>
+                  <div style={{ textAlign: 'left' }}>
+                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#334155', marginBottom: '6px', textAlign: 'left' }}>Jenis Sertifikasi yang Diajukan *</label>
                     <select 
                       name="jenis_sertifikasi" 
                       value={dataPemohon.jenis_sertifikasi} 
@@ -445,8 +448,8 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
                       <option value="Standardisasi SNI">Standardisasi Mutu SNI</option>
                     </select>
                   </div>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#334155', marginBottom: '6px' }}>Nomor Induk Berusaha (NIB)</label>
+                  <div style={{ textAlign: 'left' }}>
+                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#334155', marginBottom: '6px', textAlign: 'left' }}>Nomor Induk Berusaha (NIB)</label>
                     <input 
                       type="text" 
                       name="nib" 
@@ -458,8 +461,8 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
                   </div>
                 </div>
 
-                <div>
-                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#334155', marginBottom: '6px' }}>Deskripsi Singkat Komposisi / Produk *</label>
+                <div style={{ textAlign: 'left' }}>
+                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#334155', marginBottom: '6px', textAlign: 'left' }}>Deskripsi Singkat Komposisi / Produk *</label>
                   <textarea 
                     name="deskripsi_produk" 
                     required 
@@ -473,14 +476,14 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
               </div>
 
               {/* Bagian 3: Unggah Berkas */}
-              <div style={{ marginBottom: '32px' }}>
-                <h3 style={{ fontSize: '1rem', fontWeight: '700', color: '#255456', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <Upload size={17} /> 3. Berkas Persyaratan (Maks. 7 MB)
+              <div style={{ marginBottom: '32px', textAlign: 'left' }}>
+                <h3 style={{ fontSize: '1.05rem', fontWeight: '700', color: '#255456', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px', textAlign: 'left' }}>
+                  <Upload size={18} /> 3. Berkas Persyaratan (Maks. 7 MB)
                 </h3>
-                <div className="responsive-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                <div className="responsive-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', textAlign: 'left' }}>
                   
-                  <div style={{ border: '1px dashed #CBD5E1', borderRadius: '8px', padding: '14px', backgroundColor: '#F8FAFC' }}>
-                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#334155', marginBottom: '4px' }}>
+                  <div style={{ border: '1px dashed #CBD5E1', borderRadius: '8px', padding: '14px', backgroundColor: '#F8FAFC', textAlign: 'left' }}>
+                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#334155', marginBottom: '4px', textAlign: 'left' }}>
                       Foto KTP Pemohon * <span style={{ fontSize: '0.74rem', color: '#64748B', fontWeight: '400' }}>(PDF/JPG/PNG, Maks. 7MB)</span>
                     </label>
                     <input 
@@ -492,12 +495,12 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
                       style={{ fontSize: '0.78rem', width: '100%', color: '#334155' }} 
                     />
                     {files.file_ktp && (
-                      <div style={{ fontSize: '0.76rem', color: '#255456', marginTop: '6px' }}>✓ {files.file_ktp.name}</div>
+                      <div style={{ fontSize: '0.76rem', color: '#255456', marginTop: '6px', textAlign: 'left' }}>✓ {files.file_ktp.name}</div>
                     )}
                   </div>
 
-                  <div style={{ border: '1px dashed #CBD5E1', borderRadius: '8px', padding: '14px', backgroundColor: '#F8FAFC' }}>
-                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#334155', marginBottom: '4px' }}>
+                  <div style={{ border: '1px dashed #CBD5E1', borderRadius: '8px', padding: '14px', backgroundColor: '#F8FAFC', textAlign: 'left' }}>
+                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#334155', marginBottom: '4px', textAlign: 'left' }}>
                       Foto Tempat / Kemasan Produk * <span style={{ fontSize: '0.74rem', color: '#64748B', fontWeight: '400' }}>(PDF/JPG/PNG, Maks. 7MB)</span>
                     </label>
                     <input 
@@ -509,12 +512,12 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
                       style={{ fontSize: '0.78rem', width: '100%', color: '#334155' }} 
                     />
                     {files.file_foto_produk && (
-                      <div style={{ fontSize: '0.76rem', color: '#255456', marginTop: '6px' }}>✓ {files.file_foto_produk.name}</div>
+                      <div style={{ fontSize: '0.76rem', color: '#255456', marginTop: '6px', textAlign: 'left' }}>✓ {files.file_foto_produk.name}</div>
                     )}
                   </div>
 
-                  <div style={{ border: '1px dashed #CBD5E1', borderRadius: '8px', padding: '14px', backgroundColor: '#F8FAFC', gridColumn: 'span 2' }}>
-                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#334155', marginBottom: '4px' }}>
+                  <div style={{ border: '1px dashed #CBD5E1', borderRadius: '8px', padding: '14px', backgroundColor: '#F8FAFC', gridColumn: 'span 2', textAlign: 'left' }}>
+                    <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#334155', marginBottom: '4px', textAlign: 'left' }}>
                       Dokumen Pendukung / NIB / Surat Keterangan Usaha (Opsional) <span style={{ fontSize: '0.74rem', color: '#64748B', fontWeight: '400' }}>(Wajib PDF, Maks. 7MB)</span>
                     </label>
                     <input 
@@ -525,7 +528,7 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
                       style={{ fontSize: '0.78rem', width: '100%', color: '#334155' }} 
                     />
                     {files.file_dokumen_pendukung && (
-                      <div style={{ fontSize: '0.76rem', color: '#255456', marginTop: '6px' }}>✓ {files.file_dokumen_pendukung.name}</div>
+                      <div style={{ fontSize: '0.76rem', color: '#255456', marginTop: '6px', textAlign: 'left' }}>✓ {files.file_dokumen_pendukung.name}</div>
                     )}
                   </div>
 
