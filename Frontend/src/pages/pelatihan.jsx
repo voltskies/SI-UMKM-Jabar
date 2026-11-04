@@ -133,7 +133,7 @@ export default function Pelatihan({ onKembali, onPilihPelatihan, setHalaman, use
       <main className="responsive-page-content" style={{ flex: 1, maxWidth: '1240px', width: '100%', margin: '0 auto', padding: '32px 24px 60px 24px', boxSizing: 'border-box' }}>
         
         {/* Header Navigasi & Pencarian */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px', flexWrap: 'wrap', gap: '16px' }}>
           <button
             type="button"
             onClick={handleKembaliKeBeranda}
@@ -156,19 +156,19 @@ export default function Pelatihan({ onKembali, onPilihPelatihan, setHalaman, use
             <ArrowLeft size={18} /> Kembali ke Beranda
           </button>
 
-          <div className="responsive-search" style={{ position: 'relative', width: '340px' }}>
-            <Search size={16} color="#94A3B8" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }} />
+          <div className="responsive-search" style={{ position: 'relative', width: '360px' }}>
+            <Search size={18} color="#94A3B8" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }} />
             <input
               type="text"
-              placeholder="Cari tema pelatihan, materi, dinas..."
+              placeholder="Cari tema pelatihan, sertifikasi, materi..."
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
               style={{
                 width: '100%',
-                padding: '9px 14px 9px 38px',
+                padding: '10px 16px 10px 42px',
                 borderRadius: '999px',
                 border: '1px solid #CBD5E1',
-                fontSize: '0.82rem',
+                fontSize: '0.85rem',
                 outline: 'none',
                 backgroundColor: '#FFFFFF',
                 color: '#0F172A',
@@ -179,43 +179,45 @@ export default function Pelatihan({ onKembali, onPilihPelatihan, setHalaman, use
           </div>
         </div>
 
-        {/* Judul & Deskripsi Katalog (Proporsional & Tidak Terlalu Besar) */}
-        <div style={{ marginBottom: '24px' }}>
+        {/* Judul & Deskripsi Katalog (Rata Kiri & Proporsional) */}
+        <div style={{ marginBottom: '24px', textAlign: 'left' }}>
           <h1 style={{ 
-            fontSize: 'clamp(20px, 2.5vw, 24px)', 
-            fontWeight: '700', 
+            fontSize: 'clamp(24px, 3.2vw, 30px)', 
+            fontWeight: '800', 
             color: '#0F172A', 
-            margin: '0 0 6px 0',
-            lineHeight: 1.3
+            margin: '0 0 8px 0', 
+            lineHeight: 1.3,
+            textAlign: 'left'
           }}>
             Katalog Pelatihan & Pendampingan UMKM Jawa Barat
           </h1>
           <p style={{ 
             color: '#64748B', 
-            fontSize: '0.85rem', 
-            maxWidth: '720px', 
+            fontSize: '0.9rem', 
+            maxWidth: '780px', 
             margin: 0, 
-            lineHeight: '1.5' 
+            lineHeight: '1.5',
+            textAlign: 'left'
           }}>
             Akselerasi keahlian usaha, perizinan, dan tata kelola bisnis Anda melalui kurikulum kurasi bersertifikat resmi tanpa dipungut biaya.
           </p>
         </div>
 
         {/* Filter Kategori */}
-        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '24px' }}>
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '28px' }}>
           {['Semua', 'Pemasaran Digital', 'Keuangan & Akuntansi', 'Legalitas Usaha', 'Inovasi Produk', 'Ekspor Komoditas'].map((kat) => (
             <button
               key={kat}
               type="button"
               onClick={() => setFilterKategori(kat)}
               style={{
-                padding: '6px 14px',
+                padding: '7px 16px',
                 borderRadius: '999px',
                 border: '1px solid',
                 borderColor: filterKategori === kat ? '#255456' : '#E2E8F0',
                 backgroundColor: filterKategori === kat ? '#255456' : '#FFFFFF',
                 color: filterKategori === kat ? '#FFFFFF' : '#475569',
-                fontSize: '0.78rem',
+                fontSize: '0.82rem',
                 fontWeight: filterKategori === kat ? '700' : '500',
                 cursor: 'pointer',
                 transition: 'all 0.15s ease'
@@ -229,8 +231,8 @@ export default function Pelatihan({ onKembali, onPilihPelatihan, setHalaman, use
         {/* Grid Kartu Pelatihan */}
         <div className="responsive-card-grid" style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-          gap: '20px'
+          gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))',
+          gap: '24px'
         }}>
           {filtered.map((item) => (
             <div
@@ -238,28 +240,28 @@ export default function Pelatihan({ onKembali, onPilihPelatihan, setHalaman, use
               onClick={() => handleKlikPelatihan(item)}
               style={{
                 backgroundColor: '#FFFFFF',
-                borderRadius: '14px',
+                borderRadius: '16px',
                 overflow: 'hidden',
                 border: '1px solid #E2E8F0',
                 cursor: 'pointer',
                 display: 'flex',
                 flexDirection: 'column',
-                boxShadow: '0 2px 4px rgba(0,0,0,0.02)',
+                boxShadow: '0 4px 6px -1px rgba(0,0,0,0.03)',
                 transition: 'transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease'
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-3px)';
-                e.currentTarget.style.boxShadow = '0 10px 18px -3px rgba(37, 84, 86, 0.10)';
+                e.currentTarget.style.transform = 'translateY(-4px)';
+                e.currentTarget.style.boxShadow = '0 12px 20px -3px rgba(37, 84, 86, 0.12)';
                 e.currentTarget.style.borderColor = '#255456';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.02)';
+                e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0,0,0,0.03)';
                 e.currentTarget.style.borderColor = '#E2E8F0';
               }}
             >
               {/* Thumbnail Foto */}
-              <div style={{ position: 'relative', height: '160px', backgroundColor: '#F1F5F9', overflow: 'hidden' }}>
+              <div style={{ position: 'relative', height: '180px', backgroundColor: '#F1F5F9', overflow: 'hidden' }}>
                 <img
                   src={item.banner}
                   alt={item.judul}
@@ -267,14 +269,14 @@ export default function Pelatihan({ onKembali, onPilihPelatihan, setHalaman, use
                 />
                 <div style={{
                   position: 'absolute',
-                  top: '10px',
-                  left: '10px',
+                  top: '12px',
+                  left: '12px',
                   backgroundColor: 'rgba(37, 84, 86, 0.90)',
                   backdropFilter: 'blur(4px)',
                   color: '#FFFFFF',
-                  padding: '3px 10px',
+                  padding: '4px 12px',
                   borderRadius: '6px',
-                  fontSize: '0.68rem',
+                  fontSize: '0.72rem',
                   fontWeight: '700',
                   border: '1px solid rgba(255,255,255,0.2)'
                 }}>
@@ -285,10 +287,10 @@ export default function Pelatihan({ onKembali, onPilihPelatihan, setHalaman, use
                   bottom: 0,
                   left: 0,
                   right: 0,
-                  backgroundColor: 'rgba(15, 23, 42, 0.75)',
+                  backgroundColor: 'rgba(15, 23, 42, 0.78)',
                   color: '#FFFFFF',
-                  fontSize: '0.68rem',
-                  padding: '4px 12px',
+                  fontSize: '0.72rem',
+                  padding: '5px 14px',
                   fontWeight: '500'
                 }}>
                   {item.penyelenggara}
@@ -296,22 +298,22 @@ export default function Pelatihan({ onKembali, onPilihPelatihan, setHalaman, use
               </div>
 
               {/* Isi Konten Kartu */}
-              <div style={{ padding: '16px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', textAlign: 'left' }}>
+              <div style={{ padding: '20px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', textAlign: 'left' }}>
                 <div>
-                  <span style={{ fontSize: '0.68rem', fontWeight: '800', color: '#255456', textTransform: 'uppercase', letterSpacing: '0.4px', display: 'block', marginBottom: '4px' }}>
+                  <span style={{ fontSize: '0.72rem', fontWeight: '800', color: '#255456', textTransform: 'uppercase', letterSpacing: '0.4px', display: 'block', marginBottom: '6px' }}>
                     {item.tag}
                   </span>
                   <h3 style={{
-                    fontSize: '0.95rem',
-                    fontWeight: '700',
+                    fontSize: '1.02rem',
+                    fontWeight: '800',
                     color: '#0F172A',
-                    margin: '0 0 6px 0',
+                    margin: '0 0 8px 0',
                     lineHeight: 1.4,
-                    minHeight: '40px'
+                    minHeight: '44px'
                   }}>
                     {item.judul}
                   </h3>
-                  <p style={{ fontSize: '0.78rem', color: '#64748B', lineHeight: '1.5', margin: '0 0 14px 0' }}>
+                  <p style={{ fontSize: '0.82rem', color: '#64748B', lineHeight: '1.5', margin: '0 0 16px 0' }}>
                     {item.deskripsi}
                   </p>
                 </div>
@@ -321,16 +323,16 @@ export default function Pelatihan({ onKembali, onPilihPelatihan, setHalaman, use
                   alignItems: 'center',
                   justifyContent: 'space-between',
                   borderTop: '1px solid #F1F5F9',
-                  paddingTop: '12px',
-                  fontSize: '0.78rem',
+                  paddingTop: '14px',
+                  fontSize: '0.82rem',
                   color: '#64748B'
                 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                    <Users size={14} color="#255456" />
-                    <span>Kuota: <strong>{item.kuota.toLocaleString('id-ID')}</strong></span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <Users size={16} color="#255456" />
+                    <span>Kuota: <strong>{item.kuota.toLocaleString('id-ID')} Peserta</strong></span>
                   </div>
                   <span style={{ color: '#255456', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    Detail & Daftar <ExternalLink size={13} />
+                    Detail & Daftar <ExternalLink size={14} />
                   </span>
                 </div>
               </div>
