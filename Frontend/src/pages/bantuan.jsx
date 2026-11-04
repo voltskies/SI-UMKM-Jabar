@@ -39,6 +39,18 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
 
   const MAX_FILE_SIZE = 7 * 1024 * 1024; // 7 MB dalam satuan bytes
 
+  // Style input konsisten agar selalu putih dan tidak terkena dark mode browser
+  const inputStyle = {
+    width: '100%',
+    padding: '10px 12px',
+    borderRadius: '8px',
+    border: '1px solid #CBD5E1',
+    fontSize: '0.85rem',
+    backgroundColor: '#FFFFFF',
+    color: '#0F172A',
+    boxSizing: 'border-box'
+  };
+
   const handleKembaliKeBeranda = () => {
     if (typeof setHalaman === 'function') {
       setHalaman('dashboard');
@@ -136,7 +148,7 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
       dataPayload.append('kategori_usaha', formData.kategori_usaha);
       dataPayload.append('sektor_usaha', formData.kategori_usaha);
 
-      // Mengirim jumlah nominal dana agar lolos validasi 'jumlah_dana: Field required'
+      // Mengirim jumlah nominal dana agar lolos validasi
       dataPayload.append('jumlah_dana', nominalClean);
       dataPayload.append('nominal_bantuan', nominalClean);
 
@@ -287,7 +299,7 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
                     value={formData.nik}
                     onChange={handleInputChange}
                     placeholder="16 digit sesuai KTP Jabar"
-                    style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.85rem', boxSizing: 'border-box' }}
+                    style={inputStyle}
                   />
                 </div>
 
@@ -302,7 +314,7 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
                     value={formData.nama_lengkap}
                     onChange={handleInputChange}
                     placeholder="Nama sesuai KTP"
-                    style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.85rem', boxSizing: 'border-box' }}
+                    style={inputStyle}
                   />
                 </div>
 
@@ -317,7 +329,7 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
                     value={formData.email}
                     onChange={handleInputChange}
                     placeholder="contoh@gmail.com"
-                    style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.85rem', boxSizing: 'border-box' }}
+                    style={inputStyle}
                   />
                 </div>
 
@@ -332,7 +344,7 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
                     value={formData.nomor_whatsapp}
                     onChange={handleInputChange}
                     placeholder="08xxxxxxxxxx"
-                    style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.85rem', boxSizing: 'border-box' }}
+                    style={inputStyle}
                   />
                 </div>
               </div>
@@ -356,7 +368,7 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
                     value={formData.nama_usaha}
                     onChange={handleInputChange}
                     placeholder="Misal: Keripik Singkong Barokah"
-                    style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.85rem', boxSizing: 'border-box' }}
+                    style={inputStyle}
                   />
                 </div>
 
@@ -368,7 +380,7 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
                     name="kategori_usaha"
                     value={formData.kategori_usaha}
                     onChange={handleInputChange}
-                    style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.85rem', backgroundColor: '#FFF', boxSizing: 'border-box' }}
+                    style={{ ...inputStyle, cursor: 'pointer' }}
                   >
                     <option value="Kuliner">Kuliner & Makanan</option>
                     <option value="Fashion">Fashion & Tekstil</option>
@@ -391,7 +403,7 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
                     value={formData.nib}
                     onChange={handleInputChange}
                     placeholder="Opsional / jika ada"
-                    style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.85rem', boxSizing: 'border-box' }}
+                    style={inputStyle}
                   />
                 </div>
 
@@ -406,7 +418,7 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
                     value={formData.jumlah_dana}
                     onChange={handleInputChange}
                     placeholder="Contoh: 10.000.000"
-                    style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.85rem', boxSizing: 'border-box' }}
+                    style={inputStyle}
                   />
                 </div>
               </div>
@@ -422,7 +434,10 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
                   value={formData.tujuan_penggunaan}
                   onChange={handleInputChange}
                   placeholder="Jelaskan kebutuhan pengadaan alat produksi, modal bahan baku, atau perluasan jangkauan pasar..."
-                  style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.85rem', resize: 'vertical', boxSizing: 'border-box' }}
+                  style={{ 
+                    ...inputStyle, 
+                    resize: 'vertical' 
+                  }}
                 />
               </div>
             </div>
@@ -444,7 +459,7 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
                     accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" 
                     required 
                     onChange={handleFileChange} 
-                    style={{ fontSize: '0.78rem', width: '100%' }} 
+                    style={{ fontSize: '0.78rem', width: '100%', color: '#334155' }} 
                   />
                   {files.file_ktp && (
                     <div style={{ fontSize: '0.76rem', color: '#255456', marginTop: '6px' }}>
@@ -462,7 +477,7 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
                     name="file_kk" 
                     accept=".pdf,application/pdf" 
                     onChange={handleFileChange} 
-                    style={{ fontSize: '0.78rem', width: '100%' }} 
+                    style={{ fontSize: '0.78rem', width: '100%', color: '#334155' }} 
                   />
                   {files.file_kk && (
                     <div style={{ fontSize: '0.76rem', color: '#255456', marginTop: '6px' }}>
@@ -480,7 +495,7 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
                     name="file_nib" 
                     accept=".pdf,application/pdf" 
                     onChange={handleFileChange} 
-                    style={{ fontSize: '0.78rem', width: '100%' }} 
+                    style={{ fontSize: '0.78rem', width: '100%', color: '#334155' }} 
                   />
                   {files.file_nib && (
                     <div style={{ fontSize: '0.76rem', color: '#255456', marginTop: '6px' }}>
@@ -498,7 +513,7 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
                     name="file_proposal" 
                     accept=".pdf,application/pdf" 
                     onChange={handleFileChange} 
-                    style={{ fontSize: '0.78rem', width: '100%' }} 
+                    style={{ fontSize: '0.78rem', width: '100%', color: '#334155' }} 
                   />
                   {files.file_proposal && (
                     <div style={{ fontSize: '0.76rem', color: '#255456', marginTop: '6px' }}>
