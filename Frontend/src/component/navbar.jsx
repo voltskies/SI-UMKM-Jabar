@@ -503,9 +503,9 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
                         <UserCheck size={14} /> Terverifikasi ({user.role})
                       </div>
                       <div style={{ fontWeight: '700', fontSize: '0.92rem', marginTop: '4px', color: '#0F172A' }}>
-                        {user.nama || user.nama_lengkap}[cite: 19]
+                        {user.nama || user.nama_lengkap}
                       </div>
-                      <div style={{ fontSize: '0.78rem', color: '#64748B' }}>{user.email}</div>[cite: 19]
+                      <div style={{ fontSize: '0.78rem', color: '#64748B' }}>{user.email}</div>
                     </div>
                     <button
                       type="button"
@@ -519,7 +519,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
                       }}
                       style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '8px', background: 'none', border: 'none', color: '#DC2626', padding: '8px 10px', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '600' }}
                     >
-                      <LogOut size={15} /> Keluar Akun[cite: 19]
+                      <LogOut size={15} /> Keluar Akun
                     </button>
                   </>
                 ) : (
