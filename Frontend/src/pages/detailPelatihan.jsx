@@ -95,7 +95,6 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
       }
     } catch (err) {
       console.error('Pendaftaran gagal detail:', err);
-      // Ekstraksi pesan error presisi dari backend FastAPI
       const errRes = err.response?.data;
       let pesan = 'Gagal memproses pendaftaran ke server.';
       
@@ -130,154 +129,196 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
 
   return (
     <div style={{ backgroundColor: '#F8FAFC', minHeight: '100svh', display: 'flex', flexDirection: 'column', fontFamily: 'Inter, system-ui, sans-serif' }}>
-      <Navbar setHalaman={setHalaman} user={user} />
+      <Navbar setHalaman={setHalaman} user={user} mode="solid-sticky" />
 
+      {/* Hero Header Bagian Atas (Rata Kiri Penuh) */}
       <div style={{
-        background: 'linear-gradient(135deg, #255456 0%, #255456 60%, #255456 100%)',
+        background: 'linear-gradient(135deg, #255456 0%, #1E4648 100%)',
         color: '#FFFFFF',
-        padding: '48px 8% 70px 8%',
-        boxShadow: '0 4px 20px rgba(37, 84, 86, 0.25)'
+        padding: '36px 20px 64px 20px',
+        boxShadow: '0 4px 20px rgba(37, 84, 86, 0.25)',
+        textAlign: 'left'
       }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <button
-            type="button"
-            onClick={handleKembali}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: 'rgba(255,255,255,0.85)',
+        <div style={{ maxWidth: '1200px', margin: '0 auto', textAlign: 'left' }}>
+          
+          {/* Tombol Kembali & Badge */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap', marginBottom: '16px', textAlign: 'left' }}>
+            <button
+              type="button"
+              onClick={handleKembali}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'rgba(255,255,255,0.85)',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                cursor: 'pointer',
+                fontWeight: '700',
+                fontSize: '0.88rem',
+                padding: 0,
+                transition: 'color 0.15s ease'
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = '#FFFFFF')}
+              onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255,255,255,0.85)')}
+            >
+              <ArrowLeft size={18} /> Kembali ke Katalog
+            </button>
+
+            <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.8rem' }}>•</span>
+
+            <div style={{
               display: 'inline-flex',
               alignItems: 'center',
-              gap: '8px',
-              cursor: 'pointer',
-              fontWeight: '700',
-              fontSize: '0.9rem',
-              marginBottom: '22px',
-              padding: 0
-            }}
-          >
-            <ArrowLeft size={18} /> Kembali ke Katalog
-          </button>
-
-          <div style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '8px',
-            backgroundColor: 'rgba(255,255,255,0.15)',
-            backdropFilter: 'blur(6px)',
-            padding: '5px 14px',
-            borderRadius: '999px',
-            fontSize: '12px',
-            fontWeight: '600',
-            marginBottom: '14px',
-            border: '1px solid rgba(255,255,255,0.2)'
-          }}>
-            Program Resmi Dinas KUK Jawa Barat
+              gap: '6px',
+              backgroundColor: 'rgba(255,255,255,0.15)',
+              backdropFilter: 'blur(6px)',
+              padding: '4px 12px',
+              borderRadius: '999px',
+              fontSize: '11px',
+              fontWeight: '600',
+              border: '1px solid rgba(255,255,255,0.2)'
+            }}>
+              Program Resmi Dinas KUK Jawa Barat
+            </div>
           </div>
 
-          <h1 style={{ fontSize: 'clamp(28px, 5vw, 36px)', fontWeight: '800', margin: '0 0 10px 0', maxWidth: '850px', lineHeight: 1.3 }}>
+          {/* Judul & Kategori Pelatihan */}
+          <h1 style={{ 
+            fontSize: 'clamp(24px, 3.2vw, 32px)', 
+            fontWeight: '800', 
+            margin: '0 0 8px 0', 
+            maxWidth: '900px', 
+            lineHeight: 1.3,
+            textAlign: 'left'
+          }}>
             {pelatihan.judul || pelatihan.title}
           </h1>
-          <p style={{ color: 'rgba(255,255,255,0.85)', fontSize: '0.96rem', margin: '0 0 28px 0' }}>
+          <p style={{ 
+            color: 'rgba(255,255,255,0.85)', 
+            fontSize: '0.9rem', 
+            margin: '0 0 24px 0',
+            textAlign: 'left' 
+          }}>
             Pelatihan & Standardisasi ({pelatihan.kategori})
           </p>
 
-          <div style={{ display: 'flex', gap: '36px', flexWrap: 'wrap', borderTop: '1px solid rgba(255,255,255,0.15)', paddingTop: '22px' }}>
-            <div>
-              <div style={{ fontSize: '0.76rem', color: 'rgba(255,255,255,0.75)' }}>Kategori</div>
-              <div style={{ fontWeight: '700', fontSize: '0.92rem', display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
+          {/* Metadata Bar */}
+          <div style={{ 
+            display: 'flex', 
+            gap: '32px', 
+            flexWrap: 'wrap', 
+            borderTop: '1px solid rgba(255,255,255,0.15)', 
+            paddingTop: '20px',
+            textAlign: 'left'
+          }}>
+            <div style={{ textAlign: 'left' }}>
+              <div style={{ fontSize: '0.74rem', color: 'rgba(255,255,255,0.75)' }}>Kategori</div>
+              <div style={{ fontWeight: '700', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
                 <GraduationCap size={16} color="#a6c6c7" /> {pelatihan.kategori}
               </div>
             </div>
-            <div>
-              <div style={{ fontSize: '0.76rem', color: 'rgba(255,255,255,0.75)' }}>Kapasitas Kuota</div>
-              <div style={{ fontWeight: '700', fontSize: '0.92rem', display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
+
+            <div style={{ textAlign: 'left' }}>
+              <div style={{ fontSize: '0.74rem', color: 'rgba(255,255,255,0.75)' }}>Kapasitas Kuota</div>
+              <div style={{ fontWeight: '700', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
                 <Users size={16} color="#a6c6c7" /> {pelatihan.kuota || pelatihan.peserta || 150} Peserta
               </div>
             </div>
-            <div>
-              <div style={{ fontSize: '0.76rem', color: 'rgba(255,255,255,0.75)' }}>Alur Pendaftaran</div>
-              <div style={{ fontWeight: '700', fontSize: '0.92rem', display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
+
+            <div style={{ textAlign: 'left' }}>
+              <div style={{ fontSize: '0.74rem', color: 'rgba(255,255,255,0.75)' }}>Alur Pendaftaran</div>
+              <div style={{ fontWeight: '700', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
                 <RefreshCw size={16} color="#a6c6c7" /> Pendaftaran Terbuka (Mandiri)
               </div>
             </div>
           </div>
+
         </div>
       </div>
 
-      <main className="responsive-page-content" style={{ flex: 1, maxWidth: '1200px', width: '100%', margin: '-40px auto 50px auto', padding: '0 20px', boxSizing: 'border-box' }}>
+      {/* Konten Utama Detail & Formulir Pendaftaran */}
+      <main className="responsive-page-content" style={{ flex: 1, maxWidth: '1200px', width: '100%', margin: '-36px auto 50px auto', padding: '0 20px', boxSizing: 'border-box', textAlign: 'left' }}>
         <div className="responsive-detail-grid" style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: '28px', alignItems: 'start' }}>
           
-          <div style={{ backgroundColor: '#FFFFFF', borderRadius: '16px', overflow: 'hidden', border: '1px solid #E2E8F0', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.06)' }}>
-            <div className="responsive-detail-image" style={{ height: '360px', width: '100%', overflow: 'hidden', backgroundColor: '#F1F5F9' }}>
+          {/* Kolom Kiri: Foto Banner & Rincian */}
+          <div style={{ backgroundColor: '#FFFFFF', borderRadius: '16px', overflow: 'hidden', border: '1px solid #E2E8F0', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.06)', textAlign: 'left' }}>
+            <div className="responsive-detail-image" style={{ height: '340px', width: '100%', overflow: 'hidden', backgroundColor: '#F1F5F9' }}>
               <img
                 src={pelatihan.banner || pelatihan.image}
                 alt={pelatihan.judul || pelatihan.title}
                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
               />
             </div>
-            <div style={{ padding: '30px' }}>
-              <span style={{ fontSize: '0.78rem', fontWeight: '800', color: '#255456', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+            <div style={{ padding: '28px', textAlign: 'left' }}>
+              <span style={{ fontSize: '0.74rem', fontWeight: '800', color: '#255456', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '6px' }}>
                 {pelatihan.tag || 'Fasilitasi UMKM'}
               </span>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: '800', color: '#0F172A', margin: '10px 0 14px 0' }}>
+              <h3 style={{ fontSize: '1.18rem', fontWeight: '800', color: '#0F172A', margin: '0 0 12px 0', textAlign: 'left' }}>
                 Rincian Program Pelatihan
               </h3>
-              <p style={{ color: '#475569', fontSize: '0.92rem', lineHeight: 1.7, margin: '0 0 20px 0' }}>
+              <p style={{ color: '#475569', fontSize: '0.9rem', lineHeight: 1.7, margin: '0 0 20px 0', textAlign: 'left' }}>
                 {pelatihan.deskripsi || 'Program pembinaan strategis dari Dinas KUK Jawa Barat untuk memperkuat kapabilitas manajemen usaha mikro dan akselerasi omzet perdagangan digital.'}
               </p>
               
-              <div style={{ borderTop: '1px solid #F1F5F9', paddingTop: '18px' }}>
-                <h4 style={{ fontSize: '0.9rem', fontWeight: '700', color: '#0F172A', marginBottom: '8px' }}>
+              <div style={{ borderTop: '1px solid #F1F5F9', paddingTop: '16px', textAlign: 'left' }}>
+                <h4 style={{ fontSize: '0.86rem', fontWeight: '700', color: '#0F172A', marginBottom: '6px', textAlign: 'left' }}>
                   Penyelenggara Teknis:
                 </h4>
-                <p style={{ fontSize: '0.85rem', color: '#64748B', margin: 0 }}>
+                <p style={{ fontSize: '0.84rem', color: '#64748B', margin: 0, textAlign: 'left' }}>
                   {pelatihan.penyelenggara || 'Dinas Koperasi & Usaha Kecil (KUK) Provinsi Jawa Barat'}
                 </p>
               </div>
             </div>
           </div>
 
+          {/* Kolom Kanan: Card Pendaftaran */}
           <div>
             <div style={{
               backgroundColor: '#FFFFFF',
               border: '1px solid #E2E8F0',
               borderRadius: '16px',
-              padding: '28px',
-              boxShadow: '0 10px 25px -5px rgba(0,0,0,0.06)'
+              padding: '26px',
+              boxShadow: '0 10px 25px -5px rgba(0,0,0,0.06)',
+              textAlign: 'left'
             }}>
+              <h3 style={{ fontSize: '1.05rem', fontWeight: '800', color: '#0F172A', margin: '0 0 14px 0', textAlign: 'left' }}>
+                Pendaftaran Pelatihan
+              </h3>
+
               {errorMsg && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: '#FEF2F2', border: '1px solid #F87171', color: '#991B1B', padding: '12px', borderRadius: '8px', marginBottom: '16px', fontSize: '0.82rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: '#FEF2F2', border: '1px solid #F87171', color: '#991B1B', padding: '11px', borderRadius: '8px', marginBottom: '14px', fontSize: '0.82rem', textAlign: 'left' }}>
                   <AlertCircle size={16} />
                   <span>{errorMsg}</span>
                 </div>
               )}
 
               {suksesMsg && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: '#eaf1f1', border: '1px solid #a6c6c7', color: '#255456', padding: '12px', borderRadius: '8px', marginBottom: '16px', fontSize: '0.82rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: '#eaf1f1', border: '1px solid #a6c6c7', color: '#255456', padding: '11px', borderRadius: '8px', marginBottom: '14px', fontSize: '0.82rem', textAlign: 'left' }}>
                   <CheckCircle2 size={16} />
                   <span>{suksesMsg}</span>
                 </div>
               )}
 
               {/* Upload Berkas Syarat Pelatihan */}
-              <div style={{ marginBottom: '20px', border: '1px dashed #CBD5E1', padding: '14px', borderRadius: '8px', backgroundColor: '#F8FAFC' }}>
-                <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#334155', marginBottom: '4px' }}>
+              <div style={{ marginBottom: '18px', border: '1px dashed #CBD5E1', padding: '14px', borderRadius: '8px', backgroundColor: '#F8FAFC', textAlign: 'left' }}>
+                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', color: '#334155', marginBottom: '6px', textAlign: 'left' }}>
                   Unggah Dokumen Syarat / KTP (PDF, PNG, JPG)
                 </label>
                 <input
                   type="file"
                   accept="image/jpeg,image/png,application/pdf"
                   onChange={(e) => setBerkasSyarat(e.target.files[0] || null)}
-                  style={{ fontSize: '0.78rem' }}
+                  style={{ fontSize: '0.78rem', width: '100%', color: '#334155' }}
                 />
                 {berkasSyarat && (
-                  <div style={{ fontSize: '0.75rem', color: '#255456', marginTop: '6px' }}>
+                  <div style={{ fontSize: '0.75rem', color: '#255456', marginTop: '6px', textAlign: 'left' }}>
                     ✓ Berkas terpilih: {berkasSyarat.name}
                   </div>
                 )}
               </div>
 
+              {/* Tombol Aksi */}
               <button
                 type="button"
                 disabled={loading}
@@ -287,10 +328,10 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
                   backgroundColor: loading ? '#94A3B8' : '#D97706',
                   color: '#FFFFFF',
                   border: 'none',
-                  padding: '14px',
+                  padding: '13px',
                   borderRadius: '10px',
                   fontWeight: '700',
-                  fontSize: '0.95rem',
+                  fontSize: '0.92rem',
                   cursor: loading ? 'not-allowed' : 'pointer',
                   boxShadow: '0 4px 14px rgba(217, 119, 6, 0.35)',
                   transition: 'background-color 0.2s ease'
@@ -299,7 +340,6 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
                 {loading ? 'MEMPROSES & UPLOAD KE CLOUD...' : 'DAFTAR SEKARANG'}
               </button>
 
-              {/* Tombol Bagikan Pelatihan */}
               <button
                 type="button"
                 onClick={() => setBukaModalShare(true)}
@@ -308,12 +348,12 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
                   backgroundColor: '#FFFFFF',
                   color: '#255456',
                   border: '1px solid #CBD5E1',
-                  padding: '12px',
+                  padding: '11px',
                   borderRadius: '10px',
                   fontWeight: '700',
-                  fontSize: '0.88rem',
+                  fontSize: '0.86rem',
                   cursor: 'pointer',
-                  marginTop: '12px',
+                  marginTop: '10px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -360,7 +400,7 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
             padding: '28px',
             boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
             position: 'relative',
-            animation: 'fadeIn 0.2s ease-out'
+            textAlign: 'left'
           }}>
             {/* Header Modal */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
@@ -382,7 +422,7 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
               </button>
             </div>
 
-            {/* Tombol-tombol Medsos */}
+            {/* Tombol Medsos */}
             <div className="responsive-social-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginBottom: '24px' }}>
               <a
                 href={linkWhatsApp}
@@ -502,7 +542,7 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
                   type="button"
                   onClick={handleSalinLink}
                   style={{
-                    backgroundColor: sudahDisalin ? '#255456' : '#255456',
+                    backgroundColor: '#255456',
                     color: '#FFFFFF',
                     border: 'none',
                     borderRadius: '8px',
