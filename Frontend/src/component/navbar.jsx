@@ -31,7 +31,6 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
   const isDashboardMode = mode === 'dashboard';
   const isSolidSticky = mode === 'solid-sticky' || isDashboardMode;
 
-  // Resize listener
   useEffect(() => {
     const handleResize = () => {
       const mobile = window.innerWidth < 768;
@@ -98,7 +97,6 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
       const ambil = (path) =>
         axios.get(`${API_BASE_URL}${path}`).then((r) => r.data?.data || []).catch(() => null);
 
-      // Ambil bantuan, sertifikasi, dan riwayat pendaftaran pelatihan
       const [dataBantuan, dataSertifikasi, dataPelatihan] = await Promise.all([
         ambil('/api/v1/admin/pengajuan'),
         ambil('/api/v1/admin/sertifikasi'),
@@ -144,7 +142,6 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
             });
           });
       } else {
-        // Notifikasi untuk pengguna Pelaku UMKM
         listBantuan
           .filter((b) => b.user_id === user.id)
           .forEach((b) => {
@@ -183,7 +180,6 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
             });
           });
 
-        // Riwayat Pendaftaran Pelatihan Pengguna
         listPelatihan.forEach((p) => {
           items.push({
             id: `user-pelatihan-${p.id}`,
@@ -230,8 +226,6 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
     };
     const timer = setInterval(cek, POLL_INTERVAL_MS);
     document.addEventListener('visibilitychange', cek);
-
-    // Listener custom event agar data notifikasi refresh instan saat selesai pendaftaran
     window.addEventListener('update_notifikasi', cek);
 
     return () => {
@@ -506,12 +500,12 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
                   <>
                     <div style={{ borderBottom: '1px solid #F1F5F9', paddingBottom: '10px', marginBottom: '8px' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.72rem', color: '#1B4143', fontWeight: '700' }}>
-                        <UserCheck size={14} /> Terverifikasi ({user.role})[cite: 18]
+                        <UserCheck size={14} /> Terverifikasi ({user.role})
                       </div>
                       <div style={{ fontWeight: '700', fontSize: '0.92rem', marginTop: '4px', color: '#0F172A' }}>
-                        {user.nama || user.nama_lengkap}[cite: 18]
+                        {user.nama || user.nama_lengkap}[cite: 19]
                       </div>
-                      <div style={{ fontSize: '0.78rem', color: '#64748B' }}>{user.email}</div>[cite: 18]
+                      <div style={{ fontSize: '0.78rem', color: '#64748B' }}>{user.email}</div>[cite: 19]
                     </div>
                     <button
                       type="button"
@@ -525,7 +519,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
                       }}
                       style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '8px', background: 'none', border: 'none', color: '#DC2626', padding: '8px 10px', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: '600' }}
                     >
-                      <LogOut size={15} /> Keluar Akun[cite: 18]
+                      <LogOut size={15} /> Keluar Akun[cite: 19]
                     </button>
                   </>
                 ) : (
