@@ -7,7 +7,6 @@ import LoginAdmin from './pages/LoginAdmin';
 import Bantuan from './pages/bantuan';
 import Sertifikasi from './pages/sertifikasi';
 
-
 // Import Admin App dari folder adminpanel
 import AdminApp from './adminpanel/AdminApp';
 
@@ -27,35 +26,56 @@ export default function App() {
     setHalaman('dashboard');
   };
 
-   // BARU: dipanggil dari LoginAdmin setelah login admin berhasil
+  // Dipanggil dari LoginAdmin setelah login admin berhasil
   const handleLoginAdmin = (adminData) => {
     localStorage.setItem('user_umkm', JSON.stringify(adminData));
     setCurrentUser(adminData);
   };
 
+  // Wrapper navigasi aman: memproteksi halaman formulir layanan jika belum login
+  const navigasiHalaman = (tujuan) => {
+    const token = localStorage.getItem('token');
+    const userStorage = localStorage.getItem('user_umkm');
+    const isLoggedIn = Boolean(currentUser || token || userStorage);
 
-  // LOGIKA 1: Jika user yang login di sistem memiliki role 'admin'
+    if ((tujuan === 'bantuan' || tujuan === 'sertifikasi') && !isLoggedIn) {
+      alert('Silakan masuk ke akun UMKM Anda terlebih dahulu untuk mengakses layanan ini.');
+      setHalaman('login');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
+    setHalaman(tujuan);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // LOGIKA 1: Jika user yang login memiliki role 'admin'
   if (currentUser && currentUser.role === 'admin') {
     return (
       <AdminApp 
         user={currentUser} 
         onKeluar={handleLogout}
-        setHalaman={setHalaman} 
+        setHalaman={navigasiHalaman} 
       />
     );
   }
 
- 
+  // Cek otentikasi aktif untuk halaman layanan
+  const isLoggedIn = Boolean(
+    currentUser || 
+    localStorage.getItem('token') || 
+    localStorage.getItem('user_umkm')
+  );
 
-  // LOGIKA 3: Alur Standar untuk Publik / Pelaku UMKM
+  // LOGIKA 2: Alur Standar untuk Publik / Pelaku UMKM
   return (
     <div>
       {/* 1. Halaman Beranda (Dashboard Publik) */}
       {halaman === 'dashboard' && (
         <Dashboard
           user={currentUser}
-          setHalaman={setHalaman}
-          onNavigasiPelatihan={() => setHalaman('pelatihan')}
+          setHalaman={navigasiHalaman}
+          onNavigasiPelatihan={() => navigasiHalaman('pelatihan')}
         />
       )}
 
@@ -63,10 +83,10 @@ export default function App() {
       {halaman === 'pelatihan' && (
         <Pelatihan
           user={currentUser}
-          setHalaman={setHalaman}
+          setHalaman={navigasiHalaman}
           onPilihPelatihan={(item) => {
             setPelatihanTerpilih(item);
-            setHalaman('detailPelatihan');
+            navigasiHalaman('detailPelatihan');
           }}
         />
       )}
@@ -76,49 +96,69 @@ export default function App() {
         <DetailPelatihan
           pelatihan={pelatihanTerpilih}
           user={currentUser}
-          setHalaman={setHalaman}
-          onKembali={() => setHalaman('pelatihan')}
-          onArahkanLogin={() => setHalaman('login')}
+          setHalaman={navigasiHalaman}
+          onKembali={() => navigasiHalaman('pelatihan')}
+          onArahkanLogin={() => navigasiHalaman('login')}
         />
       )}
 
-      {/* 4. Halaman Bantuan Usaha */}
+      {/* 4. Halaman Bantuan Usaha (Hanya dapat dibuka jika sudah login) */}
       {halaman === 'bantuan' && (
-        <Bantuan
-          user={currentUser}
-          setHalaman={setHalaman}
-        />
+        isLoggedIn ? (
+          <Bantuan
+            user={currentUser}
+            setHalaman={navigasiHalaman}
+          />
+        ) : (
+          <Login
+            setHalaman={navigasiHalaman}
+            onLoginSukses={(userData) => {
+              setCurrentUser(userData);
+              navigasiHalaman('bantuan');
+            }}
+          />
+        )
       )}
 
-      {/* 5. Halaman Sertifikasi & Legalitas */}
+      {/* 5. Halaman Sertifikasi & Legalitas (Hanya dapat dibuka jika sudah login) */}
       {halaman === 'sertifikasi' && (
-        <Sertifikasi
-          user={currentUser}
-          setHalaman={setHalaman}
-        />
+        isLoggedIn ? (
+          <Sertifikasi
+            user={currentUser}
+            setHalaman={navigasiHalaman}
+          />
+        ) : (
+          <Login
+            setHalaman={navigasiHalaman}
+            onLoginSukses={(userData) => {
+              setCurrentUser(userData);
+              navigasiHalaman('sertifikasi');
+            }}
+          />
+        )
       )}
 
       {/* 6. Halaman Login */}
       {halaman === 'login' && (
         <Login
-          setHalaman={setHalaman}
+          setHalaman={navigasiHalaman}
           onLoginSukses={(userData) => {
             setCurrentUser(userData);
             if (userData?.role === 'admin') {
-              setHalaman('admin');
+              navigasiHalaman('admin');
             } else {
-              setHalaman('dashboard');
+              navigasiHalaman('dashboard');
             }
           }}
         />
       )}
 
       {/* 7. Halaman Login / Register Admin */}
-      {halaman === 'login-admin'&& (
+      {halaman === 'login-admin' && (
         <LoginAdmin
-          setHalaman={setHalaman}
+          setHalaman={navigasiHalaman}
           onLoginSukses={handleLoginAdmin}
-          />
+        />
       )}
     </div>
   );
