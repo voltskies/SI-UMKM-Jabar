@@ -10,7 +10,7 @@ const POLL_INTERVAL_MS = 10000;
 
 export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode }) {
   const [isScrolled, setIsScrolled] = useState(() => window.scrollY >= 20);
-  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 900);
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [dropdownLayanan, setDropdownLayanan] = useState(false);
   const [dropdownUser, setDropdownUser] = useState(false);
@@ -34,7 +34,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
   // resize listener
   useEffect(() => {
     const handleResize = () => {
-      const mobile = window.innerWidth < 900;
+      const mobile = window.innerWidth < 768;
       setIsMobile(mobile);
       if (!mobile) setMobileMenuOpen(false);
     };
@@ -291,6 +291,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
         right: 0,
         width: '100%',
         boxSizing: 'border-box',
+        // lengkung
         borderBottomLeftRadius: '24px',
         borderBottomRightRadius: '24px',
         borderTopLeftRadius: '0px',
@@ -312,6 +313,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
         {!isMobile && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '28px', fontSize: '0.9rem', fontWeight: '500' }}>
             <span
+              className="nav-category"
               onClick={() => setHalaman('dashboard')}
               style={{
                 cursor: 'pointer',
@@ -323,6 +325,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
             </span>
 
             <span
+              className="nav-category"
               onClick={() => setHalaman('pelatihan')}
               style={{
                 cursor: 'pointer',
@@ -335,6 +338,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
 
             <div style={{ position: 'relative' }} ref={layananRef}>
               <div
+                className="nav-category"
                 onClick={() => setDropdownLayanan(!dropdownLayanan)}
                 style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer', opacity: 0.85 }}
               >
@@ -379,6 +383,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
               href="https://www.facebook.com/waroenkUMKM"
               target="_blank"
               rel="noopener noreferrer"
+              className="nav-category"
               style={{ cursor: 'pointer', opacity: 0.85, textDecoration: 'none', color: 'inherit' }}
             >
               Gabung Komunitas
@@ -390,6 +395,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
         <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '8px' : '16px' }} ref={userMenuRef}>
           <button
             type="button"
+            className="notification-bell"
             onClick={() => {
               setSidebarNotifOpen(true);
               fetchNotifikasiReal();
@@ -405,7 +411,15 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
               padding: '6px'
             }}
           >
-            <Bell size={isMobile ? 18 : 20} />
+            <span
+              className="bell-icon"
+              style={{
+                display: 'inline-flex',
+                transformOrigin: '50% 0'
+              }}
+            >
+              <Bell size={isMobile ? 18 : 20} />
+            </span>
             {jumlahBelumDibaca > 0 && (
               <span style={{
                 position: 'absolute',
@@ -428,9 +442,14 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
             )}
           </button>
 
+          {/* Tombol profil*/}
           <div style={{ position: 'relative' }}>
             <button
               type="button"
+              className="navbar-menu-button"
+              aria-controls={isMobile ? 'mobile-navigation' : undefined}
+              aria-label={isMobile ? (mobileMenuOpen ? 'Tutup menu navigasi' : 'Buka menu navigasi') : 'Buka menu profil'}
+              aria-expanded={isMobile ? mobileMenuOpen : dropdownUser}
               onClick={() => {
                 if (isMobile) {
                   setMobileMenuOpen(!mobileMenuOpen);
@@ -448,10 +467,13 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
                 alignItems: 'center',
                 gap: '8px',
                 cursor: 'pointer',
-                boxShadow: '0 2px 5px rgba(0,0,0,0.15)'
+                boxShadow: '0 2px 5px rgba(0,0,0,0.15)',
+                minWidth: isMobile ? '44px' : undefined,
+                minHeight: isMobile ? '44px' : undefined,
+                justifyContent: 'center'
               }}
             >
-              <Menu size={16} />
+              {isMobile && mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
               <div style={{
                 width: '24px',
                 height: '24px',
@@ -538,7 +560,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
 
       {/* Menu Mobile */}
       {isMobile && mobileMenuOpen && (
-        <div style={{
+        <div id="mobile-navigation" className="mobile-nav-panel" style={{
           position: 'fixed',
           top: '56px',
           left: 0,
@@ -553,24 +575,28 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
           boxShadow: '0 12px 24px rgba(0,0,0,0.2)'
         }}>
           <div
+            className="nav-category"
             onClick={() => { setHalaman('dashboard'); setMobileMenuOpen(false); }}
             style={{ color: '#FFFFFF', padding: '8px 0', fontWeight: '600', fontSize: '0.92rem', cursor: 'pointer' }}
           >
             Beranda
           </div>
           <div
+            className="nav-category"
             onClick={() => { setHalaman('pelatihan'); setMobileMenuOpen(false); }}
             style={{ color: '#FFFFFF', padding: '8px 0', fontWeight: '600', fontSize: '0.92rem', cursor: 'pointer' }}
           >
             Pelatihan
           </div>
           <div
+            className="nav-category"
             onClick={() => { setHalaman('bantuan'); setMobileMenuOpen(false); }}
             style={{ color: '#FFFFFF', padding: '8px 0', fontWeight: '600', fontSize: '0.92rem', cursor: 'pointer' }}
           >
             Layanan Bantuan UMKM
           </div>
           <div
+            className="nav-category"
             onClick={() => { setHalaman('sertifikasi'); setMobileMenuOpen(false); }}
             style={{ color: '#FFFFFF', padding: '8px 0', fontWeight: '600', fontSize: '0.92rem', cursor: 'pointer' }}
           >
@@ -580,6 +606,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
             href="https://www.facebook.com/waroenkUMKM"
             target="_blank"
             rel="noopener noreferrer"
+            className="nav-category"
             style={{ color: '#FFFFFF', padding: '8px 0', fontWeight: '600', fontSize: '0.92rem', textDecoration: 'none' }}
           >
             Gabung Komunitas
@@ -625,7 +652,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
             position: 'fixed',
             top: 0,
             right: 0,
-            height: '100vh',
+            height: '100svh',
             width: isMobile ? '85vw' : '360px',
             maxWidth: '380px',
             backgroundColor: '#FFFFFF',

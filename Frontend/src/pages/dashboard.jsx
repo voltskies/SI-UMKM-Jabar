@@ -355,7 +355,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
   }, [umkmList, searchKeyword, filterActive, selectedKabKota]);
 
   return (
-    <div style={{ backgroundColor: '#F8FAFC', minHeight: '100vh', display: 'flex', flexDirection: 'column', fontFamily: 'Inter, system-ui, sans-serif' }}>
+    <div style={{ backgroundColor: '#F8FAFC', minHeight: '100svh', display: 'flex', flexDirection: 'column', fontFamily: 'Inter, system-ui, sans-serif' }}>
       
       {/* Animasi card */}
       <style>{`
@@ -517,12 +517,197 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
           box-shadow: 0 0 0 3px rgba(0, 136, 72, 0.14);
           outline: none;
         }
+
+               @media (max-width: 768px) {
+          .landing-hero {
+            min-height: 0 !important;
+            margin-bottom: 24px !important;
+          }
+
+          .landing-hero-content {
+            align-items: center !important;
+            text-align: center !important;
+            min-height: 50svh !important;
+            justify-content: flex-start !important;
+            gap: 0 !important;
+            padding-top: 92px !important;
+            padding-bottom: 44px !important;
+          }
+
+          .landing-hero-title,
+          .landing-hero-desc {
+            margin-left: auto !important;
+            margin-right: auto !important;
+            text-align: center !important;
+          }
+
+          .landing-hero-title {
+            font-size: 22px !important;
+            margin-bottom: 8px !important;
+          }
+
+          .landing-hero-desc {
+            font-size: 12.5px !important;
+            line-height: 1.5 !important;
+            margin-bottom: 16px !important;
+            max-width: 300px !impo
+          }
+
+          .landing-hero-overlay {
+            background: linear-gradient(180deg, rgba(27, 65, 67, 0.88) 0%, rgba(15, 23, 42, 0.65) 55%, rgba(0, 0, 0, 0.4) 100%) !important;
+          }
+        }
+          @media (max-width: 768px) {
+          .responsive-section {
+            margin-bottom: 32px !important;
+          }
+          .split-card-container {
+            flex-wrap: nowrap;
+            gap: 8px;
+          }
+          .split-card {
+            flex: 1 1 0;
+            min-width: 0;
+            height: auto;
+          }
+          .split-card .face {
+            height: auto;
+          }
+          .split-card .face.face1,
+          .split-card:hover .face.face1 {
+            transform: none;
+            min-height: 118px;
+            padding: 12px 4px;
+            border-radius: 14px;
+          }
+          .split-card .face.face2 {
+            display: none;
+          }
+          .split-card .face.face1 .icon-box {
+            width: 34px;
+            height: 34px;
+            margin-bottom: 6px;
+          }
+          .split-card .face.face1 .icon-box svg {
+            width: 18px;
+            height: 18px;
+          }
+          .split-card .face.face1 h3 {
+            font-size: 0.78rem;
+            line-height: 1.2;
+            margin: 2px 0;
+          }
+          .split-card .face.face1 span {
+            font-size: 0.62rem;
+            line-height: 1.25;
+          }
+        }
+
+        @media (max-width: 768px) {
+          .map-head {
+            flex-direction: column !important;
+            align-items: center !important;
+            text-align: center !important;
+            gap: 4px !important;
+          }
+
+          .responsive-map {
+            height: 280px !important;
+          }
+
+          .map-legend {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr !important;
+            gap: 8px 10px !important;
+            padding: 10px !important;
+            font-size: 0.68rem !important;
+            text-align: left !important;
+            margin-bottom: 8px !important;
+          }
+
+          .map-legend > div {
+            align-items: flex-start !important;
+            text-align: left !important;
+            line-height: 1.3 !important;
+          }
+
+          .map-legend > div > span:first-child {
+            flex-shrink: 0 !important;
+            margin-top: 2px;
+          }
+        }
+
+        /* Card komunitas di HP */
+        @media (max-width: 768px) {
+          .community-card {
+            display: flex !important;
+            flex-direction: column !important;
+            background: #1B4143 !important;
+            border-radius: 20px !important;
+            padding: 18px !important;
+            gap: 16px !important;
+          }
+
+          .community-card__image {
+            order: -1 !important;
+            width: 100% !important;
+            height: 170px !important;
+            border: 0 !important;
+            border-radius: 14px !important;
+            overflow: hidden !important;
+          }
+
+          .community-card__content h2 {
+            color: #FFFFFF !important;
+            font-size: 21px !important;
+            text-align: center !important;
+            margin-bottom: 14px !important;
+          }
+
+          .community-card__content p {
+            display: none !important;
+          }
+
+          .community-list {
+            gap: 12px !important;
+            margin-bottom: 20px !important;
+            font-size: 0.82rem !important;
+          }
+
+          .community-list > div {
+            align-items: flex-start !important;
+          }
+
+          .community-list svg {
+            flex-shrink: 0 !important;
+            color: #FBBF24 !important;
+            margin-top: 2px !important;
+          }
+
+          .community-card__button {
+            display: flex !important;
+            justify-content: center !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+            background: #D97706 !important;
+            color: #FFFFFF !important;
+            padding: 13px 20px !important;
+            border-radius: 10px !important;
+            font-weight: 700 !important;
+            text-decoration: none !important;
+            box-shadow: 0 4px 14px rgba(217,119,6,0.35) !important;
+          }
+
+          .community-card__button:hover {
+            background: #B45309 !important;
+          }
+        }
       `}</style>
 
       <Navbar setHalaman={setHalaman} user={user} />
 
       {/* Hero Video */}
-      <section style={{ position: 'relative', width: '100%', height: 'calc(100vh - 1cm + 48px)', margin: '-48px 0 35px', overflow: 'hidden', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)' }}>
+      <section className="landing-hero" style={{ position: 'relative', width: '100%', minHeight: '100svh', margin: '-48px 0 35px', overflow: 'hidden', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)' }}>
         <video
           autoPlay
           muted
@@ -533,12 +718,12 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
         >
           <source src={videoLanding} type="video/mp4" />
         </video>
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, rgba(27, 65, 67, 0.88) 0%, rgba(15,23,42,0.65) 55%, rgba(0,0,0,0.4) 100%)' }} />
-        <div style={{ position: 'relative', zIndex: 2, maxWidth: '1200px', width: '100%', height: '100%', margin: '0 auto', padding: '0 6%', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', justifyContent: 'center', color: '#FFFFFF' }}>
-          <h1 style={{ fontSize: '44px', fontWeight: '800', lineHeight: '1.2', margin: '0 0 16px', maxWidth: '750px', textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>
+        <div className="landing-hero-overlay" style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, rgba(27, 65, 67, 0.88) 0%, rgba(15,23,42,0.65) 55%, rgba(0,0,0,0.4) 100%)' }} />
+        <div className="landing-hero-content" style={{ position: 'relative', zIndex: 2, maxWidth: '1200px', width: '100%', minHeight: '100svh', margin: '0 auto', padding: '48px 6% 0', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', color: '#FFFFFF', textAlign: 'left' }}>
+          <h1 className="landing-hero-title" style={{ fontSize: 'clamp(30px, 5vw, 48px)', fontWeight: '800', lineHeight: '1.2', margin: '0 0 16px', maxWidth: '620px', width: '100%' }}>
             SI-UMKM Jawa Barat
           </h1>
-          <p style={{ fontSize: '16px', lineHeight: '1.6', maxWidth: '620px', margin: '0 0 26px', color: 'rgba(255,255,255,0.9)' }}>
+          <p className="landing-hero-desc" style={{ fontSize: '16px', lineHeight: '1.6', maxWidth: '620px', width: '100%', margin: '0 0 26px', color: 'rgba(255,255,255,0.9)', textAlign: 'left' }}>
             Sistem Informasi & Integrasi Layanan UMKM Jawa Barat. Menghubungkan potensi UMKM dengan fasilitasi legalitas dan investasi digital.
           </p>
           <button
@@ -554,10 +739,10 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
       {/* Main Content */}
       <main style={{ flex: 1, maxWidth: '1200px', width: '100%', margin: 'auto', padding: '0 20px 50px', boxSizing: 'border-box' }}>
         
-        <section style={{ marginBottom: '90px' }}>
+        <section className="responsive-section" style={{ marginBottom: '90px' }}>
           <div style={{ textAlign: 'center', marginBottom: '16px' }}>
             <span style={{ fontSize: '13px', fontWeight: '600', color: '#64748B', display: 'block', marginBottom: '6px' }}>Data Terkini Database</span>
-            <h2 style={{ margin: 0, fontSize: '26px', fontWeight: '800', color: '#0F172A' }}>UMKM DI JAWA BARAT</h2>
+            <h2 className="responsive-heading" style={{ margin: 0, fontSize: 'clamp(22px, 4vw, 26px)', fontWeight: '800', color: '#0F172A' }}>UMKM DI JAWA BARAT</h2>
           </div>
 
           <div className="split-card-container">
@@ -702,10 +887,10 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
         </div>
 
         {/* Map Section */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1.7fr 1fr', gap: '20px', alignItems: 'start', marginBottom: '50px' }}>
+        <div className="responsive-map-grid" style={{ display: 'grid', gridTemplateColumns: '1.7fr 1fr', gap: '20px', alignItems: 'start', marginBottom: '50px' }}>
           
           <div style={{ backgroundColor: '#fff', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '16px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+            <div className="map-head" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
               <div style={{ fontWeight: '700', fontSize: '0.95rem', color: '#0F172A' }}>Pemetaan Spasial Komoditas</div>
               <div style={{ fontSize: '0.74rem', color: '#64748B' }}>
                 {zoomLevel < 9 ? '*Arahkan kursor ke titik UMKM' : '*Klik pada titik UMKM untuk melihat detail'}
@@ -713,7 +898,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
             </div>
 
             {/* Legenda Wilayah */}
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', padding: '8px 12px', backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '8px', marginBottom: '12px', fontSize: '0.75rem', color: '#334155' }}>
+            <div className="map-legend" style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', padding: '8px 12px', backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '8px', marginBottom: '12px', fontSize: '0.75rem', color: '#334155' }}>
               {zoomLevel < 9 && KELOMPOK_MAPCHART.map((k) => (
                 <div key={k.warna} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <span style={{ width: '12px', height: '12px', borderRadius: '3px', backgroundColor: k.warna, border: '1px solid #1E293B' }}></span>
@@ -729,7 +914,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
               </>}
             </div>
 
-            <div style={{ height: '520px', borderRadius: '10px', overflow: 'hidden', border: '1px solid #E2E8F0', position: 'relative' }}>
+            <div className="responsive-map" style={{ height: '520px', borderRadius: '10px', overflow: 'hidden', border: '1px solid #E2E8F0', position: 'relative' }}>
               <MapContainer center={[-6.9175, 107.6191]} zoom={8} scrollWheelZoom={true} style={{ height: '100%', width: '100%' }}>
                 <MapZoomListener onZoomChanged={(z) => setZoomLevel(z)} />
 
@@ -808,7 +993,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
           </div>
 
           {/* Kolom Daftar UMKM */}
-          <div style={{ backgroundColor: '#fff', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '16px', height: '630px', display: 'flex', flexDirection: 'column' }}>
+          <div className="responsive-map-list" style={{ backgroundColor: '#fff', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '16px', height: '630px', display: 'flex', flexDirection: 'column' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
               <span style={{ fontWeight: '700', fontSize: '0.9rem' }}>Daftar UMKM ({filteredUMKM.length})</span>
               <span style={{ fontSize: '0.75rem', color: '#64748B' }}>Terverifikasi</span>
@@ -931,13 +1116,13 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
         </section>
 
         {/* Section Komunitas */}
-        <section style={{ backgroundColor: 'rgba(217,155,38,0.82)', backdropFilter: 'blur(14px)', border: '1px solid rgba(255,255,255,0.3)', boxShadow: '0 12px 32px rgba(27,65,67,0.18)', borderRadius: '20px', padding: '40px', color: '#FFFFFF', display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '30px', alignItems: 'center' }}>
-          <div>
-            <h2 style={{ fontSize: '28px', fontWeight: '800', color: '#1B4143', margin: '0 0 12px' }}>Bergabung ke Komunitas</h2>
+        <section className="community-card">
+          <div className="community-card__content">
+            <h2 className="responsive-heading" style={{ fontSize: 'clamp(22px, 4vw, 28px)', fontWeight: '800', color: '#1B4143', margin: '0 0 12px' }}>Bergabung ke Komunitas</h2>
             <p style={{ fontSize: '14px', lineHeight: '1.6', margin: '0 0 24px', color: 'rgba(255,255,255,0.92)' }}>
               Terhubung dengan ribuan pelaku UMKM se-Jawa Barat. Berbagi pengalaman, tips bisnis, informasi pelatihan, dan peluang kolaborasi bersama komunitas yang aktif.
             </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '28px', fontSize: '0.86rem' }}>
+            <div className="community-list" style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '28px', fontSize: '0.86rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}><Users size={18} /><span>12.000+ anggota aktif dari seluruh Jawa Barat</span></div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}><MessageSquare size={18} /><span>Sharing tips bisnis dan peluang usaha</span></div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}><Calendar size={18} /><span>Info pelatihan dan event terbaru</span></div>
@@ -955,13 +1140,13 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
                 e.currentTarget.style.backgroundColor = 'rgba(27,65,67,0.45)';
                 e.currentTarget.style.color = '#FFFFFF';
               }}
-              style={{ backgroundColor: 'rgba(27,65,67,0.45)', color: '#FFFFFF', textDecoration: 'none', padding: '12px 28px', borderRadius: '8px', fontWeight: '700', fontSize: '0.9rem', display: 'inline-flex', alignItems: 'center', transition: 'background-color 0.25s ease, color 0.25s ease' }}
+              className="community-card__button"
             >
               Gabung Sekarang
             </a>
           </div>
-          <div style={{ height: '270px', borderRadius: '14px', overflow: 'hidden', border: '3px solid rgba(255,255,255,0.3)' }}>
-            <img src="/komunitas_umkm_jabar.jpg" alt="Komunitas UMKM" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <div className="community-card__image">
+            <img src="/src/assets/komunitas_umkm_jabar.jpg" alt="Komunitas UMKM" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           </div>
         </section>
 

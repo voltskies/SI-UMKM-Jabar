@@ -195,7 +195,7 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
   };
 
   return (
-    <div style={{ backgroundColor: '#F8FAFC', minHeight: '100vh', display: 'flex', flexDirection: 'column', fontFamily: 'Inter, system-ui, sans-serif' }}>
+    <div style={{ backgroundColor: '#F8FAFC', minHeight: '100svh', display: 'flex', flexDirection: 'column', fontFamily: 'Inter, system-ui, sans-serif' }}>
       
       {/* 1. Header / Navbar */}
       <Navbar setHalaman={setHalaman} user={user} mode="solid-sticky" />
@@ -228,7 +228,7 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
         </button>
 
         {/* Card Form */}
-        <div style={{
+        <div className="responsive-form-card" style={{
           backgroundColor: '#FFFFFF',
           borderRadius: '16px',
           border: '1px solid #E2E8F0',
@@ -240,7 +240,7 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', backgroundColor: '#FEF3C7', color: '#B45309', padding: '4px 12px', borderRadius: '999px', fontSize: '0.78rem', fontWeight: '700', marginBottom: '8px' }}>
               <FileCheck size={14} /> Fasilitasi Pemulihan & Modal UMKM
             </div>
-            <h1 style={{ margin: '0 0 6px', fontSize: '1.75rem', fontWeight: '800', color: '#0F172A' }}>
+            <h1 style={{ margin: '0 0 6px', fontSize: 'clamp(26px, 4vw, 34px)', fontWeight: '800', color: '#0F172A' }}>
               Form Permohonan Bantuan Usaha
             </h1>
             <p style={{ margin: 0, fontSize: '0.88rem', color: '#64748B', lineHeight: '1.5' }}>
@@ -274,7 +274,7 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
                 <User size={18} /> 1. Informasi Pemohon
               </h3>
               
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              <div className="responsive-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#334155', marginBottom: '6px' }}>
                     Nomor Induk Kependudukan (NIK) *
@@ -344,7 +344,7 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
                 <Building2 size={18} /> 2. Rincian Usaha & Kebutuhan Dana
               </h3>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '16px', marginBottom: '16px' }}>
+              <div className="responsive-form-grid" style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '16px', marginBottom: '16px' }}>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#334155', marginBottom: '6px' }}>
                     Nama Usaha / Merek Dagang *
@@ -380,7 +380,7 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
                 </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+              <div className="responsive-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '600', color: '#334155', marginBottom: '6px' }}>
                     Nomor Induk Berusaha (NIB)
@@ -433,7 +433,7 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
                 <Upload size={18} /> 3. Berkas Persyaratan (Maks. 7 MB)
               </h3>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              <div className="responsive-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                 <div style={{ border: '1px dashed #CBD5E1', borderRadius: '8px', padding: '14px', backgroundColor: '#F8FAFC' }}>
                   <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: '700', color: '#334155', marginBottom: '4px' }}>
                     Foto KTP Pemohon * <span style={{ fontSize: '0.74rem', color: '#64748B', fontWeight: '400' }}>(PDF/JPG/PNG, Maks. 7MB)</span>

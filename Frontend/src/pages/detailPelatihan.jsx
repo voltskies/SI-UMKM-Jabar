@@ -129,7 +129,7 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
   };
 
   return (
-    <div style={{ backgroundColor: '#F8FAFC', minHeight: '100vh', display: 'flex', flexDirection: 'column', fontFamily: 'Inter, system-ui, sans-serif' }}>
+    <div style={{ backgroundColor: '#F8FAFC', minHeight: '100svh', display: 'flex', flexDirection: 'column', fontFamily: 'Inter, system-ui, sans-serif' }}>
       <Navbar setHalaman={setHalaman} user={user} />
 
       <div style={{
@@ -175,7 +175,7 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
             Program Resmi Dinas KUK Jawa Barat
           </div>
 
-          <h1 style={{ fontSize: '2.2rem', fontWeight: '800', margin: '0 0 10px 0', maxWidth: '850px', lineHeight: 1.3 }}>
+          <h1 style={{ fontSize: 'clamp(28px, 5vw, 36px)', fontWeight: '800', margin: '0 0 10px 0', maxWidth: '850px', lineHeight: 1.3 }}>
             {pelatihan.judul || pelatihan.title}
           </h1>
           <p style={{ color: 'rgba(255,255,255,0.85)', fontSize: '0.96rem', margin: '0 0 28px 0' }}>
@@ -205,11 +205,11 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
         </div>
       </div>
 
-      <main style={{ flex: 1, maxWidth: '1200px', width: '100%', margin: '-40px auto 50px auto', padding: '0 20px', boxSizing: 'border-box' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: '28px', alignItems: 'start' }}>
+      <main className="responsive-page-content" style={{ flex: 1, maxWidth: '1200px', width: '100%', margin: '-40px auto 50px auto', padding: '0 20px', boxSizing: 'border-box' }}>
+        <div className="responsive-detail-grid" style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: '28px', alignItems: 'start' }}>
           
           <div style={{ backgroundColor: '#FFFFFF', borderRadius: '16px', overflow: 'hidden', border: '1px solid #E2E8F0', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.06)' }}>
-            <div style={{ height: '360px', width: '100%', overflow: 'hidden', backgroundColor: '#F1F5F9' }}>
+            <div className="responsive-detail-image" style={{ height: '360px', width: '100%', overflow: 'hidden', backgroundColor: '#F1F5F9' }}>
               <img
                 src={pelatihan.banner || pelatihan.image}
                 alt={pelatihan.judul || pelatihan.title}
@@ -383,7 +383,7 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
             </div>
 
             {/* Tombol-tombol Medsos */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginBottom: '24px' }}>
+            <div className="responsive-social-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginBottom: '24px' }}>
               <a
                 href={linkWhatsApp}
                 target="_blank"

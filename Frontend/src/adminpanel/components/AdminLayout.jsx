@@ -33,8 +33,8 @@ export default function AdminLayout({ page, go, user, onKeluar, children }) {
   );
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '240px 1fr', minHeight: '100vh', background: C.bg, fontFamily: font }}>
-      <aside style={{ background: C.dark, padding: 16, display: 'flex', flexDirection: 'column', position: 'sticky', top: 0, height: '100vh', boxSizing: 'border-box' }}>
+    <div className="admin-layout" style={{ display: 'grid', gridTemplateColumns: '240px 1fr', minHeight: '100svh', background: C.bg, fontFamily: font }}>
+      <aside className="admin-sidebar" style={{ background: C.dark, padding: 16, display: 'flex', flexDirection: 'column', position: 'sticky', top: 0, height: '100svh', boxSizing: 'border-box' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 28 }}>
           <div><div style={{ fontWeight: 800, color: '#fff' }}>SI-UMKM</div><div style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.65)' }}>PROVINSI JAWA BARAT</div></div>
         </div>
@@ -49,7 +49,7 @@ export default function AdminLayout({ page, go, user, onKeluar, children }) {
       </aside>
 
       <div style={{ minWidth: 0 }}>
-        <header style={{ background: '#fff', borderBottom: `1px solid ${C.line}`, padding: '12px 32px', display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 16 }}>
+        <header className="admin-header" style={{ background: '#fff', borderBottom: `1px solid ${C.line}`, padding: '12px 32px', display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 16 }}>
           <div ref={profileRef} style={{ position: 'relative' }}>
             <button
               type="button"
@@ -89,7 +89,7 @@ export default function AdminLayout({ page, go, user, onKeluar, children }) {
             )}
           </div>
         </header>
-        <main style={{ padding: 32, maxWidth: 1200 }}>{children}</main>
+        <main className="admin-main" style={{ padding: 32, maxWidth: 1200 }}>{children}</main>
       </div>
     </div>
   );

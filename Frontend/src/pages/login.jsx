@@ -8,7 +8,7 @@ import {
 import bgLogin from '../assets/login.jpg';
 
 export default function Login({ onKembali, onLoginSukses, setHalaman }) {
-  const [isCompact, setIsCompact] = useState(() => window.innerWidth < 900);
+  const [isCompact, setIsCompact] = useState(() => window.innerWidth < 768);
   const [isRegister, setIsRegister] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -23,7 +23,7 @@ export default function Login({ onKembali, onLoginSukses, setHalaman }) {
   const [nik, setNik] = useState('');
 
   useEffect(() => {
-    const handleResize = () => setIsCompact(window.innerWidth < 900);
+    const handleResize = () => setIsCompact(window.innerWidth < 768);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
@@ -227,9 +227,8 @@ export default function Login({ onKembali, onLoginSukses, setHalaman }) {
 
   return (
     <div style={{
-      width: '100vw',
-      minHeight: '100vh',
-      marginLeft: 'calc((100% - 100vw) / 2)',
+      width: '100%',
+      minHeight: '100svh',
       boxSizing: 'border-box',
       position: 'relative',
       backgroundImage: `url(${bgLogin})`,
@@ -281,7 +280,7 @@ export default function Login({ onKembali, onLoginSukses, setHalaman }) {
         zIndex: 1,
         width: '100%',
         maxWidth: '1440px',
-        minHeight: '100vh',
+        minHeight: '100svh',
         margin: '0 auto',
         padding: isCompact ? '80px 16px 24px' : '32px 32px 24px',
         boxSizing: 'border-box',
@@ -306,7 +305,7 @@ export default function Login({ onKembali, onLoginSukses, setHalaman }) {
           </p>
         </div>
 
-        <div style={{ height: isCompact ? 'calc(100vh - 108px)' : 'calc(100vh - 48px - 0.5cm)', minHeight: 0, width: '100%', maxWidth: '500px', margin: '0 auto', display: 'flex', flexDirection: 'column' }}>
+        <div className="responsive-auth-panel" style={{ height: isCompact ? 'auto' : 'calc(100svh - 48px - 0.5cm)', minHeight: 0, width: '100%', maxWidth: '500px', margin: '0 auto', display: 'flex', flexDirection: 'column' }}>
           <div style={{ backgroundColor: 'rgba(225,240,170,0.10)', backdropFilter: 'blur(14px) brightness(1.25)', WebkitBackdropFilter: 'blur(14px) brightness(1.25)', border: '1px solid rgba(255,255,255,0.30)', borderRadius: '20px', padding: isCompact ? '24px' : '32px', boxShadow: '0 18px 50px rgba(0,0,0,0.24)', display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, boxSizing: 'border-box' }}>
             <div style={{ overflowY: 'auto', flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', justifyContent: isRegister ? 'flex-start' : 'center', padding: '2px' }}>
               <div style={{ marginBottom: isRegister ? '24px' : '16px' }}>
@@ -454,8 +453,8 @@ export default function Login({ onKembali, onLoginSukses, setHalaman }) {
           position: 'fixed',
           top: 0,
           left: 0,
-          width: '100vw',
-          height: '100vh',
+          width: '100%',
+          height: '100svh',
           backgroundColor: 'rgba(15, 23, 42, 0.6)',
           backdropFilter: 'blur(4px)',
           display: 'flex',

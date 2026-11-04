@@ -19,6 +19,7 @@ export default function NotifikasiToast({ show, message, onClose, duration = 300
   return (
     <div
       role="status"
+      className="notifikasi-toast"
       style={{
         position: 'fixed',
         bottom: '28px',
@@ -31,7 +32,8 @@ export default function NotifikasiToast({ show, message, onClose, duration = 300
         display: 'flex',
         alignItems: 'center',
         gap: '12px',
-        maxWidth: '360px',
+        width: 'min(360px, calc(100vw - 32px))',
+        boxSizing: 'border-box',
         zIndex: 9999,
         fontFamily: 'Inter, system-ui, sans-serif',
         animation: 'slideInToast 0.3s ease forwards'

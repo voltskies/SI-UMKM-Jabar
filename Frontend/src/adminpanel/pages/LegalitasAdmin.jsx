@@ -75,7 +75,7 @@ export default function LegalitasAdmin({ selectedId }) {
         desc="Kelola dan verifikasi permohonan sertifikasi produk halal, P-IRT, BPOM, dan merek dari database."
       />
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 360px', gap: 16, alignItems: 'start' }}>
+      <div className="admin-content-grid admin-content-grid-wide" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 360px', gap: 16, alignItems: 'start' }}>
         <div style={{ display: 'grid', gap: 16 }}>
           <Card title="Daftar Berkas Permohonan Masuk">
             <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 14 }}>

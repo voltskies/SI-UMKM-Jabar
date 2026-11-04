@@ -1,0 +1,228 @@
+img,
+video {
+  max-width: 100%;
+  height: auto;
+}
+
+.responsive-search {
+  width: 100% !important;
+  min-width: 0;
+  max-width: 380px;
+}
+
+.responsive-card-grid,
+.responsive-detail-grid,
+.responsive-map-grid,
+.admin-layout,
+.admin-content-grid {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+.responsive-form-grid {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+.responsive-map {
+  height: clamp(300px, 65svh, 520px) !important;
+}
+
+.responsive-map-list {
+  height: min(520px, 70svh) !important;
+  min-height: 300px;
+}
+
+.responsive-detail-image {
+  height: clamp(220px, 55vw, 360px) !important;
+}
+
+.responsive-social-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+.landing-hero {
+  min-height: 100svh;
+}
+
+.landing-hero-content {
+  min-height: inherit;
+}
+
+.landing-hero-heading {
+  font-size: clamp(28px, 8vw, 44px) !important;
+}
+
+.responsive-auth-panel {
+  height: auto !important;
+  min-height: 0 !important;
+  max-width: 500px;
+}
+
+.admin-sidebar {
+  height: auto !important;
+  min-height: 0;
+  position: static !important;
+}
+
+.admin-main {
+  width: 100%;
+  max-width: none !important;
+  padding: clamp(16px, 4vw, 32px) !important;
+  min-width: 0;
+}
+
+.admin-header {
+  padding-inline: clamp(16px, 4vw, 32px) !important;
+}
+
+.mobile-nav-panel .nav-category {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+.community-card__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@media (min-width: 480px) {
+  .responsive-social-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .responsive-search {
+    width: min(380px, 100%) !important;
+  }
+
+  .responsive-card-grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)) !important;
+  }
+
+  .responsive-form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .responsive-social-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  }
+
+  .responsive-auth-panel {
+    height: calc(100svh - 48px - 0.5cm) !important;
+    min-height: 0 !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .responsive-card-grid {
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)) !important;
+  }
+
+  .responsive-detail-grid {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) !important;
+  }
+
+  .responsive-map-grid {
+    grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr) !important;
+  }
+
+  .responsive-map-list {
+    height: 630px !important;
+  }
+
+  .responsive-social-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  }
+
+  .admin-layout {
+    grid-template-columns: 240px minmax(0, 1fr) !important;
+  }
+
+  .admin-sidebar {
+    position: sticky !important;
+    top: 0;
+    height: 100svh !important;
+  }
+
+  .admin-main {
+    max-width: 1200px !important;
+    padding: 32px !important;
+  }
+
+  .admin-content-grid {
+    grid-template-columns: minmax(0, 1fr) 320px !important;
+  }
+
+  .admin-content-grid-wide {
+    grid-template-columns: minmax(0, 1fr) 360px !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .landing-hero {
+    min-height: max(100svh, 560px);
+  }
+
+  .responsive-page-content {
+    padding-inline: clamp(16px, 4vw, 24px) !important;
+    padding-top: 24px !important;
+    padding-bottom: 40px !important;
+  }
+
+  .responsive-form-card {
+    padding: clamp(18px, 5vw, 24px) !important;
+    box-sizing: border-box;
+  }
+
+  .responsive-map-list {
+    height: 420px !important;
+  }
+
+  .mobile-nav-panel {
+    top: 68px !important;
+    max-height: calc(100svh - 56px);
+    overflow-y: auto;
+  }
+
+  .navbar-menu-button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .notification-bell {
+    width: 44px;
+    height: 44px;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .admin-header {
+    min-height: 60px;
+  }
+
+  .admin-content-grid {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .responsive-social-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .responsive-map-list {
+    height: 380px !important;
+    min-height: 0;
+  }
+
+  .notifikasi-toast {
+    right: 16px !important;
+    bottom: 16px !important;
+  }
+
+  .notification-bell {
+    padding: 0 !important;
+  }
+}

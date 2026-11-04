@@ -47,7 +47,7 @@ export default function BantuanDetail({ item, onKembali, onUbah }) {
         right={<Badge>{item.status}</Badge>}
       />
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 320px', gap: 16, alignItems: 'start' }}>
+      <div className="admin-content-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 320px', gap: 16, alignItems: 'start' }}>
         <div style={{ display: 'grid', gap: 16 }}>
           <Card title="Data Identitas & Usaha">
             <Row label="User ID Akun" value={`#${item.user_id}`} />

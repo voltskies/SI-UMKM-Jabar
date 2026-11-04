@@ -2,7 +2,7 @@ import { MapPin, Phone, Mail } from 'lucide-react';
 
 export default function Footer() {
   return (
-    <footer style={{
+    <footer className="site-footer" style={{
       backgroundColor: '#1B4143',
       color: '#FFFFFF',
       padding: '40px 24px 20px',
@@ -11,7 +11,47 @@ export default function Footer() {
       boxSizing: 'border-box',
       fontFamily: 'Inter, system-ui, sans-serif'
     }}>
-      <div style={{
+      <style>{`
+        @media (max-width: 768px) {
+          .site-footer {
+            padding: 24px 18px 14px !important;
+          }
+
+          .footer-grid {
+            gap: 14px !important;
+            padding-bottom: 16px !important;
+            text-align: center !important;
+          }
+
+          .footer-grid h3 {
+            font-size: 1rem !important;
+            margin-bottom: 6px !important;
+          }
+
+          .footer-desc {
+            font-size: 0.78rem !important;
+            line-height: 1.5 !important;
+          }
+
+          .footer-layanan {
+            display: none !important;
+          }
+
+          .footer-kontak h4 {
+            display: none !important;
+          }
+
+          .footer-kontak > div {
+            align-items: center !important;
+          }
+
+          .footer-kontak > div > div {
+            justify-content: center !important;
+            font-size: 0.78rem !important;
+          }
+        }
+      `}</style>
+      <div className="footer-grid" style={{
         maxWidth: '1200px',
         margin: '0 auto',
         display: 'grid',
@@ -25,13 +65,13 @@ export default function Footer() {
           <h3 style={{ fontSize: '1.2rem', fontWeight: '800', margin: '0 0 10px' }}>
             SI-UMKM JABAR
           </h3>
-          <p style={{ fontSize: '0.84rem', lineHeight: '1.6', color: 'rgba(255,255,255,0.85)', margin: 0 }}>
+          <p className="footer-desc" style={{ fontSize: '0.84rem', lineHeight: '1.6', color: 'rgba(255,255,255,0.85)', margin: 0 }}>
             Sistem Informasi & Integrasi Layanan Usaha Mikro, Kecil, dan Menengah Provinsi Jawa Barat.
           </p>
         </div>
 
         {/*layanan*/}
-        <div>
+        <div className="footer-layanan">
           <h4 style={{ fontSize: '0.92rem', fontWeight: '700', margin: '0 0 12px', color: '#D99B26' }}>
             Layanan Terpadu
           </h4>
@@ -43,7 +83,7 @@ export default function Footer() {
         </div>
 
         {/*kontak*/}
-        <div>
+        <div className="footer-kontak">
           <h4 style={{ fontSize: '0.92rem', fontWeight: '700', margin: '0 0 12px', color: '#D99B26' }}>
             Kontak
           </h4>

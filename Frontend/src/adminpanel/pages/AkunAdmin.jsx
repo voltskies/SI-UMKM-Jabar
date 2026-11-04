@@ -77,7 +77,7 @@ export default function AkunAdmin() {
         <StatCard label="Terverifikasi NIK" value={dataAkun.filter((a) => Boolean(a.nik)).length} icon={BadgeCheck} />
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 320px', gap: 16, alignItems: 'start', marginTop: 16 }}>
+      <div className="admin-content-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 320px', gap: 16, alignItems: 'start', marginTop: 16 }}>
         <Card title="Data Pengguna dari Database">
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 14 }}>
             <Chips items={ROLES.map((r) => [r, n(r)])} value={role} onChange={setRole} />

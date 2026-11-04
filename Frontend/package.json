@@ -13,9 +13,10 @@
     "@emailjs/browser": "^5.0.3",
     "axios": "^1.20.0",
     "leaflet": "^1.9.4",
+    "lucide": "^1.67.0",
     "lucide-react": "^1.46.0",
-    "react": "^19.2.8",
-    "react-dom": "^19.2.8",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
     "react-leaflet": "^5.0.0"
   },
   "devDependencies": {

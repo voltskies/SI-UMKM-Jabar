@@ -52,7 +52,7 @@ export const Header = ({ crumbs = [], title, desc, right }) => (
       <div style={{ fontSize: '0.75rem', color: C.mute }}>
         {crumbs.map((c, i) => <span key={c}>{i > 0 && ' › '}<span style={i === crumbs.length - 1 ? { color: C.link, fontWeight: 600 } : {}}>{c}</span></span>)}
       </div>
-      <h1 style={{ margin: '6px 0 4px', fontSize: '1.6rem', color: C.ink }}>{title}</h1>
+      <h1 style={{ margin: '6px 0 4px', fontSize: 'clamp(24px, 3vw, 32px)', color: C.ink }}>{title}</h1>
       {desc && <p style={{ margin: 0, color: C.mute, fontSize: '0.9rem' }}>{desc}</p>}
     </div>
     {right}

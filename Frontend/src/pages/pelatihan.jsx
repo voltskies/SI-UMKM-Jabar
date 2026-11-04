@@ -128,13 +128,13 @@ export default function Pelatihan({ onKembali, onPilihPelatihan, setHalaman, use
   });
 
   return (
-    <div style={{ backgroundColor: '#F8FAFC', minHeight: '100vh', display: 'flex', flexDirection: 'column', fontFamily: 'Inter, system-ui, sans-serif' }}>
+    <div style={{ backgroundColor: '#F8FAFC', minHeight: '100svh', display: 'flex', flexDirection: 'column', fontFamily: 'Inter, system-ui, sans-serif' }}>
       
       {/* 1. Navbar Atas */}
       <Navbar setHalaman={setHalaman} user={user} mode="solid-sticky" />
 
       {/* 2. Konten Utama */}
-      <main style={{ flex: 1, maxWidth: '1240px', width: '100%', margin: '0 auto', padding: '32px 24px 60px 24px', boxSizing: 'border-box' }}>
+      <main className="responsive-page-content" style={{ flex: 1, maxWidth: '1240px', width: '100%', margin: '0 auto', padding: '32px 24px 60px 24px', boxSizing: 'border-box' }}>
         
         {/* Header Navigasi & Pencarian */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px', flexWrap: 'wrap', gap: '16px' }}>
@@ -160,7 +160,7 @@ export default function Pelatihan({ onKembali, onPilihPelatihan, setHalaman, use
             <ArrowLeft size={20} /> Kembali ke Beranda
           </button>
 
-          <div style={{ position: 'relative', width: '380px' }}>
+          <div className="responsive-search" style={{ position: 'relative', width: '380px' }}>
             <Search size={18} color="#94A3B8" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }} />
             <input
               type="text"
@@ -184,7 +184,7 @@ export default function Pelatihan({ onKembali, onPilihPelatihan, setHalaman, use
 
         {/* Judul & Deskripsi Katalog */}
         <div style={{ marginBottom: '24px' }}>
-          <h1 style={{ fontSize: '1.8rem', fontWeight: '800', color: '#0F172A', margin: '0 0 8px 0' }}>
+          <h1 style={{ fontSize: 'clamp(28px, 4vw, 36px)', fontWeight: '800', color: '#0F172A', margin: '0 0 8px 0' }}>
             Katalog Pelatihan & Pendampingan UMKM Jawa Barat
           </h1>
           <p style={{ color: '#64748B', fontSize: '0.92rem', maxWidth: '800px', margin: 0, lineHeight: '1.5' }}>
@@ -218,7 +218,7 @@ export default function Pelatihan({ onKembali, onPilihPelatihan, setHalaman, use
         </div>
 
         {/* Grid Kartu Pelatihan */}
-        <div style={{
+        <div className="responsive-card-grid" style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))',
           gap: '24px'
