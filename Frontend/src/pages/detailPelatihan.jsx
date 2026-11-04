@@ -166,21 +166,6 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
             </button>
 
             <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.8rem' }}>•</span>
-
-            <div style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              backgroundColor: 'rgba(255,255,255,0.15)',
-              backdropFilter: 'blur(6px)',
-              padding: '4px 12px',
-              borderRadius: '999px',
-              fontSize: '11px',
-              fontWeight: '600',
-              border: '1px solid rgba(255,255,255,0.2)'
-            }}>
-              Program Resmi Dinas KUK Jawa Barat
-            </div>
           </div>
 
           {/* Judul & Kategori Pelatihan */}
