@@ -1146,7 +1146,11 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
             </a>
           </div>
           <div className="community-card__image">
-            <img src="/src/assets/komunitas_umkm_jabar.jpg" alt="Komunitas UMKM" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            <img 
+            src="/komunitas_umkm_jabar.jpg" 
+            alt="Komunitas UMKM" 
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+            />
           </div>
         </section>
 
