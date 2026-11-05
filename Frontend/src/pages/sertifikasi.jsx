@@ -98,6 +98,14 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
     textAlign: 'left'
   };
 
+  const inputReadOnlyStyle = {
+    ...inputStyle,
+    backgroundColor: '#F1F5F9',
+    color: '#475569',
+    cursor: 'not-allowed',
+    borderColor: '#E2E8F0'
+  };
+
   const handleKembaliKeDashboard = () => {
     if (typeof setHalaman === 'function') {
       setHalaman('dashboard');
@@ -390,60 +398,72 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
 
             <form onSubmit={handleSubmitForm} style={{ textAlign: 'left' }}>
               {/* Bagian 1: Data Pemohon */}
+              {/* Bagian 1: Data Pemilik Usaha */}
               <div style={{ marginBottom: '24px', textAlign: 'left' }}>
                 <h3 style={{ fontSize: '0.98rem', fontWeight: '700', color: '#255456', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px', textAlign: 'left' }}>
-                  <User size={17} /> 1. Informasi Pemilik Usaha
+                  <User size={17} /> 1. Informasi Pemilik Usaha (Terkunci Sesuai Akun)
                 </h3>
+                
                 <div className="responsive-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '14px', textAlign: 'left' }}>
                   <div style={{ textAlign: 'left' }}>
-                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '600', color: '#334155', marginBottom: '5px', textAlign: 'left' }}>NIK *</label>
-                    <input 
-                      type="text" 
-                      name="nik" 
-                      maxLength={16} 
-                      required 
-                      value={dataPemohon.nik} 
-                      onChange={handleInputPemohon} 
-                      placeholder="16 digit sesuai KTP" 
-                      style={inputStyle} 
+                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '600', color: '#334155', marginBottom: '5px', textAlign: 'left' }}>
+                      NIK *
+                    </label>
+                    <input
+                      type="text"
+                      name="nik"
+                      readOnly
+                      required
+                      value={dataPemohon.nik}
+                      placeholder="16 digit sesuai KTP"
+                      style={inputReadOnlyStyle}
                     />
                   </div>
+
                   <div style={{ textAlign: 'left' }}>
-                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '600', color: '#334155', marginBottom: '5px', textAlign: 'left' }}>Nama Lengkap *</label>
-                    <input 
-                      type="text" 
-                      name="nama_lengkap" 
-                      required 
-                      value={dataPemohon.nama_lengkap} 
-                      onChange={handleInputPemohon} 
-                      placeholder="Nama sesuai KTP" 
-                      style={inputStyle} 
+                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '600', color: '#334155', marginBottom: '5px', textAlign: 'left' }}>
+                      Nama Lengkap *
+                    </label>
+                    <input
+                      type="text"
+                      name="nama_lengkap"
+                      readOnly
+                      required
+                      value={dataPemohon.nama_lengkap}
+                      placeholder="Nama lengkap sesuai KTP"
+                      style={inputReadOnlyStyle}
                     />
                   </div>
                 </div>
+
                 <div className="responsive-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', textAlign: 'left' }}>
                   <div style={{ textAlign: 'left' }}>
-                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '600', color: '#334155', marginBottom: '5px', textAlign: 'left' }}>Email Aktif *</label>
-                    <input 
-                      type="email" 
-                      name="email" 
-                      required 
-                      value={dataPemohon.email} 
-                      onChange={handleInputPemohon} 
-                      placeholder="nama@gmail.com" 
-                      style={inputStyle} 
+                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '600', color: '#334155', marginBottom: '5px', textAlign: 'left' }}>
+                      Email Aktif *
+                    </label>
+                    <input
+                      type="email"
+                      name="email"
+                      readOnly
+                      required
+                      value={dataPemohon.email}
+                      placeholder="contoh@gmail.com"
+                      style={inputReadOnlyStyle}
                     />
                   </div>
+
                   <div style={{ textAlign: 'left' }}>
-                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '600', color: '#334155', marginBottom: '5px', textAlign: 'left' }}>Nomor WhatsApp *</label>
-                    <input 
-                      type="text" 
-                      name="nomor_whatsapp" 
-                      required 
-                      value={dataPemohon.nomor_whatsapp} 
-                      onChange={handleInputPemohon} 
-                      placeholder="08xxxxxxxxxx" 
-                      style={inputStyle} 
+                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '600', color: '#334155', marginBottom: '5px', textAlign: 'left' }}>
+                      Nomor WhatsApp *
+                    </label>
+                    <input
+                      type="tel"
+                      name="nomor_whatsapp"
+                      readOnly
+                      required
+                      value={dataPemohon.nomor_whatsapp}
+                      placeholder="08xxxxxxxxxx"
+                      style={inputReadOnlyStyle}
                     />
                   </div>
                 </div>
