@@ -6,6 +6,7 @@ import Login from './pages/login';
 import LoginAdmin from './pages/LoginAdmin';
 import Bantuan from './pages/bantuan';
 import Sertifikasi from './pages/sertifikasi';
+import RiwayatDetail from './pages/riwayat';
 
 // Import Admin App dari folder adminpanel
 import AdminApp from './adminpanel/AdminApp';
@@ -13,6 +14,7 @@ import AdminApp from './adminpanel/AdminApp';
 export default function App() {
   const [halaman, setHalaman] = useState('dashboard');
   const [pelatihanTerpilih, setPelatihanTerpilih] = useState(null);
+  const [notifTerpilih, setNotifTerpilih] = useState(null);
   const [currentUser, setCurrentUser] = useState(() => {
     const simpanan = localStorage.getItem('user_umkm');
     return simpanan ? JSON.parse(simpanan) : null;
@@ -49,6 +51,13 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  // Handler saat notifikasi di drawer diklik "Lihat detail →"
+  const handlePilihNotif = (notifItem) => {
+    setNotifTerpilih(notifItem);
+    setHalaman('riwayatDetail');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   // LOGIKA 1: Jika user yang login memiliki role 'admin'
   if (currentUser && currentUser.role === 'admin') {
     return (
@@ -76,6 +85,7 @@ export default function App() {
           user={currentUser}
           setHalaman={navigasiHalaman}
           onNavigasiPelatihan={() => navigasiHalaman('pelatihan')}
+          onPilihNotif={handlePilihNotif}
         />
       )}
 
@@ -88,6 +98,7 @@ export default function App() {
             setPelatihanTerpilih(item);
             navigasiHalaman('detailPelatihan');
           }}
+          onPilihNotif={handlePilihNotif}
         />
       )}
 
@@ -99,15 +110,17 @@ export default function App() {
           setHalaman={navigasiHalaman}
           onKembali={() => navigasiHalaman('pelatihan')}
           onArahkanLogin={() => navigasiHalaman('login')}
+          onPilihNotif={handlePilihNotif}
         />
       )}
 
-      {/* 4. Halaman Bantuan Usaha (Hanya dapat dibuka jika sudah login) */}
+      {/* 4. Halaman Bantuan Usaha */}
       {halaman === 'bantuan' && (
         isLoggedIn ? (
           <Bantuan
             user={currentUser}
             setHalaman={navigasiHalaman}
+            onPilihNotif={handlePilihNotif}
           />
         ) : (
           <Login
@@ -120,12 +133,13 @@ export default function App() {
         )
       )}
 
-      {/* 5. Halaman Sertifikasi & Legalitas (Hanya dapat dibuka jika sudah login) */}
+      {/* 5. Halaman Sertifikasi & Legalitas */}
       {halaman === 'sertifikasi' && (
         isLoggedIn ? (
           <Sertifikasi
             user={currentUser}
             setHalaman={navigasiHalaman}
+            onPilihNotif={handlePilihNotif}
           />
         ) : (
           <Login
@@ -138,7 +152,18 @@ export default function App() {
         )
       )}
 
-      {/* 6. Halaman Login */}
+      {/* 6. Halaman Detail Riwayat Pengajuan Notifikasi */}
+      {halaman === 'riwayatDetail' && (
+        <RiwayatDetail
+          data={notifTerpilih}
+          user={currentUser}
+          setHalaman={navigasiHalaman}
+          onKembali={() => navigasiHalaman('dashboard')}
+          onPilihNotif={handlePilihNotif}
+        />
+      )}
+
+      {/* 7. Halaman Login */}
       {halaman === 'login' && (
         <Login
           setHalaman={navigasiHalaman}
@@ -153,7 +178,7 @@ export default function App() {
         />
       )}
 
-      {/* 7. Halaman Login / Register Admin */}
+      {/* 8. Halaman Login / Register Admin */}
       {halaman === 'login-admin' && (
         <LoginAdmin
           setHalaman={navigasiHalaman}

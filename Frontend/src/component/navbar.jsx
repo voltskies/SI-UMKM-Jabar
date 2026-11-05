@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import NotifikasiToast from './notifikasiToast';
 
+
 const POLL_INTERVAL_MS = 10000;
 
 export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode }) {
@@ -307,7 +308,9 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
   const klikNotifikasi = (notif) => {
     tandaiDibaca([notif.key]);
     setSidebarNotifOpen(false);
-    if (notif.targetHalaman && typeof setHalaman === 'function') {
+    if (typeof onPilihNotif === 'function') {
+      onPilihNotif(notif);
+    } else if (notif.targetHalaman && typeof setHalaman === 'function') {
       setHalaman(notif.targetHalaman);
     }
   };
