@@ -11,6 +11,7 @@
 \usepackage{subcaption}
 \usepackage{url}
 \usepackage{dblfloatfix}
+\usepackage{makecell}
 
 \graphicspath{{image_tex/}}
 
@@ -28,7 +29,7 @@
 \title{SI-UMKM Jabar: Rancang Bangun Sistem Informasi dan Layanan Terpadu UMKM Jawa Barat}
 
 \author{\IEEEauthorblockN{Vania Rahmawati\textsuperscript{1}, Reva Fadillah Susetya\textsuperscript{2}}
-\IEEEauthorblockA{\textit{PSDKU Lamongan D3 Teknik Informatika, Politeknik Elektronika Negeri Surabaya} \\
+\IEEEauthorblockA{\textit{D3 Teknik Informatika, PSDKU Lamongan Politeknik Elektronika Negeri Surabaya} \\
 Lamongan, Jawa Timur, Indonesia \\
 Email: \textsuperscript{1}vania07@it.student.pens.ac.id, \textsuperscript{2}reva@it.student.pens.ac.id}
 }
@@ -56,9 +57,9 @@ Sebagai basis referensi empiris layanan daerah, penelitian ini merujuk pada port
 
 Melihat keterbatasan tersebut, SI-UMKM Jabar dikembangkan sebagai bentuk eskalasi fungsional dan teknologis dari model layanan DISKUK yang ada:
 \begin{enumerate}
-    \item \textbf{Single-Window Service}: Mengonsolidasikan alur pengajuan fasilitasi sarana, legalitas, dan kurasi pelatihan ke dalam satu akun terpadu pemohon yang terhubung langsung ke panel verifikasi admin.
-    \item \textbf{Transformasi Peta Spasial Dinamis}: Mengonversi data direktori wilayah ke dalam peta interaktif berbasis kode warna sebaran komoditas 27 kabupaten/kota untuk memudahkan analisis potensi ekonomi daerah.
-    \item \textbf{Real-Time Tracking}: Menyediakan fitur pelacakan status audit berkas bagi pelaku usaha secara transparan, didukung arsitektur RESTful API performa tinggi berbasis FastAPI serta penyimpanan berkas proposal pada \textit{cloud storage}.
+    \item {Single-Window Service}: Mengonsolidasikan alur pengajuan fasilitasi sarana, legalitas, dan kurasi pelatihan ke dalam satu akun terpadu pemohon yang terhubung langsung ke panel verifikasi admin.
+    \item {Transformasi Peta Spasial Dinamis}: Mengonversi data direktori wilayah ke dalam peta interaktif berbasis kode warna sebaran komoditas 27 kabupaten/kota untuk memudahkan analisis potensi ekonomi daerah.
+    \item {Real-Time Tracking}: Menyediakan fitur pelacakan status audit berkas bagi pelaku usaha secara transparan, didukung arsitektur RESTful API performa tinggi berbasis FastAPI serta penyimpanan berkas proposal pada \textit{cloud storage}.
 \end{enumerate}
 
 \section{Architecture \& Design System}
@@ -66,7 +67,7 @@ Arsitektur SI-UMKM Jabar dirancang dengan mengadopsi prinsip pemisahan tanggung 
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.47\textwidth,height=6.2cm,keepaspectratio]{"gambar 1.jpg"}
+\includegraphics[width=\columnwidth]{"gambar 1.jpg"}
 \caption{Arsitektur Sistem.}
 \label{fig:arch}
 \end{figure}
@@ -75,25 +76,25 @@ Komunikasi data antara antarmuka pengguna dan basis data diproses oleh lapisan b
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.47\textwidth,height=6.2cm,keepaspectratio]{"gambar 2.jpg"}
+\includegraphics[width=\columnwidth]{"gambar 2.jpg"}
 \caption{Design System Antarmuka SI-UMKM Jabar.}
 \label{fig:design}
 \end{figure}
 
-Implementasi antarmuka frontend mengadopsi struktur perancangan \textit{design system} berbasis komponen modular guna menjamin konsistensi visual dan kemudahan navigasi pengguna, seperti diilustrasikan pada Fig. 2. Sistem antarmuka ini dibagi ke dalam dua lingkungan kerja utama, yaitu portal layanan mandiri publik dan panel audit verifikasi internal dinas. Portal publik menyediakan antarmuka visualisasi spasial 27 kabupaten/kota di Jawa Barat berbasis kode warna zonasi wilayah dan titik persebaran komoditas usaha secara interaktif, direktori katalog produk, serta modul pengajuan program fasilitasi yang dilengkapi fitur pelacakan status audit berkas secara \textit{real-time}. Sementara itu, panel internal dinas menyediakan tata letak dasbor verifikator yang mencakup tabel manajemen antrean berkas, fitur pratinjau dokumen persyaratan secara langsung, modul validasi persetujuan maupun penolakan bersyarat dengan catatan evaluasi terintegrasi, serta modul ekspor rekapitulasi data layanan untuk kebutuhan pelaporan administratif.
+Implementasi antarmuka frontend mengadopsi struktur perancangan \textit{design system} berbasis komponen modular guna menjamin konsistensi visual dan kemudahan navigasi pengguna, seperti diilustrasikan pada Fig. 2. Sistem antarmuka ini dibagi ke dalam dua lingkungan kerja utama, yaitu portal layanan mandiri publik dan panel audit verifikasi internal dinas. Portal publik menyediakan antarmuka direktori katalog produk serta modul pengajuan program fasilitasi yang dilengkapi fitur pelacakan status audit berkas secara \textit{real-time}. Sementara itu, panel internal dinas menyediakan tata letak dasbor verifikator yang mencakup tabel manajemen antrean berkas, fitur pratinjau dokumen persyaratan secara langsung, modul validasi persetujuan maupun penolakan bersyarat dengan catatan evaluasi terintegrasi, serta modul ekspor rekapitulasi data layanan untuk kebutuhan pelaporan administratif.
 
-\section{Flagship}
-Fitur unggulan platform menghadirkan visualisasi spasial interaktif 27 kabupaten/kota berbasis kode warna zonasi wilayah dan pengelompokan titik komoditas UMKM terverifikasi guna mempermudah akses informasi geografis secara akurat [5] (Fig. 3).
+\subsection{Fitur Unggulan (Flagship Features)}
+Sebagai nilai keunggulan fungsional utama, sistem mengintegrasikan visualisasi spasial interaktif 27 kabupaten/kota berbasis kode warna zonasi wilayah dan pengelompokan titik komoditas UMKM terverifikasi guna mempermudah akses informasi geografis secara presisi dan kontekstual [5], seperti ditunjukkan pada Fig. 3. Fitur ini dirancang terhubung langsung dengan basis data direktori usaha sehingga setiap pembaruan status legalitas komoditas oleh dinas langsung terefleksi secara dinamis pada antarmuka peta wilayah.
 
-\begin{figure}[!]
+\begin{figure}[htbp]
 \centering
-\includegraphics[width=0.47\textwidth,height=4.6cm,keepaspectratio]{"gambar 3.png"}
+\includegraphics[width=\columnwidth]{"gambar 3.png"}
 \caption{Tampilan Antarmuka Layanan Unggulan SI-UMKM Jabar.}
 \label{fig:map}
 \end{figure}
 
-\section{Alur}
-Alur operasional sistem terbagi menjadi dua proses bisnis utama: alur mandiri oleh pemohon layanan (Fig. 4) dan alur audit berkas oleh administrator verifikator (Fig. 5). Tahapan pengajuan dimulai dari seleksi layanan, validasi akun, pengunggahan berkas legalitas, hingga penerbitan status registrasi. Administrator dinas kemudian memvalidasi dokumen dengan opsi persetujuan atau penolakan bersyarat disertai catatan evaluasi terintegrasi.
+\subsection{Alur Operasional}
+Alur operasional sistem terbagi menjadi dua proses bisnis utama: alur mandiri oleh pemohon layanan (Fig. 4(a)) dan alur audit berkas oleh administrator verifikator (Fig. 4(b)). Tahapan pengajuan dimulai dari seleksi layanan, validasi akun, pengunggahan berkas legalitas, hingga penerbitan status registrasi. Administrator dinas kemudian memvalidasi dokumen dengan opsi persetujuan atau penolakan bersyarat disertai catatan evaluasi terintegrasi.
 
 \begin{figure}[htbp]
 \centering
@@ -114,16 +115,22 @@ Alur operasional sistem terbagi menjadi dua proses bisnis utama: alur mandiri ol
 \label{fig:flowcharts}
 \end{figure}
 
-\section{Pengujian}
-Pengujian kinerja dilakukan terhadap endpoint direktori UMKM (\texttt{GET /api/v1/umkm}) menggunakan simulasi konkurensi bertingkat pada rentang 50 hingga 500 \textit{Virtual Users} (VUs). Grafik pengujian beban pada Fig. 6 dan rincian kuantitatif pada Table I menunjukkan backend beroperasi stabil hingga 300 VUs dengan throughput puncak 616,96 req/s dan tingkat kesalahan 0,00\%. Pada beban ekstrem 500 VUs, sistem mencapai ambang kapasitas layanan.
-
-\begin{table*}[!b]
+\begin{table*}[!t]
 \caption{Hasil Pengujian Beban Kinerja Endpoint API Direktori UMKM (\texttt{GET /api/v1/umkm})}
 \label{tab:loadtest}
 \centering
 \begin{tabular}{cccccccccc}
 \toprule
-\textbf{Virtual Users} & \textbf{Total Req.} & \textbf{Throughput (req/s)} & \textbf{Avg. Latency (ms)} & \textbf{P90 (ms)} & \textbf{P95 (ms)} & \textbf{P99 (ms)} & \textbf{Error (\%)} & \textbf{Peak CPU (\%)} & \textbf{Peak RAM (\%)} \\
+\textbf{\makecell{Virtual\\Users}} & 
+\textbf{\makecell{Total\\Req.}} & 
+\textbf{\makecell{Throughput\\(req/s)}} & 
+\textbf{\makecell{Avg. Latency\\(ms)}} & 
+\textbf{\makecell{P90\\(ms)}} & 
+\textbf{\makecell{P95\\(ms)}} & 
+\textbf{\makecell{P99\\(ms)}} & 
+\textbf{\makecell{Error\\(\%)}} & 
+\textbf{\makecell{Peak CPU\\(\%)}} & 
+\textbf{\makecell{Peak RAM\\(\%)}} \\
 \midrule
 50 VU  & 12.627 & 208,47 & 192 & 404   & 445   & 517   & 0,00  & 44,0 & 91,3 \\
 100 VU & 20.896 & 345,26 & 217 & 430   & 487   & 749   & 0,00  & 60,2 & 94,0 \\
@@ -134,41 +141,8 @@ Pengujian kinerja dilakukan terhadap endpoint direktori UMKM (\texttt{GET /api/v
 \end{tabular}
 \end{table*}
 
-\begin{figure*}[!t]
-\centering
-\begin{subfigure}[b]{0.31\textwidth}
-   \includegraphics[width=\textwidth]{vus50.png}
-   \caption{50 VUs.}
-   \label{fig:50vu}
-\end{subfigure}
-\hfill
-\begin{subfigure}[b]{0.31\textwidth}
-   \includegraphics[width=\textwidth]{vus100.png}
-   \caption{100 VUs.}
-   \label{fig:100vu}
-\end{subfigure}
-\hfill
-\begin{subfigure}[b]{0.31\textwidth}
-   \includegraphics[width=\textwidth]{vus200.png}
-   \caption{200 VUs.}
-   \label{fig:200vu}
-\end{subfigure}
-
-\vspace{1.5mm}
-\begin{subfigure}[b]{0.31\textwidth}
-   \includegraphics[width=\textwidth]{vus300.png}
-   \caption{300 VUs.}
-   \label{fig:300vu}
-\end{subfigure}
-\hspace{8mm}
-\begin{subfigure}[b]{0.31\textwidth}
-   \includegraphics[width=\textwidth]{vus500.png}
-   \caption{500 VUs.}
-   \label{fig:500vu}
-\end{subfigure}
-\caption{Hasil Pengujian Beban Kinerja Endpoint API pada Skala 50 hingga 500 Virtual Users.}
-\label{fig:loadtest}
-\end{figure*}
+\section{Pengujian}
+Pengujian kinerja dilakukan terhadap endpoint direktori UMKM (\texttt{GET /api/v1/umkm}) menggunakan simulasi konkurensi bertingkat pada rentang 50 hingga 500 \textit{Virtual Users} (VUs). Rincian kuantitatif pengujian beban pada Table I menunjukkan bahwa backend beroperasi secara stabil hingga skala 300 VUs dengan throughput puncak mencapai 616,96 req/s serta tingkat kegagalan respon 0,00\%. Pada beban ekstrem 500 VUs, sistem mulai mencapai titik jenuh konkurensi I/O yang ditandai dengan peningkatan rata-rata waktu respon menjadi 407 ms dan lonjakan tingkat kegagalan respons (\textit{error rate}) hingga 60,25\%.
 
 \section*{References}
 \begin{thebibliography}{00}

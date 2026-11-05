@@ -107,6 +107,10 @@ INPUT D:\MikTEX\tex\latex\dblfloatfix\dblfloatfix.sty
 INPUT D:\MikTEX\tex\latex\dblfloatfix\dblfloatfix.sty
 INPUT D:\MikTEX\tex\latex\base\fixltx2e.sty
 INPUT D:\MikTEX\tex\latex\base\fixltx2e.sty
+INPUT D:\MikTEX\tex\latex\makecell\makecell.sty
+INPUT D:\MikTEX\tex\latex\makecell\makecell.sty
+INPUT D:\MikTEX\tex\latex\tools\array.sty
+INPUT D:\MikTEX\tex\latex\tools\array.sty
 INPUT D:\MikTEX\tex\latex\l3backend\l3backend-pdftex.def
 INPUT D:\MikTEX\tex\latex\l3backend\l3backend-pdftex.def
 INPUT .\umkm.aux
@@ -173,8 +177,6 @@ INPUT D:\MikTEX\fonts\vf\adobe\times\ptmb7t.vf
 INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmb8r.tfm
 INPUT D:\MikTEX\fonts\vf\adobe\times\ptmrc7t.vf
 INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmr8r.tfm
-INPUT D:\MikTEX\fonts\vf\adobe\times\ptmb7t.vf
-INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmb8r.tfm
 INPUT .\image_tex\gambar 1.jpg
 INPUT .\image_tex\gambar 1.jpg
 INPUT .\image_tex\gambar 1.jpg
@@ -218,36 +220,6 @@ INPUT D:\MikTEX\fonts\tfm\public\amsfonts\symbols\msam10.tfm
 INPUT D:\MikTEX\fonts\tfm\public\amsfonts\symbols\msam7.tfm
 INPUT D:\MikTEX\fonts\tfm\public\amsfonts\symbols\msbm10.tfm
 INPUT D:\MikTEX\fonts\tfm\public\amsfonts\symbols\msbm7.tfm
-INPUT .\image_tex\vus50.png
-INPUT .\image_tex\vus50.png
-INPUT .\image_tex\vus50.png
-INPUT .\image_tex\vus50.png
-INPUT .\image_tex\vus50.png
-INPUT .\image_tex\vus50.png
-INPUT .\image_tex\vus100.png
-INPUT .\image_tex\vus100.png
-INPUT .\image_tex\vus100.png
-INPUT .\image_tex\vus100.png
-INPUT .\image_tex\vus100.png
-INPUT .\image_tex\vus100.png
-INPUT .\image_tex\vus200.png
-INPUT .\image_tex\vus200.png
-INPUT .\image_tex\vus200.png
-INPUT .\image_tex\vus200.png
-INPUT .\image_tex\vus200.png
-INPUT .\image_tex\vus200.png
-INPUT .\image_tex\vus300.png
-INPUT .\image_tex\vus300.png
-INPUT .\image_tex\vus300.png
-INPUT .\image_tex\vus300.png
-INPUT .\image_tex\vus300.png
-INPUT .\image_tex\vus300.png
-INPUT .\image_tex\vus500.png
-INPUT .\image_tex\vus500.png
-INPUT .\image_tex\vus500.png
-INPUT .\image_tex\vus500.png
-INPUT .\image_tex\vus500.png
-INPUT .\image_tex\vus500.png
 INPUT D:\MikTEX\fonts\vf\adobe\times\ptmr7t.vf
 INPUT D:\MikTEX\fonts\tfm\adobe\times\ptmr8r.tfm
 INPUT D:\MikTEX\fonts\vf\adobe\courier\pcrr7t.vf

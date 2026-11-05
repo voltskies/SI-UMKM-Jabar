@@ -345,7 +345,7 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
                 </div>
 
                 <div style={{ backgroundColor: '#F8FAFC', border: '1px solid #F1F5F9', borderRadius: '10px', padding: '14px', fontSize: '0.82rem', color: '#64748B' }}>
-                  Dokumen persyaratan bantuan usaha Anda telah terunggah ke Cloud Storage Supabase dan masuk ke sistem antrean audit Dinas KUK Jawa Barat.
+                  Dokumen persyaratan bantuan usaha Anda telah terunggah ke Storage dan masuk ke sistem antrean audit.
                 </div>
               </div>
             )}

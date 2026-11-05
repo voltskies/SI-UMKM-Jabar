@@ -322,7 +322,7 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
                   transition: 'background-color 0.2s ease'
                 }}
               >
-                {loading ? 'MEMPROSES & UPLOAD KE CLOUD...' : 'DAFTAR SEKARANG'}
+                {loading ? 'MEMPROSES & UPLOAD' : 'DAFTAR SEKARANG'}
               </button>
 
               <button
