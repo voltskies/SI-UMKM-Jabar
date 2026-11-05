@@ -553,7 +553,25 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
               }}>
                 {user ? (
                   <>
-                    <div style={{ borderBottom: '1px solid #F1F5F9', paddingBottom: '10px', marginBottom: '8px' }}>
+                    <div 
+                      onClick={() => {
+                        setDropdownUser(false);
+                        if (typeof setHalaman === 'function') {
+                          setHalaman('profil');
+                        }
+                      }}
+                      style={{ 
+                        borderBottom: '1px solid #F1F5F9', 
+                        padding: '6px 8px 10px 8px', 
+                        marginBottom: '8px',
+                        cursor: 'pointer',
+                        borderRadius: '8px',
+                        transition: 'background-color 0.15s ease'
+                      }}
+                      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#F8FAFC')}
+                      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+                      title="Klik untuk melihat detail profil saya"
+                    >
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.72rem', color: '#1B4143', fontWeight: '700' }}>
                         <UserCheck size={14} /> Terverifikasi ({user.role})
                       </div>

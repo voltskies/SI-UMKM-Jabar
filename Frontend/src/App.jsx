@@ -7,6 +7,7 @@ import LoginAdmin from './pages/LoginAdmin';
 import Bantuan from './pages/bantuan';
 import Sertifikasi from './pages/sertifikasi';
 import RiwayatDetail from './pages/riwayat';
+import Profil from './pages/profil';
 
 // Import Admin App dari folder adminpanel
 import AdminApp from './adminpanel/AdminApp';
@@ -34,14 +35,14 @@ export default function App() {
     setCurrentUser(adminData);
   };
 
-  // Wrapper navigasi aman: memproteksi halaman formulir layanan jika belum login
+  // Wrapper navigasi aman: memproteksi halaman formulir layanan & profil jika belum login
   const navigasiHalaman = (tujuan) => {
     const token = localStorage.getItem('token');
     const userStorage = localStorage.getItem('user_umkm');
     const isLoggedIn = Boolean(currentUser || token || userStorage);
 
-    if ((tujuan === 'bantuan' || tujuan === 'sertifikasi') && !isLoggedIn) {
-      alert('Silakan masuk ke akun UMKM Anda terlebih dahulu untuk mengakses layanan ini.');
+    if ((tujuan === 'bantuan' || tujuan === 'sertifikasi' || tujuan === 'profil') && !isLoggedIn) {
+      alert('Silakan masuk ke akun UMKM Anda terlebih dahulu.');
       setHalaman('login');
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
@@ -163,7 +164,17 @@ export default function App() {
         />
       )}
 
-      {/* 7. Halaman Login */}
+      {/* 7. Halaman Profil Pengguna */}
+      {halaman === 'profil' && (
+        <Profil
+          user={currentUser}
+          setHalaman={navigasiHalaman}
+          onKembali={() => navigasiHalaman('dashboard')}
+          onPilihNotif={handlePilihNotif}
+        />
+      )}
+
+      {/* 8. Halaman Login */}
       {halaman === 'login' && (
         <Login
           setHalaman={navigasiHalaman}
@@ -178,7 +189,7 @@ export default function App() {
         />
       )}
 
-      {/* 8. Halaman Login / Register Admin */}
+      {/* 9. Halaman Login / Register Admin */}
       {halaman === 'login-admin' && (
         <LoginAdmin
           setHalaman={navigasiHalaman}
