@@ -45,6 +45,20 @@ export default function Login({ onKembali, onLoginSukses, setHalaman }) {
   const EMAILJS_TEMPLATE_ID = 'template_318btwq';
   const EMAILJS_PUBLIC_KEY = 'BrC6NgRExKr6v1fz7';
 
+  // Style input konsisten: Latar putih bersih dan teks gelap
+  const inputStyle = {
+    width: '100%',
+    height: '46px',
+    padding: '10px 12px 10px 42px',
+    borderRadius: '10px',
+    border: '1px solid #CBD5E1',
+    fontSize: '0.9rem',
+    backgroundColor: '#FFFFFF',
+    color: '#0F172A',
+    boxSizing: 'border-box',
+    outline: 'none'
+  };
+
   const handleKembaliKeDashboard = () => {
     if (typeof setHalaman === 'function') {
       setHalaman('dashboard');
@@ -237,9 +251,23 @@ export default function Login({ onKembali, onLoginSukses, setHalaman }) {
       fontFamily: 'Inter, system-ui, sans-serif',
       textAlign: 'left'
     }}>
+      {/* Style Placeholder agar jelas dan terbaca */}
+      <style>{`
+        input::placeholder {
+          color: #94A3B8 !important;
+          opacity: 1 !important;
+        }
+        input:-ms-input-placeholder {
+          color: #94A3B8 !important;
+        }
+        input::-ms-input-placeholder {
+          color: #94A3B8 !important;
+        }
+      `}</style>
+
       <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(15, 53, 46, 0.65)' }} />
 
-      {/* Tombol Kembali ke Beranda: Polos tanpa background/kotak */}
+      {/* Tombol Kembali ke Beranda */}
       <button
         type="button"
         onClick={handleKembaliKeDashboard}
@@ -326,7 +354,15 @@ export default function Login({ onKembali, onLoginSukses, setHalaman }) {
                       </label>
                       <div style={{ position: 'relative' }}>
                         <CreditCard size={17} color="#94A3B8" style={{ position: 'absolute', left: '13px', top: '50%', transform: 'translateY(-50%)' }} />
-                        <input type="text" required maxLength={16} placeholder="16 digit angka sesuai KTP" value={nik} onChange={(e) => setNik(e.target.value.replace(/\D/g, ''))} style={{ width: '100%', height: '46px', padding: '10px 12px 10px 42px', borderRadius: '10px', border: '1px solid #CBD5E1', fontSize: '0.9rem', color: '#0F172A', boxSizing: 'border-box' }} />
+                        <input 
+                          type="text" 
+                          required 
+                          maxLength={16} 
+                          placeholder="16 digit angka sesuai KTP" 
+                          value={nik} 
+                          onChange={(e) => setNik(e.target.value.replace(/\D/g, ''))} 
+                          style={inputStyle} 
+                        />
                       </div>
                     </div>
 
@@ -336,7 +372,14 @@ export default function Login({ onKembali, onLoginSukses, setHalaman }) {
                       </label>
                       <div style={{ position: 'relative' }}>
                         <User size={17} color="#94A3B8" style={{ position: 'absolute', left: '13px', top: '50%', transform: 'translateY(-50%)' }} />
-                        <input type="text" required placeholder="Nama lengkap sesuai KTP" value={namaLengkap} onChange={(e) => setNamaLengkap(e.target.value)} style={{ width: '100%', height: '46px', padding: '10px 12px 10px 42px', borderRadius: '10px', border: '1px solid #CBD5E1', fontSize: '0.9rem', color: '#0F172A', boxSizing: 'border-box' }} />
+                        <input 
+                          type="text" 
+                          required 
+                          placeholder="Nama lengkap sesuai KTP" 
+                          value={namaLengkap} 
+                          onChange={(e) => setNamaLengkap(e.target.value)} 
+                          style={inputStyle} 
+                        />
                       </div>
                     </div>
                   </>
@@ -348,7 +391,14 @@ export default function Login({ onKembali, onLoginSukses, setHalaman }) {
                   </label>
                   <div style={{ position: 'relative' }}>
                     <Mail size={17} color="#94A3B8" style={{ position: 'absolute', left: '13px', top: '50%', transform: 'translateY(-50%)' }} />
-                    <input type="email" required placeholder="contoh: nama@gmail.com" value={email} onChange={(e) => setEmail(e.target.value)} style={{ width: '100%', height: '46px', padding: '10px 12px 10px 42px', borderRadius: '10px', border: '1px solid #CBD5E1', fontSize: '0.9rem', color: '#0F172A', boxSizing: 'border-box' }} />
+                    <input 
+                      type="email" 
+                      required 
+                      placeholder="contoh: nama@gmail.com" 
+                      value={email} 
+                      onChange={(e) => setEmail(e.target.value)} 
+                      style={inputStyle} 
+                    />
                   </div>
                 </div>
 
@@ -359,7 +409,14 @@ export default function Login({ onKembali, onLoginSukses, setHalaman }) {
                     </label>
                     <div style={{ position: 'relative' }}>
                       <Lock size={17} color="#94A3B8" style={{ position: 'absolute', left: '13px', top: '50%', transform: 'translateY(-50%)' }} />
-                      <input type={showPassword ? 'text' : 'password'} required placeholder="Min. 6 karakter" value={password} onChange={(e) => setPassword(e.target.value)} style={{ width: '100%', height: '46px', padding: '10px 42px', borderRadius: '10px', border: '1px solid #CBD5E1', fontSize: '0.9rem', color: '#0F172A', boxSizing: 'border-box' }} />
+                      <input 
+                        type={showPassword ? 'text' : 'password'} 
+                        required 
+                        placeholder="Min. 6 karakter" 
+                        value={password} 
+                        onChange={(e) => setPassword(e.target.value)} 
+                        style={{ ...inputStyle, padding: '10px 42px' }} 
+                      />
                       <button type="button" onClick={() => setShowPassword(!showPassword)} style={{ position: 'absolute', right: '13px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#64748B', padding: 0, display: 'flex' }}>
                         {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
                       </button>
@@ -373,7 +430,14 @@ export default function Login({ onKembali, onLoginSukses, setHalaman }) {
                       </label>
                       <div style={{ position: 'relative' }}>
                         <Lock size={17} color="#94A3B8" style={{ position: 'absolute', left: '13px', top: '50%', transform: 'translateY(-50%)' }} />
-                        <input type={showConfirmPassword ? 'text' : 'password'} required placeholder="Ulangi kata sandi" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} style={{ width: '100%', height: '46px', padding: '10px 42px', borderRadius: '10px', border: '1px solid #CBD5E1', fontSize: '0.9rem', color: '#0F172A', boxSizing: 'border-box' }} />
+                        <input 
+                          type={showConfirmPassword ? 'text' : 'password'} 
+                          required 
+                          placeholder="Ulangi kata sandi" 
+                          value={confirmPassword} 
+                          onChange={(e) => setConfirmPassword(e.target.value)} 
+                          style={{ ...inputStyle, padding: '10px 42px' }} 
+                        />
                         <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} style={{ position: 'absolute', right: '13px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#64748B', padding: 0, display: 'flex' }}>
                           {showConfirmPassword ? <EyeOff size={17} /> : <Eye size={17} />}
                         </button>
@@ -389,7 +453,15 @@ export default function Login({ onKembali, onLoginSukses, setHalaman }) {
                     </label>
                     <div style={{ position: 'relative' }}>
                       <Phone size={17} color="#94A3B8" style={{ position: 'absolute', left: '13px', top: '50%', transform: 'translateY(-50%)' }} />
-                      <input type="text" required maxLength={13} placeholder="08xxxxxxxxxx (10 - 13 digit)" value={nomorWhatsapp} onChange={(e) => setNomorWhatsapp(e.target.value.replace(/\D/g, ''))} style={{ width: '100%', height: '46px', padding: '10px 12px 10px 42px', borderRadius: '10px', border: '1px solid #CBD5E1', fontSize: '0.9rem', color: '#0F172A', boxSizing: 'border-box' }} />
+                      <input 
+                        type="text" 
+                        required 
+                        maxLength={13} 
+                        placeholder="08xxxxxxxxxx (10 - 13 digit)" 
+                        value={nomorWhatsapp} 
+                        onChange={(e) => setNomorWhatsapp(e.target.value.replace(/\D/g, ''))} 
+                        style={inputStyle} 
+                      />
                     </div>
                   </div>
                 )}
@@ -520,7 +592,7 @@ export default function Login({ onKembali, onLoginSukses, setHalaman }) {
                       placeholder="contoh: nama@gmail.com"
                       value={forgotEmail}
                       onChange={(e) => setForgotEmail(e.target.value)}
-                      style={{ width: '100%', padding: '10px 12px 10px 38px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.84rem', boxSizing: 'border-box' }}
+                      style={{ width: '100%', padding: '10px 12px 10px 38px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.84rem', backgroundColor: '#FFFFFF', color: '#0F172A', boxSizing: 'border-box' }}
                     />
                   </div>
                 </div>
@@ -565,6 +637,8 @@ export default function Login({ onKembali, onLoginSukses, setHalaman }) {
                       letterSpacing: '4px',
                       textAlign: 'center',
                       fontWeight: '800',
+                      backgroundColor: '#FFFFFF',
+                      color: '#0F172A',
                       boxSizing: 'border-box'
                     }}
                   />
@@ -582,7 +656,7 @@ export default function Login({ onKembali, onLoginSukses, setHalaman }) {
                       placeholder="Minimal 6 karakter"
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
-                      style={{ width: '100%', padding: '10px 34px 10px 36px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.84rem', boxSizing: 'border-box' }}
+                      style={{ width: '100%', padding: '10px 34px 10px 36px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.84rem', backgroundColor: '#FFFFFF', color: '#0F172A', boxSizing: 'border-box' }}
                     />
                     <button
                       type="button"
@@ -604,7 +678,7 @@ export default function Login({ onKembali, onLoginSukses, setHalaman }) {
                     placeholder="Ulangi kata sandi baru"
                     value={confirmNewPassword}
                     onChange={(e) => setConfirmNewPassword(e.target.value)}
-                    style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.84rem', boxSizing: 'border-box' }}
+                    style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.84rem', backgroundColor: '#FFFFFF', color: '#0F172A', boxSizing: 'border-box' }}
                   />
                 </div>
 

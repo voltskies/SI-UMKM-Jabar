@@ -70,6 +70,12 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
       return;
     }
 
+    // Validasi Wajib Upload Dokumen Syarat
+    if (!berkasSyarat) {
+      setErrorMsg('Dokumen Syarat / KTP wajib diunggah sebelum mendaftar pelatihan.');
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -79,10 +85,7 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
       formData.append('judul_pelatihan', pelatihan.judul || pelatihan.title || 'Pelatihan UMKM Jabar');
       formData.append('kategori', pelatihan.kategori || 'Fasilitasi UMKM');
       formData.append('penyelenggara', pelatihan.penyelenggara || 'Dinas KUK Jawa Barat');
-
-      if (berkasSyarat) {
-        formData.append('file_syarat', berkasSyarat);
-      }
+      formData.append('file_syarat', berkasSyarat);
 
       const response = await axios.post(`${API_BASE_URL}/api/v1/layanan/pendaftaran-pelatihan`, formData, {
         headers: {
@@ -90,8 +93,9 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
         }
       });
 
-      if (response.data.status === 'success' || response.status === 200 || response.status === 201) {
-        setSuksesMsg(response.data.message || 'Pendaftaran pelatihan berhasil disimpan!');
+      if (response.data?.status === 'success' || response.status === 200 || response.status === 201) {
+        setSuksesMsg(response.data?.message || 'Pendaftaran pelatihan berhasil disimpan!');
+        window.dispatchEvent(new Event('update_notifikasi'));
       }
     } catch (err) {
       console.error('Pendaftaran gagal detail:', err);
@@ -131,7 +135,7 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
     <div style={{ backgroundColor: '#F8FAFC', minHeight: '100svh', display: 'flex', flexDirection: 'column', fontFamily: 'Inter, system-ui, sans-serif' }}>
       <Navbar setHalaman={setHalaman} user={user} mode="solid-sticky" />
 
-      {/* Hero Header Bagian Atas (Rata Kiri Penuh) */}
+      {/* Hero Header Bagian Atas */}
       <div style={{
         background: 'linear-gradient(135deg, #255456 0%, #1E4648 100%)',
         color: '#FFFFFF',
@@ -166,6 +170,21 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
             </button>
 
             <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.8rem' }}>•</span>
+
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              backgroundColor: 'rgba(255,255,255,0.15)',
+              backdropFilter: 'blur(6px)',
+              padding: '4px 12px',
+              borderRadius: '999px',
+              fontSize: '11px',
+              fontWeight: '600',
+              border: '1px solid rgba(255,255,255,0.2)'
+            }}>
+              Program Resmi Dinas KUK Jawa Barat
+            </div>
           </div>
 
           {/* Judul & Kategori Pelatihan */}
@@ -285,44 +304,64 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
                 </div>
               )}
 
-              {/* Upload Berkas Syarat Pelatihan */}
-              <div style={{ marginBottom: '18px', border: '1px dashed #CBD5E1', padding: '14px', borderRadius: '8px', backgroundColor: '#F8FAFC', textAlign: 'left' }}>
+              {/* Upload Berkas Syarat Pelatihan (Wajib) */}
+              <div style={{ 
+                marginBottom: '18px', 
+                border: berkasSyarat ? '1px solid #255456' : '1px dashed #CBD5E1', 
+                padding: '14px', 
+                borderRadius: '8px', 
+                backgroundColor: berkasSyarat ? '#F0FDF4' : '#F8FAFC', 
+                textAlign: 'left' 
+              }}>
                 <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', color: '#334155', marginBottom: '6px', textAlign: 'left' }}>
-                  Unggah Dokumen Syarat / KTP (PDF, PNG, JPG)
+                  Unggah Dokumen Syarat / KTP (Wajib PDF/PNG/JPG) *
                 </label>
                 <input
                   type="file"
                   accept="image/jpeg,image/png,application/pdf"
-                  onChange={(e) => setBerkasSyarat(e.target.files[0] || null)}
+                  required
+                  onChange={(e) => {
+                    const file = e.target.files[0] || null;
+                    setBerkasSyarat(file);
+                    if (file) setErrorMsg('');
+                  }}
                   style={{ fontSize: '0.78rem', width: '100%', color: '#334155' }}
                 />
-                {berkasSyarat && (
-                  <div style={{ fontSize: '0.75rem', color: '#255456', marginTop: '6px', textAlign: 'left' }}>
-                    ✓ Berkas terpilih: {berkasSyarat.name}
+                {berkasSyarat ? (
+                  <div style={{ fontSize: '0.75rem', color: '#166534', fontWeight: '600', marginTop: '6px', textAlign: 'left' }}>
+                    ✓ Dokumen terpilih: {berkasSyarat.name}
+                  </div>
+                ) : (
+                  <div style={{ fontSize: '0.72rem', color: '#94A3B8', marginTop: '4px' }}>
+                    * Unggah berkas identitas/syarat untuk membuka tombol daftar
                   </div>
                 )}
               </div>
 
-              {/* Tombol Aksi */}
+              {/* Tombol Aksi - Hanya aktif jika berkasSyarat sudah ada */}
               <button
                 type="button"
-                disabled={loading}
+                disabled={loading || !berkasSyarat}
                 onClick={handleKlikDaftar}
                 style={{
                   width: '100%',
-                  backgroundColor: loading ? '#94A3B8' : '#D97706',
-                  color: '#FFFFFF',
+                  backgroundColor: loading 
+                    ? '#94A3B8' 
+                    : (!berkasSyarat ? '#CBD5E1' : '#D97706'),
+                  color: !berkasSyarat ? '#64748B' : '#FFFFFF',
                   border: 'none',
                   padding: '13px',
                   borderRadius: '10px',
                   fontWeight: '700',
                   fontSize: '0.92rem',
-                  cursor: loading ? 'not-allowed' : 'pointer',
-                  boxShadow: '0 4px 14px rgba(217, 119, 6, 0.35)',
-                  transition: 'background-color 0.2s ease'
+                  cursor: (loading || !berkasSyarat) ? 'not-allowed' : 'pointer',
+                  boxShadow: (!berkasSyarat || loading) ? 'none' : '0 4px 14px rgba(217, 119, 6, 0.35)',
+                  transition: 'all 0.2s ease'
                 }}
               >
-                {loading ? 'MEMPROSES & UPLOAD' : 'DAFTAR SEKARANG'}
+                {loading 
+                  ? 'MEMPROSES & UPLOAD KE CLOUD...' 
+                  : (!berkasSyarat ? 'UNGGAH DOKUMEN UNTUK DAFTAR' : 'DAFTAR SEKARANG')}
               </button>
 
               <button

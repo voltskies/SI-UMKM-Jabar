@@ -2,7 +2,8 @@ import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import axios from 'axios';
 import { 
   Menu, User, Bell, ChevronDown, LogOut, LogIn, 
-  UserCheck, X, Shield, CheckCircle2, Clock, AlertCircle, FileText 
+  UserCheck, X, Shield, CheckCircle2, Clock, AlertCircle, FileText,
+  Trash2
 } from 'lucide-react';
 import NotifikasiToast from './notifikasiToast';
 
@@ -19,6 +20,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
   const [loadingNotif, setLoadingNotif] = useState(false);
   const [toast, setToast] = useState({ show: false, message: '' });
   const [versiDibaca, setVersiDibaca] = useState(0);
+  const [filterNotif, setFilterNotif] = useState('Semua'); // 'Semua' | 'pelatihan' | 'bantuan' | 'sertifikasi'
 
   const layananRef = useRef(null);
   const userMenuRef = useRef(null);
@@ -28,6 +30,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
 
   const API_BASE_URL = import.meta.env.VITE_API_URL || `http://${window.location.hostname || '127.0.0.1'}:8000`;
   const storageKey = user ? `notif_dibaca_${user.role}_${user.id}` : null;
+  const storageDeletedKey = user ? `notif_deleted_${user.role}_${user.id}` : null;
   const isDashboardMode = mode === 'dashboard';
   const isSolidSticky = mode === 'solid-sticky' || isDashboardMode;
 
@@ -48,6 +51,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
     return () => window.removeEventListener('scroll', handleScroll);
   }, [isSolidSticky]);
 
+  // Membaca status notifikasi yang sudah dibaca
   const bacaKeysTersimpan = useCallback(() => {
     if (!storageKey) return new Set();
     try {
@@ -57,13 +61,38 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
     }
   }, [storageKey]);
 
-  const dibacaKeys = useMemo(() => bacaKeysTersimpan(), [bacaKeysTersimpan, versiDibaca]);
+  // Membaca daftar notifikasi yang dihapus user
+  const bacaDeletedKeys = useCallback(() => {
+    if (!storageDeletedKey) return new Set();
+    try {
+      return new Set(JSON.parse(localStorage.getItem(storageDeletedKey) || '[]'));
+    } catch {
+      return new Set();
+    }
+  }, [storageDeletedKey]);
 
-  const daftarNotifTampil = daftarNotif.map((n) => ({
-    ...n,
-    dibaca: !n.perluPerhatian || dibacaKeys.has(n.key)
-  }));
+  const dibacaKeys = useMemo(() => bacaKeysTersimpan(), [bacaKeysTersimpan, versiDibaca]);
+  const deletedKeys = useMemo(() => bacaDeletedKeys(), [bacaDeletedKeys, versiDibaca]);
+
+  // Filter notifikasi aktif (tidak termasuk yang dihapus)
+  const notifAktif = useMemo(() => {
+    return daftarNotif.filter((n) => !deletedKeys.has(n.key));
+  }, [daftarNotif, deletedKeys]);
+
+  const daftarNotifTampil = useMemo(() => {
+    return notifAktif.map((n) => ({
+      ...n,
+      dibaca: !n.perluPerhatian || dibacaKeys.has(n.key)
+    }));
+  }, [notifAktif, dibacaKeys]);
+
   const jumlahBelumDibaca = daftarNotifTampil.filter((n) => !n.dibaca).length;
+
+  // Filter berdasarkan kategori yang dipilih
+  const notifTerfilter = useMemo(() => {
+    if (filterNotif === 'Semua') return daftarNotifTampil;
+    return daftarNotifTampil.filter((n) => n.tipe?.toLowerCase() === filterNotif.toLowerCase());
+  }, [daftarNotifTampil, filterNotif]);
 
   useEffect(() => {
     sudahMuatPertama.current = false;
@@ -79,6 +108,29 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
     } catch { /* ignore */ }
     setVersiDibaca((v) => v + 1);
   }, [storageKey, bacaKeysTersimpan]);
+
+  // Menghapus 1 notifikasi
+  const handleHapusNotif = (e, notifKey) => {
+    e.stopPropagation();
+    if (!storageDeletedKey) return;
+    const current = bacaDeletedKeys();
+    current.add(notifKey);
+    try {
+      localStorage.setItem(storageDeletedKey, JSON.stringify([...current]));
+    } catch { /* ignore */ }
+    setVersiDibaca((v) => v + 1);
+  };
+
+  // Menghapus semua notifikasi pada kategori yang aktif
+  const handleHapusSemua = () => {
+    if (!storageDeletedKey || notifTerfilter.length === 0) return;
+    const current = bacaDeletedKeys();
+    notifTerfilter.forEach((n) => current.add(n.key));
+    try {
+      localStorage.setItem(storageDeletedKey, JSON.stringify([...current]));
+    } catch { /* ignore */ }
+    setVersiDibaca((v) => v + 1);
+  };
 
   const tutupToast = useCallback(() => setToast({ show: false, message: '' }), []);
 
@@ -176,7 +228,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
               waktu: s.created_at ? new Date(s.created_at).toLocaleDateString('id-ID') : 'Terkini',
               status: s.status,
               targetHalaman: 'sertifikasi',
-              perluPerhatian: s.status !== 'Menunggu Verifikasi'
+              perluPerhatian: b => b.status !== 'Menunggu Verifikasi'
             });
           });
 
@@ -249,7 +301,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
   }, []);
 
   const tandaiSemuaDibaca = () => {
-    tandaiDibaca(daftarNotif.filter((n) => n.perluPerhatian).map((n) => n.key));
+    tandaiDibaca(notifTerfilter.filter((n) => n.perluPerhatian).map((n) => n.key));
   };
 
   const klikNotifikasi = (notif) => {
@@ -626,7 +678,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
         </div>
       )}
 
-      {/* Sidebar Drawer Notifikasi */}
+      {/* Sidebar Drawer Notifikasi dengan Filter & Fitur Hapus */}
       {sidebarNotifOpen && (
         <>
           <div
@@ -638,8 +690,8 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
             top: 0,
             right: 0,
             height: '100svh',
-            width: isMobile ? '85vw' : '360px',
-            maxWidth: '380px',
+            width: isMobile ? '88vw' : '380px',
+            maxWidth: '400px',
             backgroundColor: '#FFFFFF',
             boxShadow: '-8px 0 24px rgba(0,0,0,0.15)',
             zIndex: 1101,
@@ -647,33 +699,73 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
             flexDirection: 'column',
             fontFamily: 'Inter, system-ui, sans-serif'
           }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '18px 20px', borderBottom: '1px solid #E2E8F0' }}>
-              <div>
-                <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: '800', color: '#0F172A' }}>Pemberitahuan</h3>
-                <span style={{ fontSize: '0.74rem', color: '#64748B' }}>
-                  {user ? (user.role === 'admin' ? 'Antrean Verifikasi Dinas' : 'Status Pengajuan Berkas') : 'Notifikasi Pengguna'}
-                </span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                {jumlahBelumDibaca > 0 && (
+            {/* Header Drawer */}
+            <div style={{ padding: '16px 20px', borderBottom: '1px solid #E2E8F0' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: '800', color: '#0F172A' }}>Pemberitahuan</h3>
+                  <span style={{ fontSize: '0.74rem', color: '#64748B' }}>
+                    {user ? (user.role === 'admin' ? 'Antrean Verifikasi Dinas' : 'Status Pengajuan Berkas') : 'Notifikasi Pengguna'}
+                  </span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  {jumlahBelumDibaca > 0 && (
+                    <button
+                      type="button"
+                      onClick={tandaiSemuaDibaca}
+                      style={{ background: 'none', border: 'none', color: '#1B4143', fontSize: '0.75rem', fontWeight: '700', cursor: 'pointer', padding: 0 }}
+                    >
+                      Tandai dibaca
+                    </button>
+                  )}
+                  {notifTerfilter.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={handleHapusSemua}
+                      title="Bersihkan notifikasi pada filter ini"
+                      style={{ background: 'none', border: 'none', color: '#EF4444', fontSize: '0.75rem', fontWeight: '700', cursor: 'pointer', padding: 0 }}
+                    >
+                      Hapus semua
+                    </button>
+                  )}
                   <button
                     type="button"
-                    onClick={tandaiSemuaDibaca}
-                    style={{ background: 'none', border: 'none', color: '#1B4143', fontSize: '0.75rem', fontWeight: '700', cursor: 'pointer', padding: 0 }}
+                    onClick={() => setSidebarNotifOpen(false)}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748B', display: 'flex', padding: 0 }}
                   >
-                    Tandai dibaca
+                    <X size={20} />
                   </button>
-                )}
-                <button
-                  type="button"
-                  onClick={() => setSidebarNotifOpen(false)}
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748B', display: 'flex' }}
-                >
-                  <X size={20} />
-                </button>
+                </div>
+              </div>
+
+              {/* Tabs Filter Notifikasi */}
+              <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '4px' }}>
+                {['Semua', 'Pelatihan', 'Bantuan', 'Sertifikasi'].map((kat) => (
+                  <button
+                    key={kat}
+                    type="button"
+                    onClick={() => setFilterNotif(kat)}
+                    style={{
+                      padding: '5px 12px',
+                      borderRadius: '999px',
+                      border: '1px solid',
+                      borderColor: filterNotif === kat ? '#1B4143' : '#E2E8F0',
+                      backgroundColor: filterNotif === kat ? '#1B4143' : '#F8FAFC',
+                      color: filterNotif === kat ? '#FFFFFF' : '#475569',
+                      fontSize: '0.74rem',
+                      fontWeight: filterNotif === kat ? '700' : '500',
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap',
+                      transition: 'all 0.15s ease'
+                    }}
+                  >
+                    {kat}
+                  </button>
+                ))}
               </div>
             </div>
 
+            {/* List Notifikasi */}
             <div style={{ flex: 1, overflowY: 'auto', padding: '4px 0' }}>
               {!user ? (
                 <div style={{ textAlign: 'center', padding: '50px 20px', color: '#64748B' }}>
@@ -682,37 +774,75 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
                 </div>
               ) : loadingNotif ? (
                 <p style={{ textAlign: 'center', color: '#94A3B8', fontSize: '0.85rem', marginTop: '40px' }}>Memeriksa notifikasi...</p>
-              ) : daftarNotif.length === 0 ? (
+              ) : notifTerfilter.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '50px 20px', color: '#64748B' }}>
                   <CheckCircle2 size={36} color="#CBD5E1" style={{ margin: '0 auto 12px' }} />
-                  <p style={{ margin: 0, fontSize: '0.86rem', fontWeight: '600' }}>Semua Berkas Terkelola</p>
+                  <p style={{ margin: 0, fontSize: '0.86rem', fontWeight: '600' }}>Tidak ada notifikasi {filterNotif !== 'Semua' ? filterNotif.toLowerCase() : ''}</p>
                 </div>
               ) : (
-                daftarNotifTampil.map((notif) => (
+                notifTerfilter.map((notif) => (
                   <div
                     key={notif.id}
                     onClick={() => klikNotifikasi(notif)}
                     style={{
-                      padding: '14px 20px',
+                      padding: '14px 18px',
                       borderBottom: '1px solid #F1F5F9',
                       backgroundColor: notif.dibaca ? '#FFFFFF' : '#eef4f4',
                       display: 'flex',
                       gap: '12px',
-                      cursor: 'pointer'
+                      cursor: 'pointer',
+                      transition: 'background-color 0.15s ease',
+                      position: 'relative'
                     }}
+                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#F8FAFC')}
+                    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = notif.dibaca ? '#FFFFFF' : '#eef4f4')}
                   >
-                    <div style={{ marginTop: '2px', flexShrink: 0 }}>{getStatusIcon(notif.status)}</div>
+                    <div style={{ marginTop: '3px', flexShrink: 0 }}>{getStatusIcon(notif.status)}</div>
+                    
                     <div style={{ flex: 1 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '3px' }}>
-                        <span style={{ fontSize: '0.86rem', fontWeight: '700', color: '#0F172A' }}>{notif.judul}</span>
-                        {!notif.dibaca && <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#1B4143' }} />}
+                        <span style={{ fontSize: '0.85rem', fontWeight: '700', color: '#0F172A', paddingRight: '20px' }}>
+                          {notif.judul}
+                        </span>
+                        {!notif.dibaca && (
+                          <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#1B4143', flexShrink: 0 }} />
+                        )}
                       </div>
-                      <div style={{ fontSize: '0.8rem', color: '#475569', lineHeight: '1.45', marginBottom: '6px' }}>{notif.pesan}</div>
+                      
+                      <div style={{ fontSize: '0.78rem', color: '#475569', lineHeight: '1.45', marginBottom: '6px' }}>
+                        {notif.pesan}
+                      </div>
+
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.72rem', color: '#94A3B8' }}>
                         <span>{notif.waktu}</span>
                         <span style={{ color: '#1B4143', fontWeight: '600' }}>Lihat detail →</span>
                       </div>
                     </div>
+
+                    {/* Tombol Hapus Satuan */}
+                    <button
+                      type="button"
+                      title="Hapus notifikasi ini"
+                      onClick={(e) => handleHapusNotif(e, notif.key)}
+                      style={{
+                        position: 'absolute',
+                        top: '12px',
+                        right: '12px',
+                        background: 'none',
+                        border: 'none',
+                        color: '#94A3B8',
+                        cursor: 'pointer',
+                        padding: '4px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        transition: 'color 0.15s ease'
+                      }}
+                      onMouseEnter={(e) => (e.currentTarget.style.color = '#EF4444')}
+                      onMouseLeave={(e) => (e.currentTarget.style.color = '#94A3B8')}
+                    >
+                      <Trash2 size={14} />
+                    </button>
                   </div>
                 ))
               )}
