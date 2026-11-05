@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import {
   Award, ArrowLeft, CheckCircle2, Circle, Clock,
@@ -17,17 +17,56 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
     catatanAdmin: ''
   });
 
+  // Ambil user dari props atau localStorage
+  const activeUser = user || (() => {
+    try {
+      return JSON.parse(localStorage.getItem('user_umkm') || '{}');
+    } catch {
+      return {};
+    }
+  })();
+
+  // Deteksi nomor WA dari berbagai kemungkinan nama variabel
+  const userWa = 
+    activeUser?.nomor_whatsapp || 
+    activeUser?.nomor_wa || 
+    activeUser?.no_wa || 
+    activeUser?.whatsapp || 
+    activeUser?.phone || 
+    '';
+
   const [dataPemohon, setDataPemohon] = useState({
-    nik: user?.nik || '',
-    nama_lengkap: user?.nama || user?.nama_lengkap || '',
-    email: user?.email || '',
-    nomor_whatsapp: user?.nomor_whatsapp || '',
+    nik: activeUser?.nik || '',
+    nama_lengkap: activeUser?.nama || activeUser?.nama_lengkap || '',
+    email: activeUser?.email || '',
+    nomor_whatsapp: userWa,
     nama_usaha: '',
     nama_produk: '',
     jenis_sertifikasi: 'Sertifikasi Halal',
     deskripsi_produk: '',
     nib: ''
   });
+
+  // Sinkronisasi otomatis saat state user terisi/berubah
+  useEffect(() => {
+    const waTerbaru = 
+      user?.nomor_whatsapp || 
+      user?.nomor_wa || 
+      user?.no_wa || 
+      user?.whatsapp || 
+      user?.phone || 
+      '';
+
+    if (user) {
+      setDataPemohon((prev) => ({
+        ...prev,
+        nik: prev.nik || user.nik || '',
+        nama_lengkap: prev.nama_lengkap || user.nama || user.nama_lengkap || '',
+        email: prev.email || user.email || '',
+        nomor_whatsapp: prev.nomor_whatsapp || waTerbaru
+      }));
+    }
+  }, [user]);
 
   const [files, setFiles] = useState({
     file_ktp: null,

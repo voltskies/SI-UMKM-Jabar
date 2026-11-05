@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { 
   FileText, Upload, CheckCircle2, AlertCircle, ArrowLeft, 
@@ -8,7 +8,7 @@ import {
 import Navbar from '../component/navbar';
 import Footer from '../component/footer';
 
-export default function Bantuan({ onKembali, setHalaman, user }) {
+export default function Bantuan({ onKembali, setHalaman, user, onPilihNotif }) {
   const [view, setView] = useState('dashboard'); // 'dashboard' | 'form'
   const [dataBantuan, setDataBantuan] = useState({
     status: 'belum',
@@ -16,17 +16,56 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
     catatanAdmin: ''
   });
 
+  // Ekstraksi data pengguna aktif dari props atau localStorage
+  const activeUser = user || (() => {
+    try {
+      return JSON.parse(localStorage.getItem('user_umkm') || '{}');
+    } catch {
+      return {};
+    }
+  })();
+
+  // Mendeteksi nomor whatsapp dari semua variasi nama field database/backend
+  const userWa = 
+    activeUser?.nomor_whatsapp || 
+    activeUser?.nomor_wa || 
+    activeUser?.no_wa || 
+    activeUser?.whatsapp || 
+    activeUser?.phone || 
+    '';
+
   const [formData, setFormData] = useState({
-    nik: user?.nik || '',
-    nama_lengkap: user?.nama || user?.nama_lengkap || '',
-    email: user?.email || '',
-    nomor_whatsapp: user?.nomor_whatsapp || '',
+    nik: activeUser?.nik || '',
+    nama_lengkap: activeUser?.nama || activeUser?.nama_lengkap || '',
+    email: activeUser?.email || '',
+    nomor_whatsapp: userWa,
     nama_usaha: '',
     kategori_usaha: 'Kuliner',
     jumlah_dana: '',
     tujuan_penggunaan: '',
     nib: ''
   });
+
+  // Sinkronisasi otomatis saat data user terupdate
+  useEffect(() => {
+    const waTerbaru = 
+      user?.nomor_whatsapp || 
+      user?.nomor_wa || 
+      user?.no_wa || 
+      user?.whatsapp || 
+      user?.phone || 
+      '';
+
+    if (user) {
+      setFormData((prev) => ({
+        ...prev,
+        nik: prev.nik || user.nik || '',
+        nama_lengkap: prev.nama_lengkap || user.nama || user.nama_lengkap || '',
+        email: prev.email || user.email || '',
+        nomor_whatsapp: prev.nomor_whatsapp || waTerbaru
+      }));
+    }
+  }, [user]);
 
   const [files, setFiles] = useState({
     file_ktp: null,
@@ -229,10 +268,10 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
   const tutupModalSukses = () => {
     setSuksesNomor(null);
     setFormData({
-      nik: '',
-      nama_lengkap: '',
-      email: '',
-      nomor_whatsapp: '',
+      nik: activeUser?.nik || '',
+      nama_lengkap: activeUser?.nama || activeUser?.nama_lengkap || '',
+      email: activeUser?.email || '',
+      nomor_whatsapp: userWa,
       nama_usaha: '',
       kategori_usaha: 'Kuliner',
       jumlah_dana: '',
@@ -246,7 +285,7 @@ export default function Bantuan({ onKembali, setHalaman, user }) {
     <div style={{ backgroundColor: '#F8FAFC', minHeight: '100svh', display: 'flex', flexDirection: 'column', fontFamily: 'Inter, system-ui, sans-serif' }}>
       
       {/* 1. Header / Navbar */}
-      <Navbar setHalaman={setHalaman} user={user} mode="solid-sticky" />
+      <Navbar setHalaman={setHalaman} user={user} mode="solid-sticky" onPilihNotif={onPilihNotif} />
 
       {/* 2. Konten Utama */}
       <main style={{ flex: 1, width: '100%', maxWidth: '860px', margin: '0 auto', padding: '32px 20px 60px 20px', boxSizing: 'border-box', textAlign: 'left' }}>

@@ -1,15 +1,50 @@
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 import { ArrowLeft, User, Mail, CreditCard, Phone, ShieldCheck } from 'lucide-react';
 import Navbar from '../component/navbar';
 import Footer from '../component/footer';
 
 export default function Profil({ user, setHalaman, onKembali, onPilihNotif }) {
-  const dataUser = user || (() => {
+  const [dataUser, setDataUser] = useState(() => {
+    if (user && Object.keys(user).length > 0) return user;
     try {
       return JSON.parse(localStorage.getItem('user_umkm') || '{}');
     } catch {
       return {};
     }
-  })();
+  });
+
+  const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://si-umkm-jabar.vercel.app';
+
+  // Ambil data profil terbaru langsung dari backend jika ada ID user
+  useEffect(() => {
+    const userId = dataUser?.id;
+    if (!userId) return;
+
+    axios.get(`${API_BASE_URL}/api/v1/users/${userId}`)
+      .then((res) => {
+        const userFresh = res.data?.data || res.data;
+        if (userFresh) {
+          setDataUser((prev) => ({ ...prev, ...userFresh }));
+          localStorage.setItem('user_umkm', JSON.stringify({ ...dataUser, ...userFresh }));
+        }
+      })
+      .catch(() => {
+        // Fallback jika endpoint khusus user tidak tersedia, gunakan data session
+      });
+  }, [dataUser?.id, API_BASE_URL]);
+
+  // Ekstraksi nilai nomor WhatsApp dari semua kemungkinan nama variabel
+  const nomorWaTampil = 
+    dataUser?.nomor_whatsapp || 
+    dataUser?.nomor_wa || 
+    dataUser?.no_wa || 
+    dataUser?.whatsapp || 
+    dataUser?.phone || 
+    '-';
+
+  // Ekstraksi NIK
+  const nikTampil = dataUser?.nik || '-';
 
   return (
     <div style={{ backgroundColor: '#F8FAFC', minHeight: '100svh', display: 'flex', flexDirection: 'column', fontFamily: 'Inter, system-ui, sans-serif' }}>
@@ -67,7 +102,7 @@ export default function Profil({ user, setHalaman, onKembali, onPilihNotif }) {
                 {dataUser?.nama || dataUser?.nama_lengkap || 'Pengguna UMKM'}
               </h1>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', backgroundColor: '#DCFCE7', color: '#166534', padding: '4px 10px', borderRadius: '999px', fontSize: '0.74rem', fontWeight: '700' }}>
-                <ShieldCheck size={14} /> Terverifikasi ({dataUser?.role || 'Umum'})
+                <ShieldCheck size={14} /> Terverifikasi ({dataUser?.role || 'umum'})
               </div>
             </div>
           </div>
@@ -101,7 +136,7 @@ export default function Profil({ user, setHalaman, onKembali, onPilihNotif }) {
                 <CreditCard size={14} /> Nomor Induk Kependudukan (NIK)
               </div>
               <div style={{ fontSize: '0.88rem', fontWeight: '700', color: '#0F172A' }}>
-                {dataUser?.nik || 'Terverifikasi KTP'}
+                {nikTampil}
               </div>
             </div>
 
@@ -110,7 +145,7 @@ export default function Profil({ user, setHalaman, onKembali, onPilihNotif }) {
                 <Phone size={14} /> Nomor WhatsApp
               </div>
               <div style={{ fontSize: '0.88rem', fontWeight: '700', color: '#0F172A' }}>
-                {dataUser?.nomor_whatsapp || '-'}
+                {nomorWaTampil}
               </div>
             </div>
           </div>
