@@ -59,7 +59,6 @@ const bersihkanNamaWilayah = (str = '') => {
     .trim();
 };
 
-// Per wilayah
 const KELOMPOK_MAPCHART = [
   { warna: '#cc3333', wilayah: ['bandung'] },
   { warna: '#762a83', wilayah: ['bogor', 'subang', 'cirebon', 'pangandaran'] },
@@ -221,7 +220,6 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
     fetchUMKM();
   }, []);
 
-  // Hitung per wilayah
   const dynamicDataWilayah = useMemo(() => {
     const peta = {};
 
@@ -266,7 +264,6 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
     return peta;
   }, [umkmList]);
 
-  // Style wilayah
   const styleWilayah = (feature) => ({
     weight: 0.8,
     opacity: 0.8,
@@ -275,7 +272,6 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
     fillOpacity: 0.55
   });
 
-  // Hover
   const handleEachWilayah = (feature, layer) => {
     const nama = namaWilayah(feature);
     const key = bersihkanNamaWilayah(nama);
@@ -357,8 +353,41 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
   return (
     <div style={{ backgroundColor: '#F8FAFC', minHeight: '100svh', display: 'flex', flexDirection: 'column', fontFamily: 'Inter, system-ui, sans-serif' }}>
       
-      {/* Animasi card */}
+      {/* Animasi, Stacking Map & Custom Scrollbar */}
       <style>{`
+        /* 1. Pengendalian z-index Leaflet agar tidak tembus melewati Navbar */
+        .leaflet-pane {
+          z-index: 10 !important;
+        }
+        .leaflet-top,
+        .leaflet-bottom {
+          z-index: 20 !important;
+        }
+        .leaflet-control {
+          z-index: 20 !important;
+        }
+
+        /* 2. Styling Scrollbar Kustom Halus untuk List UMKM */
+        .custom-umkm-scroll::-webkit-scrollbar {
+          width: 6px;
+        }
+        .custom-umkm-scroll::-webkit-scrollbar-track {
+          background: #F1F5F9;
+          border-radius: 8px;
+        }
+        .custom-umkm-scroll::-webkit-scrollbar-thumb {
+          background: #CBD5E1;
+          border-radius: 8px;
+        }
+        .custom-umkm-scroll::-webkit-scrollbar-thumb:hover {
+          background: #94A3B8;
+        }
+        .custom-umkm-scroll {
+          scrollbar-width: thin;
+          scrollbar-color: #CBD5E1 #F1F5F9;
+        }
+
+        /* 3. Kartu Statistik Split */
         .split-card-container {
           width: 100%;
           max-width: 1100px;
@@ -518,7 +547,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
           outline: none;
         }
 
-               @media (max-width: 768px) {
+        @media (max-width: 768px) {
           .landing-hero {
             min-height: 0 !important;
             margin-bottom: 24px !important;
@@ -550,14 +579,13 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
             font-size: 12.5px !important;
             line-height: 1.5 !important;
             margin-bottom: 16px !important;
-            max-width: 300px !impo
+            max-width: 300px !important;
           }
 
           .landing-hero-overlay {
             background: linear-gradient(180deg, rgba(27, 65, 67, 0.88) 0%, rgba(15, 23, 42, 0.65) 55%, rgba(0, 0, 0, 0.4) 100%) !important;
           }
-        }
-          @media (max-width: 768px) {
+
           .responsive-section {
             margin-bottom: 32px !important;
           }
@@ -601,9 +629,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
             font-size: 0.62rem;
             line-height: 1.25;
           }
-        }
 
-        @media (max-width: 768px) {
           .map-head {
             flex-direction: column !important;
             align-items: center !important;
@@ -635,10 +661,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
             flex-shrink: 0 !important;
             margin-top: 2px;
           }
-        }
 
-        /* Card komunitas di HP */
-        @media (max-width: 768px) {
           .community-card {
             display: flex !important;
             flex-direction: column !important;
@@ -770,7 +793,6 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
               <div className="face face1">
                 <div className="content">
                   <div className="icon-box">
-                    <Map size={26} />
                   </div>
                   <h3>{umkmList.length > 0 ? `${new Set(umkmList.map(u => u.kabupaten_kota || u.nama_kabupaten_kota)).size} Kab/Kota` : '27 Kab/Kota'}</h3>
                   <span>Wilayah Terjangkau</span>
@@ -914,7 +936,19 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
               </>}
             </div>
 
-            <div className="responsive-map" style={{ height: '520px', borderRadius: '10px', overflow: 'hidden', border: '1px solid #E2E8F0', position: 'relative' }}>
+            {/* Kotak Peta dengan Stacking Context yang Terisolasi */}
+            <div 
+              className="responsive-map" 
+              style={{ 
+                height: '520px', 
+                borderRadius: '10px', 
+                overflow: 'hidden', 
+                border: '1px solid #E2E8F0', 
+                position: 'relative',
+                zIndex: 1,
+                isolation: 'isolate'
+              }}
+            >
               <MapContainer center={[-6.9175, 107.6191]} zoom={8} scrollWheelZoom={true} style={{ height: '100%', width: '100%' }}>
                 <MapZoomListener onZoomChanged={(z) => setZoomLevel(z)} />
 
@@ -999,7 +1033,18 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
               <span style={{ fontSize: '0.75rem', color: '#64748B' }}>Terverifikasi</span>
             </div>
 
-            <div style={{ overflowY: 'auto', flex: 1, display: 'flex', flexDirection: 'column', gap: '10px', paddingRight: '4px' }}>
+            {/* List dengan Scrollbar Minimalis Halus */}
+            <div 
+              className="custom-umkm-scroll"
+              style={{ 
+                overflowY: 'auto', 
+                flex: 1, 
+                display: 'flex', 
+                flexDirection: 'column', 
+                gap: '10px', 
+                paddingRight: '6px' 
+              }}
+            >
               {filteredUMKM.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '60px 10px', color: '#94A3B8', fontSize: '0.85rem' }}>
                   Tidak ada data UMKM yang cocok.
@@ -1147,9 +1192,9 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
           </div>
           <div className="community-card__image">
             <img 
-            src="/komunitas_umkm_jabar.jpg" 
-            alt="Komunitas UMKM" 
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+              src="/komunitas_umkm_jabar.jpg" 
+              alt="Komunitas UMKM" 
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
             />
           </div>
         </section>

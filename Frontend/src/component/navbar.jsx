@@ -7,10 +7,9 @@ import {
 } from 'lucide-react';
 import NotifikasiToast from './notifikasiToast';
 
-
 const POLL_INTERVAL_MS = 10000;
 
-export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode }) {
+export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode, onPilihNotif }) {
   const [isScrolled, setIsScrolled] = useState(() => window.scrollY >= 20);
   const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -673,15 +672,46 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode 
           <div style={{ borderTop: '1px solid rgba(255,255,255,0.15)', paddingTop: '12px', marginTop: '4px' }}>
             {user ? (
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ color: 'rgba(255,255,255,0.85)', fontSize: '0.84rem' }}>{user.nama || user.email}</span>
+                {/* Bagian Nama Pengguna Mobile: Sekarang bisa diklik menuju Profil */}
+                <div
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    if (typeof setHalaman === 'function') {
+                      setHalaman('profil');
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                  }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    cursor: 'pointer',
+                    color: '#FFFFFF',
+                    fontSize: '0.88rem',
+                    fontWeight: '700',
+                    padding: '4px 6px',
+                    borderRadius: '6px',
+                    transition: 'background-color 0.15s ease'
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)')}
+                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+                  title="Lihat detail profil saya"
+                >
+                  <User size={15} />
+                  <span>{user.nama || user.nama_lengkap || user.email}</span>
+                </div>
+
                 <button
                   type="button"
                   onClick={() => {
+                    setMobileMenuOpen(false);
                     localStorage.removeItem('user_umkm');
                     localStorage.removeItem('token');
-                    window.location.reload();
+                    sessionStorage.clear();
+                    if (onLogout) onLogout();
+                    else window.location.reload();
                   }}
-                  style={{ background: 'none', border: 'none', color: '#FCA5A5', fontWeight: '700', fontSize: '0.84rem', cursor: 'pointer' }}
+                  style={{ background: 'none', border: 'none', color: '#FCA5A5', fontWeight: '700', fontSize: '0.84rem', cursor: 'pointer', padding: '6px 8px' }}
                 >
                   Keluar
                 </button>
