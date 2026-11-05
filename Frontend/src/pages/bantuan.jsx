@@ -98,6 +98,17 @@ export default function Bantuan({ onKembali, setHalaman, user, onPilihNotif }) {
     textAlign: 'left'
   };
 
+  const inputReadOnlyStyle = {
+    ...inputStyle,
+    backgroundColor: '#F1F5F9', // Warna abu-abu halus tanda terkunci
+    color: '#475569',
+    cursor: 'not-allowed',
+    borderColor: '#E2E8F0'
+  };
+
+
+
+
   const handleKembaliKeDashboard = () => {
     if (typeof setHalaman === 'function') {
       setHalaman('dashboard');
@@ -427,9 +438,10 @@ export default function Bantuan({ onKembali, setHalaman, user, onPilihNotif }) {
 
             <form onSubmit={handleSubmit} style={{ textAlign: 'left' }}>
               {/* Bagian 1: Data Pemohon */}
+              {/* Bagian 1: Data Pemohon */}
               <div style={{ marginBottom: '24px', textAlign: 'left' }}>
                 <h3 style={{ fontSize: '0.98rem', fontWeight: '700', color: '#255456', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px', textAlign: 'left' }}>
-                  <User size={17} /> 1. Informasi Pemohon
+                  <User size={17} /> 1. Informasi Pemohon (Terkunci Sesuai Akun)
                 </h3>
                 
                 <div className="responsive-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '14px', textAlign: 'left' }}>
@@ -440,12 +452,11 @@ export default function Bantuan({ onKembali, setHalaman, user, onPilihNotif }) {
                     <input
                       type="text"
                       name="nik"
-                      maxLength={16}
+                      readOnly
                       required
                       value={formData.nik}
-                      onChange={handleInputChange}
                       placeholder="16 digit sesuai KTP Jabar"
-                      style={inputStyle}
+                      style={inputReadOnlyStyle}
                     />
                   </div>
 
@@ -456,11 +467,11 @@ export default function Bantuan({ onKembali, setHalaman, user, onPilihNotif }) {
                     <input
                       type="text"
                       name="nama_lengkap"
+                      readOnly
                       required
                       value={formData.nama_lengkap}
-                      onChange={handleInputChange}
                       placeholder="Nama sesuai KTP"
-                      style={inputStyle}
+                      style={inputReadOnlyStyle}
                     />
                   </div>
                 </div>
@@ -473,11 +484,11 @@ export default function Bantuan({ onKembali, setHalaman, user, onPilihNotif }) {
                     <input
                       type="email"
                       name="email"
+                      readOnly
                       required
                       value={formData.email}
-                      onChange={handleInputChange}
                       placeholder="contoh@gmail.com"
-                      style={inputStyle}
+                      style={inputReadOnlyStyle}
                     />
                   </div>
 
@@ -488,11 +499,11 @@ export default function Bantuan({ onKembali, setHalaman, user, onPilihNotif }) {
                     <input
                       type="tel"
                       name="nomor_whatsapp"
+                      readOnly
                       required
                       value={formData.nomor_whatsapp}
-                      onChange={handleInputChange}
                       placeholder="08xxxxxxxxxx"
-                      style={inputStyle}
+                      style={inputReadOnlyStyle}
                     />
                   </div>
                 </div>
