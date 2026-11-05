@@ -188,16 +188,17 @@ def login_user(payload: LoginUserRequest, db: Session = Depends(get_db)):
         )
 
     return {
-        "status": "success",
-        "message": "Login berhasil!",
-        "data": {
-            "id": user.id,
-            "nik": user.nik,
-            "nama": user.nama_lengkap,
-            "email": user.email,
-            "role": user.role
-        }
-    }
+    "status": "success",
+    "message": "Login berhasil",
+    "data": {
+        "id": user.id,
+        "nik": user.nik,
+        "nama": user.nama_lengkap,
+        "email": user.email,
+        "nomor_whatsapp": user.nomor_whatsapp,
+        "role": user.role,
+    },
+}
 
 
 # 2. ALUR LUPA PASSWORD
