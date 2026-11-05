@@ -37,6 +37,7 @@ export default function Login({ onKembali, onLoginSukses, setHalaman }) {
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
   const [forgotLoading, setForgotLoading] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmNewPassword, setShowConfirmNewPassword] = useState(false);
 
   const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://si-umkm-jabar.vercel.app';
 
@@ -672,14 +673,45 @@ export default function Login({ onKembali, onLoginSukses, setHalaman }) {
                   <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: '700', color: '#334155', marginBottom: '6px' }}>
                     KONFIRMASI KATA SANDI BARU <span style={{ color: '#DC2626' }}>*</span>
                   </label>
-                  <input
-                    type="password"
-                    required
-                    placeholder="Ulangi kata sandi baru"
-                    value={confirmNewPassword}
-                    onChange={(e) => setConfirmNewPassword(e.target.value)}
-                    style={{ width: '100%', padding: '10px 12px', borderRadius: '8px', border: '1px solid #CBD5E1', fontSize: '0.84rem', backgroundColor: '#FFFFFF', color: '#0F172A', boxSizing: 'border-box' }}
-                  />
+                  <div style={{ position: 'relative' }}>
+                    <Lock size={15} color="#94A3B8" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+                    <input
+                      type={showConfirmNewPassword ? 'text' : 'password'}
+                      required
+                      placeholder="Ulangi kata sandi baru"
+                      value={confirmNewPassword}
+                      onChange={(e) => setConfirmNewPassword(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '10px 34px 10px 36px',
+                        borderRadius: '8px',
+                        border: '1px solid #CBD5E1',
+                        fontSize: '0.84rem',
+                        backgroundColor: '#FFFFFF',
+                        color: '#0F172A',
+                        boxSizing: 'border-box',
+                        outline: 'none'
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmNewPassword(!showConfirmNewPassword)}
+                      style={{
+                        position: 'absolute',
+                        right: '10px',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        color: '#94A3B8',
+                        padding: 0,
+                        display: 'flex'
+                      }}
+                    >
+                      {showConfirmNewPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+                    </button>
+                  </div>
                 </div>
 
                 <div style={{ display: 'flex', gap: '8px', marginTop: '6px' }}>
