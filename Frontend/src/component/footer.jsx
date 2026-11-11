@@ -3,7 +3,7 @@ import { MapPin, Phone, Mail } from 'lucide-react';
 export default function Footer() {
   return (
     <footer className="site-footer" style={{
-      backgroundColor: '#1B4143',
+      backgroundColor: '#0b2b36',
       color: '#FFFFFF',
       padding: '44px 24px 20px',
       width: '100%',

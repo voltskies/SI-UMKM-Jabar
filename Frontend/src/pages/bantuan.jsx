@@ -299,7 +299,7 @@ export default function Bantuan({ onKembali, setHalaman, user, onPilihNotif }) {
       <Navbar setHalaman={setHalaman} user={user} mode="solid-sticky" onPilihNotif={onPilihNotif} />
 
       {/* 2. Konten Utama */}
-      <main style={{ flex: 1, width: '100%', maxWidth: '860px', margin: '0 auto', padding: '32px 20px 60px 20px', boxSizing: 'border-box', textAlign: 'left' }}>
+      <main className="page-font-scope" style={{ flex: 1, width: '100%', maxWidth: '860px', margin: '0 auto', padding: '32px 20px 60px 20px', boxSizing: 'border-box', textAlign: 'left' }}>
         
         {/* Tombol Navigasi Kembali */}
         <button
@@ -319,7 +319,7 @@ export default function Bantuan({ onKembali, setHalaman, user, onPilihNotif }) {
             padding: 0,
             transition: 'color 0.15s ease'
           }}
-          onMouseEnter={(e) => (e.currentTarget.style.color = '#1B4143')}
+          onMouseEnter={(e) => (e.currentTarget.style.color = '#0b2b36')}
           onMouseLeave={(e) => (e.currentTarget.style.color = '#255456')}
         >
           <ArrowLeft size={18} /> {view === 'form' ? 'Kembali ke Panel Bantuan' : 'Kembali ke Halaman Utama'}
@@ -701,7 +701,7 @@ export default function Bantuan({ onKembali, setHalaman, user, onPilihNotif }) {
                   boxShadow: '0 4px 12px rgba(37, 84, 86, 0.2)'
                 }}
               >
-                {loading ? 'Mengunggah Berkas ke Supabase...' : 'Kirim Permohonan Bantuan Modal'}
+                {loading ? 'Mengunggah berkas' : 'Kirim Permohonan Bantuan Modal'}
               </button>
             </form>
           </div>
@@ -713,7 +713,7 @@ export default function Bantuan({ onKembali, setHalaman, user, onPilihNotif }) {
 
       {/* Modal Sukses */}
       {suksesNomor && (
-        <div style={{
+        <div className="page-font-scope" style={{
           position: 'fixed',
           inset: 0,
           backgroundColor: 'rgba(0,0,0,0.6)',

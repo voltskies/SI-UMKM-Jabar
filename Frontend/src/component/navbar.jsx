@@ -315,7 +315,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode,
   };
 
   const getStatusIcon = (status) => {
-    if (status === 'Disetujui' || status === 'Selesai' || status === 'Terdaftar') return <CheckCircle2 size={16} color="#1B4143" />;
+    if (status === 'Disetujui' || status === 'Selesai' || status === 'Terdaftar') return <CheckCircle2 size={16} color="#0b2b36" />;
     if (status === 'Ditolak' || status === 'Perlu Perbaikan') return <AlertCircle size={16} color="#DC2626" />;
     return <Clock size={16} color="#D97706" />;
   };
@@ -325,7 +325,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode,
       <NotifikasiToast show={toast.show} message={toast.message} onClose={tutupToast} />
 
       <nav style={{
-        backgroundColor: '#1B4143',
+        backgroundColor: '#0b2b36',
         color: '#FFFFFF',
         padding: isSolidSticky
           ? (isMobile ? '12px 16px' : '12px max(16px, calc((100vw - 1200px) / 2))')
@@ -506,7 +506,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode,
               }}
               style={{
                 backgroundColor: '#FFFFFF',
-                color: '#1B4143',
+                color: '#0b2b36',
                 border: 'none',
                 borderRadius: '999px',
                 padding: '5px 10px',
@@ -525,7 +525,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode,
                 width: '24px',
                 height: '24px',
                 borderRadius: '50%',
-                backgroundColor: user ? '#1B4143' : '#E2E8F0',
+                backgroundColor: user ? '#0b2b36' : '#E2E8F0',
                 color: user ? '#FFFFFF' : '#64748B',
                 display: 'flex',
                 alignItems: 'center',
@@ -571,7 +571,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode,
                       onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
                       title="Klik untuk melihat detail profil saya"
                     >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.72rem', color: '#1B4143', fontWeight: '700' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.72rem', color: '#0b2b36', fontWeight: '700' }}>
                         <UserCheck size={14} /> Terverifikasi ({user.role})
                       </div>
                       <div style={{ fontWeight: '700', fontSize: '0.92rem', marginTop: '4px', color: '#0F172A' }}>
@@ -603,7 +603,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode,
                     <button
                       type="button"
                       onClick={() => { setDropdownUser(false); setHalaman('login'); }}
-                      style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: '#1B4143', color: '#FFFFFF', border: 'none', borderRadius: '8px', padding: '9px 12px', fontSize: '0.85rem', fontWeight: '700', cursor: 'pointer', marginTop: '10px' }}
+                      style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '8px', backgroundColor: '#0b2b36', color: '#FFFFFF', border: 'none', borderRadius: '8px', padding: '9px 12px', fontSize: '0.85rem', fontWeight: '700', cursor: 'pointer', marginTop: '10px' }}
                     >
                       <LogIn size={15} /> Masuk / Daftar
                     </button>
@@ -622,7 +622,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode,
           top: '56px',
           left: 0,
           right: 0,
-          backgroundColor: '#1B4143',
+          backgroundColor: '#0b2b36',
           borderTop: '1px solid rgba(255,255,255,0.15)',
           padding: '16px',
           display: 'flex',
@@ -764,7 +764,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode,
                     <button
                       type="button"
                       onClick={tandaiSemuaDibaca}
-                      style={{ background: 'none', border: 'none', color: '#1B4143', fontSize: '0.75rem', fontWeight: '700', cursor: 'pointer', padding: 0 }}
+                      style={{ background: 'none', border: 'none', color: '#0b2b36', fontSize: '0.75rem', fontWeight: '700', cursor: 'pointer', padding: 0 }}
                     >
                       Tandai dibaca
                     </button>
@@ -800,8 +800,8 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode,
                       padding: '5px 12px',
                       borderRadius: '999px',
                       border: '1px solid',
-                      borderColor: filterNotif === kat ? '#1B4143' : '#E2E8F0',
-                      backgroundColor: filterNotif === kat ? '#1B4143' : '#F8FAFC',
+                      borderColor: filterNotif === kat ? '#0b2b36' : '#E2E8F0',
+                      backgroundColor: filterNotif === kat ? '#0b2b36' : '#F8FAFC',
                       color: filterNotif === kat ? '#FFFFFF' : '#475569',
                       fontSize: '0.74rem',
                       fontWeight: filterNotif === kat ? '700' : '500',
@@ -856,7 +856,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode,
                           {notif.judul}
                         </span>
                         {!notif.dibaca && (
-                          <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#1B4143', flexShrink: 0 }} />
+                          <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#0b2b36', flexShrink: 0 }} />
                         )}
                       </div>
                       
@@ -866,7 +866,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode,
 
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.72rem', color: '#94A3B8' }}>
                         <span>{notif.waktu}</span>
-                        <span style={{ color: '#1B4143', fontWeight: '600' }}>Lihat detail →</span>
+                        <span style={{ color: '#0b2b36', fontWeight: '600' }}>Lihat detail →</span>
                       </div>
                     </div>
 

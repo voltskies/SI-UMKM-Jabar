@@ -84,7 +84,7 @@ export default function RiwayatDetail({ data, onKembali, setHalaman, user, onPil
             padding: 0,
             transition: 'color 0.15s ease'
           }}
-          onMouseEnter={(e) => (e.currentTarget.style.color = '#1B4143')}
+          onMouseEnter={(e) => (e.currentTarget.style.color = '#0b2b36')}
           onMouseLeave={(e) => (e.currentTarget.style.color = '#255456')}
         >
           <ArrowLeft size={18} /> Kembali ke Beranda

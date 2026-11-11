@@ -418,7 +418,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
 
         .split-card .face.face1 {
           position: relative;
-          background: #1B4143;
+          background: #0b2b36;
           display: flex;
           justify-content: center;
           align-items: center;
@@ -518,14 +518,14 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
           font-weight: 700;
           font-size: 0.78rem;
           padding: 5px 12px;
-          border: 1px solid #1B4143;
+          border: 1px solid #0b2b36;
           border-radius: 6px;
-          color: #1B4143;
+          color: #0b2b36;
           transition: 0.3s;
         }
 
         .split-card .face.face2 .content a:hover {
-          background: #1B4143;
+          background: #0b2b36;
           color: #FFFFFF;
         }
 
@@ -556,10 +556,10 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
           .landing-hero-content {
             align-items: center !important;
             text-align: center !important;
-            min-height: 50svh !important;
+            min-height: 44svh !important;
             justify-content: flex-start !important;
             gap: 0 !important;
-            padding-top: 92px !important;
+            padding-top: 100px !important;
             padding-bottom: 44px !important;
           }
 
@@ -572,13 +572,13 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
 
           .landing-hero-title {
             font-size: 22px !important;
-            margin-bottom: 8px !important;
+            margin-bottom: 14px !important;
           }
 
           .landing-hero-desc {
             font-size: 12.5px !important;
             line-height: 1.5 !important;
-            margin-bottom: 16px !important;
+            margin-bottom: 26px !important;
             max-width: 300px !important;
           }
 
@@ -665,7 +665,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
           .community-card {
             display: flex !important;
             flex-direction: column !important;
-            background: #1B4143 !important;
+            background: #0b2b36 !important;
             border-radius: 20px !important;
             padding: 18px !important;
             gap: 16px !important;
@@ -850,11 +850,11 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
                 style={{
                   padding: '7px 16px',
                   borderRadius: '999px',
-                  border: filterActive === kat ? '1px solid #008848' : '1px solid #E2E8F0',
+                  border: filterActive === kat ? '1px solid #0b2b36' : '1px solid #E2E8F0',
                   cursor: 'pointer',
                   fontSize: '0.84rem',
                   fontWeight: filterActive === kat ? '700' : '500',
-                  backgroundColor: filterActive === kat ? '#008848' : '#FFFFFF',
+                  backgroundColor: filterActive === kat ? '#0b2b36' : '#FFFFFF',
                   color: filterActive === kat ? '#FFFFFF' : '#475569',
                   boxShadow: filterActive === kat ? '0 4px 12px rgba(0, 136, 72, 0.28)' : 'none'
                 }}
@@ -1012,7 +1012,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
 
                       <Popup>
                         <div style={{ fontSize: '0.85rem' }}>
-                          <h4 style={{ margin: '0 0 4px 0', color: '#1B4143' }}>{item.nama_usaha}</h4>
+                          <h4 style={{ margin: '0 0 4px 0', color: '#0b2b36' }}>{item.nama_usaha}</h4>
                           <p style={{ margin: '0 0 6px 0', color: '#64748B', fontSize: '0.78rem' }}>{item.alamat || item.kabupaten_kota}</p>
                           <span style={{ display: 'inline-block', backgroundColor: markerColor, color: '#fff', padding: '2px 8px', borderRadius: '4px', fontSize: '0.72rem', fontWeight: '700' }}>
                             {item.kategori}
@@ -1072,7 +1072,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
                     </div>
                     <button
                       onClick={() => setSelectedUMKM(item)}
-                      style={{ backgroundColor: '#fff', border: '1px solid #CBD5E1', color: '#1B4143', fontSize: '0.76rem', fontWeight: '600', padding: '5px 10px', borderRadius: '6px', cursor: 'pointer', width: '100%' }}
+                      style={{ backgroundColor: '#fff', border: '1px solid #CBD5E1', color: '#0b2b36', fontSize: '0.76rem', fontWeight: '600', padding: '5px 10px', borderRadius: '6px', cursor: 'pointer', width: '100%' }}
                     >
                       Lihat Profil Lengkap
                     </button>
@@ -1104,7 +1104,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
                   "{getKeunggulanText(normalisasiKategori(selectedUMKM.kategori))}"
                 </div>
               </div>
-              <button onClick={() => setSelectedUMKM(null)} style={{ width: '100%', backgroundColor: '#1B4143', color: '#FFFFFF', border: 'none', borderRadius: '8px', padding: '10px', fontWeight: '700', fontSize: '0.85rem', cursor: 'pointer' }}>
+              <button onClick={() => setSelectedUMKM(null)} style={{ width: '100%', backgroundColor: '#0b2b36', color: '#FFFFFF', border: 'none', borderRadius: '8px', padding: '10px', fontWeight: '700', fontSize: '0.85rem', cursor: 'pointer' }}>
                 Tutup
               </button>
             </div>
@@ -1115,7 +1115,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
         <section ref={pelatihanSectionRef} style={{ marginBottom: '50px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '20px' }}>
             <h2 style={{ fontSize: '24px', fontWeight: '800', color: '#0F172A', margin: 0 }}>Pelatihan</h2>
-            <button onClick={handlePindahKePelatihan} style={{ background: 'none', border: 'none', color: '#1B4143', fontWeight: '700', fontSize: '0.88rem', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+            <button onClick={handlePindahKePelatihan} style={{ background: 'none', border: 'none', color: '#0b2b36', fontWeight: '700', fontSize: '0.88rem', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
               Lihat Selengkapnya <ArrowRight size={16} />
             </button>
           </div>
@@ -1126,7 +1126,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
             onMouseLeave={() => setIsPelatihanHovered(false)}
             onTouchStart={() => setIsPelatihanHovered(true)}
             onTouchEnd={() => setIsPelatihanHovered(false)}
-            style={{ overflowX: 'auto', overflowY: 'hidden', scrollbarWidth: 'thin', scrollbarColor: '#1B4143 #E2E8F0' }}
+            style={{ overflowX: 'auto', overflowY: 'hidden', scrollbarWidth: 'thin', scrollbarColor: '#0b2b36 #E2E8F0' }}
           >
             <div style={{ display: 'flex', gap: '18px', width: 'max-content', padding: '8px 2px 16px 2px', boxSizing: 'border-box' }}>
               {DAFTAR_PELATIHAN.map((item) => (
@@ -1149,7 +1149,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
                     <h3 style={{ margin: '0 0 16px', fontSize: '0.9rem', fontWeight: '700', color: '#0F172A' }}>{item.title}</h3>
                     <button
                       onClick={handlePindahKePelatihan}
-                      style={{ backgroundColor: '#F1F5F9', color: '#1B4143', border: 'none', borderRadius: '6px', padding: '8px 12px', fontSize: '0.78rem', fontWeight: '700', cursor: 'pointer', width: '100%' }}
+                      style={{ backgroundColor: '#F1F5F9', color: '#0b2b36', border: 'none', borderRadius: '6px', padding: '8px 12px', fontSize: '0.78rem', fontWeight: '700', cursor: 'pointer', width: '100%' }}
                     >
                       Selengkapnya
                     </button>
@@ -1163,7 +1163,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
         {/* Section Komunitas */}
         <section className="community-card">
           <div className="community-card__content">
-            <h2 className="responsive-heading" style={{ fontSize: 'clamp(22px, 4vw, 28px)', fontWeight: '800', color: '#1B4143', margin: '0 0 12px' }}>Bergabung ke Komunitas</h2>
+            <h2 className="responsive-heading" style={{ fontSize: 'clamp(22px, 4vw, 28px)', fontWeight: '800', color: '#124557', margin: '0 0 12px' }}>Bergabung ke Komunitas</h2>
             <p style={{ fontSize: '14px', lineHeight: '1.6', margin: '0 0 24px', color: 'rgba(255,255,255,0.92)' }}>
               Terhubung dengan ribuan pelaku UMKM se-Jawa Barat. Berbagi pengalaman, tips bisnis, informasi pelatihan, dan peluang kolaborasi bersama komunitas yang aktif.
             </p>
@@ -1178,7 +1178,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
               target="_blank"
               rel="noopener noreferrer"
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#1B4143';
+                e.currentTarget.style.backgroundColor = '#0b2b36';
                 e.currentTarget.style.color = '#FFFFFF';
               }}
               onMouseLeave={(e) => {

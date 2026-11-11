@@ -129,6 +129,34 @@ p {
   border-radius: 14px;
 }
 
+@media (min-width: 769px) {
+  .community-card {
+    background-color: #0b2b36;
+  }
+
+  .community-card__content h2 {
+    color: #FFFFFF !important;
+  }
+
+  .community-list svg {
+    color: #FBBF24;
+  }
+
+  .community-card__button,
+  .community-card__button:hover {
+    background-color: #D97706 !important;
+    color: #FFFFFF !important;
+  }
+
+  .community-card__button:hover {
+    background-color: #B45309 !important;
+  }
+
+  .community-card__image {
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+}
+
 @media (max-width: 768px) {
   .community-card {
     grid-template-columns: minmax(0, 1fr);
