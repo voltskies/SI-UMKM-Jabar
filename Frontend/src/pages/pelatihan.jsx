@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Users, Search, ArrowLeft, ExternalLink } from 'lucide-react';
+import { Users, Search, ExternalLink } from 'lucide-react';
 
 import Navbar from '../component/navbar';
 import Footer from '../component/footer';
+import PageHero from '../component/pageHero';
 
 import fotoPelatihan5 from '../assets/pelatihan5.jpg';
 import fotoPelatihan6 from '../assets/pelatihan6.jpg';
@@ -124,38 +125,17 @@ export default function Pelatihan({ onKembali, onPilihPelatihan, setHalaman, use
   });
 
   return (
-    <div style={{ backgroundColor: '#F8FAFC', minHeight: '100svh', display: 'flex', flexDirection: 'column', fontFamily: 'Inter, system-ui, sans-serif' }}>
+    <div className="page-catalog-root" style={{ backgroundColor: '#F8FAFC', minHeight: '100svh', display: 'flex', flexDirection: 'column', fontFamily: 'Inter, system-ui, sans-serif', isolation: 'isolate' }}>
       
       {/* 1. Navbar Atas */}
       <Navbar setHalaman={setHalaman} user={user} mode="solid-sticky" />
 
-      {/* 2. Konten Utama */}
-      <main className="responsive-page-content" style={{ flex: 1, maxWidth: '1240px', width: '100%', margin: '0 auto', padding: '32px 24px 60px 24px', boxSizing: 'border-box' }}>
-        
-        {/* Header Navigasi & Pencarian */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px', flexWrap: 'wrap', gap: '16px' }}>
-          <button
-            type="button"
-            onClick={handleKembaliKeBeranda}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '8px',
-              backgroundColor: 'transparent',
-              border: 'none',
-              color: '#255456',
-              cursor: 'pointer',
-              fontSize: '0.9rem',
-              fontWeight: '700',
-              padding: '6px 0',
-              transition: 'color 0.15s ease'
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = '#1B4143')}
-            onMouseLeave={(e) => (e.currentTarget.style.color = '#255456')}
-          >
-            <ArrowLeft size={18} /> Kembali ke Beranda
-          </button>
-
+      <PageHero
+        variant="catalog"
+        label="Kembali ke Beranda"
+        onBack={handleKembaliKeBeranda}
+        title="Katalog Pelatihan & Pendampingan UMKM Jawa Barat"
+        actions={
           <div className="responsive-search" style={{ position: 'relative', width: '360px' }}>
             <Search size={18} color="#94A3B8" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }} />
             <input
@@ -177,20 +157,14 @@ export default function Pelatihan({ onKembali, onPilihPelatihan, setHalaman, use
               }}
             />
           </div>
-        </div>
+        }
+      />
 
-        {/* Judul & Deskripsi Katalog (Rata Kiri & Proporsional) */}
+      {/* 2. Konten Utama */}
+      <main className="page-font-scope page-catalog-content">
+
+        {/* Deskripsi Katalog */}
         <div style={{ marginBottom: '24px', textAlign: 'left' }}>
-          <h1 style={{ 
-            fontSize: 'clamp(24px, 3.2vw, 30px)', 
-            fontWeight: '800', 
-            color: '#0F172A', 
-            margin: '0 0 8px 0', 
-            lineHeight: 1.3,
-            textAlign: 'left'
-          }}>
-            Katalog Pelatihan & Pendampingan UMKM Jawa Barat
-          </h1>
           <p style={{ 
             color: '#64748B', 
             fontSize: '0.9rem', 
@@ -199,7 +173,7 @@ export default function Pelatihan({ onKembali, onPilihPelatihan, setHalaman, use
             lineHeight: '1.5',
             textAlign: 'left'
           }}>
-            Akselerasi keahlian usaha, perizinan, dan tata kelola bisnis Anda melalui kurikulum kurasi bersertifikat resmi tanpa dipungut biaya.
+
           </p>
         </div>
 
