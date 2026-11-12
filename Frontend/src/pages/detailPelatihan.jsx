@@ -274,7 +274,7 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
                 )}
               </div>
 
-              {/* Tombol Aksi - Hanya aktif jika berkasSyarat sudah ada */}
+              {/* Tombol Aksi */}
               <button
                 type="button"
                 disabled={loading || !berkasSyarat}
@@ -295,9 +295,7 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
                   transition: 'all 0.2s ease'
                 }}
               >
-                {loading 
-                  ? 'MEMPROSES PENDAFTARAN...' 
-                  : (!berkasSyarat ? 'UNGGAH DOKUMEN UNTUK DAFTAR' : 'DAFTAR SEKARANG')}
+                {loading ? 'Memproses Pendaftaran...' : 'Daftar Sekarang'}
               </button>
 
               <button
