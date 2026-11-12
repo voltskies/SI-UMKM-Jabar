@@ -1,10 +1,21 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { ExternalLink } from 'lucide-react';
-import { Header, Card, Chips, SearchBox, DataTable, Badge, Btn, C, grid } from '../components/common';
+import { Header, Card, Chips, SearchBox, DataTable, Badge, Btn, C } from '../components/common';
 
 const FILTER = ['Semua', 'Menunggu Verifikasi', 'Diproses', 'Selesai', 'Ditolak'];
-const API_BASE_URL = `http://${window.location.hostname || '127.0.0.1'}:8000`;
+
+// Konfigurasi URL API yang aman untuk localhost & production HTTPS Vercel
+const envUrl = import.meta.env.VITE_API_URL;
+let cleanApiUrl = (envUrl && !envUrl.includes('127.0.0.1') && !envUrl.includes('localhost')) 
+  ? envUrl 
+  : 'https://si-umkm-jabar.vercel.app';
+
+if (cleanApiUrl.startsWith('http://')) {
+  cleanApiUrl = cleanApiUrl.replace('http://', 'https://');
+}
+
+const API_BASE_URL = cleanApiUrl;
 
 export default function LegalitasAdmin({ selectedId }) {
   const [data, setData] = useState([]);
@@ -17,11 +28,20 @@ export default function LegalitasAdmin({ selectedId }) {
     try {
       setLoading(true);
       const res = await axios.get(`${API_BASE_URL}/api/v1/admin/sertifikasi`);
-      if (res.data && res.data.data) {
-        setData(res.data.data);
-        if (!aktifId && res.data.data.length > 0) {
-          setAktifId(res.data.data[0].id);
-        }
+      
+      // Mengakomodasi variasi return format: { data: [...] } atau langsung [...]
+      let list = [];
+      if (Array.isArray(res.data)) {
+        list = res.data;
+      } else if (res.data && Array.isArray(res.data.data)) {
+        list = res.data.data;
+      }
+
+      setData(list);
+      if (list.length > 0) {
+        setAktifId((prev) => (prev && list.some((item) => item.id === prev) ? prev : list[0].id));
+      } else {
+        setAktifId(null);
       }
     } catch (err) {
       console.error('Gagal mengambil data legalitas:', err);
@@ -45,7 +65,7 @@ export default function LegalitasAdmin({ selectedId }) {
     try {
       await axios.patch(`${API_BASE_URL}/api/v1/admin/sertifikasi/${aktif.id}`, {
         status: statusBaru,
-        catatan_admin: aktif.catatan_admin || 'Telah diperbarui oleh admin dinas'
+        catatan_admin: aktif.catatan_admin || 'Telah diverifikasi oleh admin dinas'
       });
       await loadData();
       alert(`Status sertifikasi berhasil diubah menjadi: ${statusBaru}`);
@@ -84,7 +104,9 @@ export default function LegalitasAdmin({ selectedId }) {
             </div>
 
             {loading ? (
-              <div style={{ padding: 30, textAlign: 'center', color: C.mute }}>Memuat data sertifikasi...</div>
+              <div style={{ padding: 30, textAlign: 'center', color: C.mute }}>Memuat data sertifikasi dari backend...</div>
+            ) : rows.length === 0 ? (
+              <div style={{ padding: 30, textAlign: 'center', color: C.mute }}>Belum ada berkas pengajuan sertifikasi yang masuk.</div>
             ) : (
               <DataTable
                 rows={rows}

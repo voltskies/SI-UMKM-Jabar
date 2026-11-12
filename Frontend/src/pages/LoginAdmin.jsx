@@ -7,7 +7,20 @@ import {
 } from 'lucide-react';
 import bgLogin from '../assets/diskuk.jpg';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://si-umkm-jabar.vercel.app';
+// Konfigurasi URL Backend yang dinamis dan toleran environment
+const getApiBaseUrl = () => {
+  const envUrl = import.meta.env.VITE_API_URL;
+  if (envUrl && !envUrl.includes('127.0.0.1') && !envUrl.includes('localhost')) {
+    return envUrl.replace(/\/+$/, '').replace(/^http:\/\//i, 'https://');
+  }
+  // Fallback origin saat ini (misal di Vercel si-umkm-prov-jabar.vercel.app)
+  if (typeof window !== 'undefined' && window.location.origin && !window.location.hostname.includes('localhost')) {
+    return window.location.origin;
+  }
+  return 'https://si-umkm-prov-jabar.vercel.app';
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 const EMAILJS_SERVICE_ID = 'service_vr07rh';
 const EMAILJS_TEMPLATE_ID = 'template_318btwq';
@@ -60,7 +73,7 @@ export default function LoginAdmin({ setHalaman, onLoginSukses }) {
 
   // State Modal Lupa Password Admin
   const [showForgotModal, setShowForgotModal] = useState(false);
-  const [forgotStep, setForgotStep] = useState(1); // 1 = Input Email, 2 = Input OTP & Password Baru
+  const [forgotStep, setForgotStep] = useState(1);
   const [forgotEmail, setForgotEmail] = useState('');
   const [forgotOtp, setForgotOtp] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -102,9 +115,11 @@ export default function LoginAdmin({ setHalaman, onLoginSukses }) {
           jabatan: jabatan.trim(),
           email: email.trim().toLowerCase(),
           password: password
+        }, {
+          headers: { 'Content-Type': 'application/json' }
         });
 
-        alert(res.data.message || 'Pendaftaran admin dinas berhasil! Data masuk ke database.');
+        alert(res.data?.message || 'Pendaftaran admin dinas berhasil! Silakan masuk dengan akun baru Anda.');
         setIsRegister(false);
         setPassword('');
         setConfirmPassword('');
@@ -112,29 +127,46 @@ export default function LoginAdmin({ setHalaman, onLoginSukses }) {
         const res = await axios.post(`${API_BASE_URL}/api/v1/auth/admin/login`, {
           email: email.trim().toLowerCase(),
           password: password
+        }, {
+          headers: { 'Content-Type': 'application/json' }
         });
 
-        localStorage.setItem('admin_umkm', JSON.stringify(res.data.data));
-        localStorage.setItem('token_admin', 'session-token-admin-dinas');
+        const userData = res.data?.data || res.data?.user || res.data;
+        localStorage.setItem('admin_umkm', JSON.stringify(userData));
+        localStorage.setItem('token_admin', res.data?.token || 'session-token-admin-dinas');
 
-        alert(`Login berhasil! Selamat datang, ${res.data.data.nama}`);
+        alert(`Login berhasil! Selamat datang, ${userData.nama || 'Administrator'}`);
 
         if (typeof onLoginSukses === 'function') {
-          onLoginSukses(res.data.data);
+          onLoginSukses(userData);
         } else if (typeof setHalaman === 'function') {
           setHalaman('admin');
         }
       }
     } catch (err) {
       console.error('Error Admin Auth:', err);
-      const detail = err.response?.data?.detail || err.response?.data?.message || err.message;
+      let detail = 'Gagal terhubung ke server backend (Network Error). Pastikan backend aktif dan endpoint CORS telah dikonfigurasi.';
+      
+      if (err.response?.data) {
+        const errData = err.response.data;
+        if (typeof errData.detail === 'string') {
+          detail = errData.detail;
+        } else if (Array.isArray(errData.detail)) {
+          detail = errData.detail.map((d) => d.msg).join(', ');
+        } else if (errData.message) {
+          detail = errData.message;
+        }
+      } else if (err.message && err.message !== 'Network Error') {
+        detail = err.message;
+      }
+
       alert(`Gagal: ${detail}`);
     } finally {
       setLoading(false);
     }
   };
 
-  // Handler Lupa Password Admin1
+  // Handler Lupa Password Admin
   const handleKirimOtpAdmin = async (e) => {
     e.preventDefault();
     const targetEmail = forgotEmail.trim().toLowerCase();
@@ -170,7 +202,7 @@ export default function LoginAdmin({ setHalaman, onLoginSukses }) {
     }
   };
 
-  // Handler Lupa Password Admin2
+  // Handler Reset Password Admin
   const handleResetPasswordAdmin = async (e) => {
     e.preventDefault();
     const targetEmail = forgotEmail.trim().toLowerCase();
@@ -208,9 +240,11 @@ export default function LoginAdmin({ setHalaman, onLoginSukses }) {
         email: targetEmail,
         otp: forgotOtp.trim(),
         new_password: newPassword
+      }, {
+        headers: { 'Content-Type': 'application/json' }
       });
 
-      alert(res.data.message || 'Kata sandi akun admin berhasil diperbarui! Silakan masuk.');
+      alert(res.data?.message || 'Kata sandi akun admin berhasil diperbarui! Silakan masuk.');
       
       sessionStorage.removeItem(`otp_val_admin_${targetEmail}`);
       sessionStorage.removeItem(`otp_exp_admin_${targetEmail}`);
@@ -392,7 +426,7 @@ export default function LoginAdmin({ setHalaman, onLoginSukses }) {
         </div>
       </div>
 
-      {/* MODAL POP-UP LUPA PASSWORD ADMIN */}
+      {/* MODAL LUPA PASSWORD ADMIN */}
       {showForgotModal && (
         <div style={{
           position: 'fixed',
