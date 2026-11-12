@@ -85,6 +85,14 @@ export default function Bantuan({ onKembali, setHalaman, user, onPilihNotif }) {
 
   const MAX_FILE_SIZE = 7 * 1024 * 1024; // 7 MB dalam satuan bytes
 
+  // Cek apakah semua berkas wajib sudah dipilih
+  const semuaBerkasTerisi = Boolean(
+    files.file_ktp && 
+    files.file_kk && 
+    files.file_nib && 
+    files.file_proposal
+  );
+
   // Style input konsisten agar selalu putih dan tidak terkena dark mode browser
   const inputStyle = {
     width: '100%',
@@ -105,9 +113,6 @@ export default function Bantuan({ onKembali, setHalaman, user, onPilihNotif }) {
     cursor: 'not-allowed',
     borderColor: '#E2E8F0'
   };
-
-
-
 
   const handleKembaliKeDashboard = () => {
     if (typeof setHalaman === 'function') {
@@ -131,7 +136,10 @@ export default function Bantuan({ onKembali, setHalaman, user, onPilihNotif }) {
 
   const handleFileChange = (e) => {
     const { name, files: selectedFiles } = e.target;
-    if (!selectedFiles || !selectedFiles[0]) return;
+    if (!selectedFiles || !selectedFiles[0]) {
+      setFiles((prev) => ({ ...prev, [name]: null }));
+      return;
+    }
 
     const file = selectedFiles[0];
 
@@ -184,9 +192,21 @@ export default function Bantuan({ onKembali, setHalaman, user, onPilihNotif }) {
       return;
     }
 
-    // Validasi file KTP wajib diunggah
+    // Validasi SEMUA berkas persyaratan wajib diunggah
     if (!files.file_ktp) {
       setErrorMsg('Berkas Foto KTP wajib diunggah.');
+      return;
+    }
+    if (!files.file_kk) {
+      setErrorMsg('Berkas Kartu Keluarga (KK) wajib diunggah.');
+      return;
+    }
+    if (!files.file_nib) {
+      setErrorMsg('Berkas Dokumen NIB wajib diunggah.');
+      return;
+    }
+    if (!files.file_proposal) {
+      setErrorMsg('Berkas Proposal Usaha / Rencana Anggaran wajib diunggah.');
       return;
     }
 
@@ -222,17 +242,11 @@ export default function Bantuan({ onKembali, setHalaman, user, onPilihNotif }) {
         dataPayload.append('nib', formData.nib.trim());
       }
 
-      // Lampirkan berkas ke payload form
+      // Lampirkan SEMUA berkas wajib ke payload form
       dataPayload.append('file_ktp', files.file_ktp);
-      if (files.file_kk) {
-        dataPayload.append('file_kk', files.file_kk);
-      }
-      if (files.file_nib) {
-        dataPayload.append('file_nib', files.file_nib);
-      }
-      if (files.file_proposal) {
-        dataPayload.append('file_proposal', files.file_proposal);
-      }
+      dataPayload.append('file_kk', files.file_kk);
+      dataPayload.append('file_nib', files.file_nib);
+      dataPayload.append('file_proposal', files.file_proposal);
 
       const targetUrl = `${API_BASE_URL}/api/v1/layanan/pengajuan-bantuan`;
       const res = await axios.post(targetUrl, dataPayload, {
@@ -278,6 +292,7 @@ export default function Bantuan({ onKembali, setHalaman, user, onPilihNotif }) {
 
   const tutupModalSukses = () => {
     setSuksesNomor(null);
+    setFiles({ file_ktp: null, file_kk: null, file_nib: null, file_proposal: null });
     setFormData({
       nik: activeUser?.nik || '',
       nama_lengkap: activeUser?.nama || activeUser?.nama_lengkap || '',
@@ -359,7 +374,7 @@ export default function Bantuan({ onKembali, setHalaman, user, onPilihNotif }) {
                   Belum Ada Pengajuan Bantuan Aktif
                 </h3>
                 <p style={{ margin: '0 0 18px', fontSize: '0.82rem', color: '#64748B', lineHeight: '1.5', maxWidth: '440px', marginLeft: 'auto', marginRight: 'auto' }}>
-                  Lengkapi profil usaha dan dokumen persyaratan untuk mengajukan bantuan modal serta memperoleh nomor verifikasi resmi dari dinas.
+                  Lengkapi profil usaha dan seluruh dokumen persyaratan untuk mengajukan bantuan modal serta memperoleh nomor verifikasi resmi dari dinas.
                 </p>
                 <button
                   type="button"
@@ -412,7 +427,7 @@ export default function Bantuan({ onKembali, setHalaman, user, onPilihNotif }) {
                 Form Permohonan Bantuan Usaha
               </h1>
               <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748B', lineHeight: '1.5', textAlign: 'left' }}>
-                Isi data diri dan informasi profil usaha Anda secara lengkap untuk verifikasi kelayakan bantuan modal dari Dinas KUK Provinsi Jawa Barat.
+                Isi data diri dan informasi profil usaha Anda secara lengkap serta unggah seluruh berkas wajib (*) untuk verifikasi kelayakan bantuan modal dari Dinas KUK Provinsi Jawa Barat.
               </p>
             </div>
 
@@ -437,7 +452,6 @@ export default function Bantuan({ onKembali, setHalaman, user, onPilihNotif }) {
             )}
 
             <form onSubmit={handleSubmit} style={{ textAlign: 'left' }}>
-              {/* Bagian 1: Data Pemohon */}
               {/* Bagian 1: Data Pemohon */}
               <div style={{ marginBottom: '24px', textAlign: 'left' }}>
                 <h3 style={{ fontSize: '0.98rem', fontWeight: '700', color: '#255456', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px', textAlign: 'left' }}>
@@ -561,7 +575,7 @@ export default function Bantuan({ onKembali, setHalaman, user, onPilihNotif }) {
                       name="nib"
                       value={formData.nib}
                       onChange={handleInputChange}
-                      placeholder="Opsional / jika ada"
+                      placeholder="Masukkan nomor NIB"
                       style={inputStyle}
                     />
                   </div>
@@ -601,14 +615,15 @@ export default function Bantuan({ onKembali, setHalaman, user, onPilihNotif }) {
                 </div>
               </div>
 
-              {/* Bagian 3: Dokumen Pendukung */}
+              {/* Bagian 3: Dokumen Pendukung (Semua Wajib) */}
               <div style={{ marginBottom: '28px', textAlign: 'left' }}>
                 <h3 style={{ fontSize: '0.98rem', fontWeight: '700', color: '#255456', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px', textAlign: 'left' }}>
-                  <Upload size={17} /> 3. Berkas Persyaratan (Maks. 7 MB)
+                  <Upload size={17} /> 3. Berkas Persyaratan Wajib (Semua Dokumen Wajib Diunggah, Maks. 7 MB)
                 </h3>
 
                 <div className="responsive-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', textAlign: 'left' }}>
-                  <div style={{ border: '1px dashed #CBD5E1', borderRadius: '8px', padding: '12px', backgroundColor: '#F8FAFC', textAlign: 'left' }}>
+                  {/* 1. KTP */}
+                  <div style={{ border: `1px dashed ${files.file_ktp ? '#255456' : '#CBD5E1'}`, borderRadius: '8px', padding: '12px', backgroundColor: '#F8FAFC', textAlign: 'left' }}>
                     <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', color: '#334155', marginBottom: '4px', textAlign: 'left' }}>
                       Foto KTP Pemohon * <span style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: '400' }}>(PDF/JPG/PNG, Maks. 7MB)</span>
                     </label>
@@ -627,14 +642,16 @@ export default function Bantuan({ onKembali, setHalaman, user, onPilihNotif }) {
                     )}
                   </div>
 
-                  <div style={{ border: '1px dashed #CBD5E1', borderRadius: '8px', padding: '12px', backgroundColor: '#F8FAFC', textAlign: 'left' }}>
+                  {/* 2. KK */}
+                  <div style={{ border: `1px dashed ${files.file_kk ? '#255456' : '#CBD5E1'}`, borderRadius: '8px', padding: '12px', backgroundColor: '#F8FAFC', textAlign: 'left' }}>
                     <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', color: '#334155', marginBottom: '4px', textAlign: 'left' }}>
-                      Kartu Keluarga (KK) <span style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: '400' }}>(Wajib PDF, Maks. 7MB)</span>
+                      Kartu Keluarga (KK) * <span style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: '400' }}>(Wajib PDF, Maks. 7MB)</span>
                     </label>
                     <input 
                       type="file" 
                       name="file_kk" 
                       accept=".pdf,application/pdf" 
+                      required
                       onChange={handleFileChange} 
                       style={{ fontSize: '0.76rem', width: '100%', color: '#334155' }} 
                     />
@@ -645,14 +662,16 @@ export default function Bantuan({ onKembali, setHalaman, user, onPilihNotif }) {
                     )}
                   </div>
 
-                  <div style={{ border: '1px dashed #CBD5E1', borderRadius: '8px', padding: '12px', backgroundColor: '#F8FAFC', textAlign: 'left' }}>
+                  {/* 3. NIB */}
+                  <div style={{ border: `1px dashed ${files.file_nib ? '#255456' : '#CBD5E1'}`, borderRadius: '8px', padding: '12px', backgroundColor: '#F8FAFC', textAlign: 'left' }}>
                     <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', color: '#334155', marginBottom: '4px', textAlign: 'left' }}>
-                      Dokumen NIB (Jika ada) <span style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: '400' }}>(Wajib PDF, Maks. 7MB)</span>
+                      Dokumen NIB * <span style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: '400' }}>(Wajib PDF, Maks. 7MB)</span>
                     </label>
                     <input 
                       type="file" 
                       name="file_nib" 
                       accept=".pdf,application/pdf" 
+                      required
                       onChange={handleFileChange} 
                       style={{ fontSize: '0.76rem', width: '100%', color: '#334155' }} 
                     />
@@ -663,14 +682,16 @@ export default function Bantuan({ onKembali, setHalaman, user, onPilihNotif }) {
                     )}
                   </div>
 
-                  <div style={{ border: '1px dashed #CBD5E1', borderRadius: '8px', padding: '12px', backgroundColor: '#F8FAFC', textAlign: 'left' }}>
+                  {/* 4. Proposal */}
+                  <div style={{ border: `1px dashed ${files.file_proposal ? '#255456' : '#CBD5E1'}`, borderRadius: '8px', padding: '12px', backgroundColor: '#F8FAFC', textAlign: 'left' }}>
                     <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', color: '#334155', marginBottom: '4px', textAlign: 'left' }}>
-                      Proposal Usaha / Rencana Anggaran <span style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: '400' }}>(Wajib PDF, Maks. 7MB)</span>
+                      Proposal Usaha / Rencana Anggaran * <span style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: '400' }}>(Wajib PDF, Maks. 7MB)</span>
                     </label>
                     <input 
                       type="file" 
                       name="file_proposal" 
                       accept=".pdf,application/pdf" 
+                      required
                       onChange={handleFileChange} 
                       style={{ fontSize: '0.76rem', width: '100%', color: '#334155' }} 
                     />
@@ -686,22 +707,26 @@ export default function Bantuan({ onKembali, setHalaman, user, onPilihNotif }) {
               {/* Tombol Submit */}
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || !semuaBerkasTerisi}
                 style={{
                   width: '100%',
-                  backgroundColor: loading ? '#94A3B8' : '#255456',
+                  backgroundColor: (loading || !semuaBerkasTerisi) ? '#94A3B8' : '#255456',
                   color: '#FFFFFF',
                   border: 'none',
                   borderRadius: '10px',
                   padding: '13px',
                   fontWeight: '700',
                   fontSize: '0.92rem',
-                  cursor: loading ? 'not-allowed' : 'pointer',
+                  cursor: (loading || !semuaBerkasTerisi) ? 'not-allowed' : 'pointer',
                   transition: '0.2s',
-                  boxShadow: '0 4px 12px rgba(37, 84, 86, 0.2)'
+                  boxShadow: (loading || !semuaBerkasTerisi) ? 'none' : '0 4px 12px rgba(37, 84, 86, 0.2)'
                 }}
               >
-                {loading ? 'Mengunggah berkas' : 'Kirim Permohonan Bantuan Modal'}
+                {loading 
+                  ? 'Mengunggah berkas...' 
+                  : (!semuaBerkasTerisi 
+                      ? 'Lengkapi Semua 4 Berkas Persyaratan untuk Mengirim' 
+                      : 'Kirim Permohonan Bantuan Modal')}
               </button>
             </form>
           </div>
