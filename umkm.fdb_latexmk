@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1794450129.59563 "d:/E-Governance/umkm.tex" "umkm.pdf" "umkm" 1794450130.77234 0
+["pdflatex"] 1794450597.55319 "d:/E-Governance/umkm.tex" "umkm.pdf" "umkm" 1794450598.74981 0
   "C:/Users/LENOVO/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1793813803 82507 a9eef8696c92627b87e9975edea03b2a ""
   "C:/Users/LENOVO/AppData/Local/MiKTeX/miktex/data/le/pdftex/pdflatex.fmt" 1790703788 13316655 b22ac5993fc6ca9f9f34420d96370ed6 ""
   "D:/MikTEX/fonts/enc/dvips/base/8r.enc" 1458473887 4993 80dc9bab7f31fb78a000ccfed0e27cab ""
@@ -85,14 +85,14 @@
   "D:/MikTEX/tex/latex/tools/array.sty" 1761901070 15651 9d7c62df82cb29a555c00550babfe364 ""
   "D:/MikTEX/tex/latex/url/url.sty" 1388490452 12796 8edb7d69a20b857904dd0ea757c14ec9 ""
   "D:/MikTEX/tex/latex/xcolor/xcolor.sty" 1729265222 55384 b454dec21c2d9f45ec0b793f0995b992 ""
-  "d:/E-Governance/umkm.tex" 1794450128 17962 7491f4bfa09330ac6306f356c57cc0f2 ""
+  "d:/E-Governance/umkm.tex" 1794450595 17962 ee60e7aa09c0f65bdd9c3f735f1c78d8 ""
   "image_tex/gambar 1.jpg" 1791292295 358944 264e623ad54e83fb691c610652418ec6 ""
   "image_tex/gambar 2.jpg" 1794377285 166752 261c0341406709ba6291346878c7e126 ""
   "image_tex/gambar 3.png" 1790701853 218062 5fa1a32e39a67639d589422804ad198c ""
   "image_tex/gambar 4.jpg" 1794295691 29054 19f5a653f5f000428c6d8bd224c12afd ""
   "image_tex/gambar 5.jpg" 1794296264 26862 6b8c9b3c46de9529ef1f72d69ee0b0ad ""
-  "umkm.aux" 1794450130 2847 b0878dd451e1c08468278a2f951d2fe4 "pdflatex"
-  "umkm.tex" 1794450128 17962 7491f4bfa09330ac6306f356c57cc0f2 ""
+  "umkm.aux" 1794450598 2847 d98b44628b1bc5d23e83c06ce7b78e94 "pdflatex"
+  "umkm.tex" 1794450595 17962 ee60e7aa09c0f65bdd9c3f735f1c78d8 ""
   (generated)
   "umkm.aux"
   "umkm.log"
