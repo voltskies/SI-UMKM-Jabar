@@ -7,17 +7,13 @@ import {
 } from 'lucide-react';
 import bgLogin from '../assets/diskuk.jpg';
 
-// Konfigurasi URL Backend yang dinamis dan toleran environment
+// Konfigurasi URL Backend FastAPI yang benar
 const getApiBaseUrl = () => {
   const envUrl = import.meta.env.VITE_API_URL;
   if (envUrl && !envUrl.includes('127.0.0.1') && !envUrl.includes('localhost')) {
     return envUrl.replace(/\/+$/, '').replace(/^http:\/\//i, 'https://');
   }
-  // Fallback origin saat ini (misal di Vercel si-umkm-prov-jabar.vercel.app)
-  if (typeof window !== 'undefined' && window.location.origin && !window.location.hostname.includes('localhost')) {
-    return window.location.origin;
-  }
-  return 'https://si-umkm-prov-jabar.vercel.app';
+  return 'https://si-umkm-jabar.vercel.app';
 };
 
 const API_BASE_URL = getApiBaseUrl();
