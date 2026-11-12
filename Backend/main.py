@@ -594,34 +594,46 @@ def register_admin(payload: RegisterAdminRequest, db: Session = Depends(get_db))
             detail="NIP atau Email sudah terdaftar di sistem. Silakan langsung masuk."
         )
 
-    hashed_pwd = hash_password(payload.password)
+    try:
+        # Generate ID manual agar tidak error di TiDB
+        last_u = db.query(models.User).order_by(models.User.id.desc()).first()
+        next_user_id = (last_u.id + 1) if (last_u and last_u.id) else 1
 
-    admin_baru = models.User(
-        nik=nip_clean,
-        nama_lengkap=f"{payload.nama.strip()} ({payload.jabatan.strip()})",
-        email=email_clean,
-        nomor_whatsapp="-",
-        password=hashed_pwd,
-        role="admin",
-        is_verified=True,
-        otp_code=None,
-        otp_expires_at=None
-    )
+        hashed_pwd = hash_password(payload.password)
 
-    db.add(admin_baru)
-    db.commit()
-    db.refresh(admin_baru)
+        admin_baru = models.User(
+            id=next_user_id,
+            nik=nip_clean,
+            nama_lengkap=f"{payload.nama.strip()} ({payload.jabatan.strip()})",
+            email=email_clean,
+            nomor_whatsapp="-",
+            password=hashed_pwd,
+            role="admin",
+            is_verified=True,
+            otp_code=None,
+            otp_expires_at=None
+        )
 
-    return {
-        "status": "success",
-        "message": "Pendaftaran akun Admin Dinas berhasil! Silakan masuk.",
-        "data": {
-            "id": admin_baru.id,
-            "nip": admin_baru.nik,
-            "nama": admin_baru.nama_lengkap,
-            "email": admin_baru.email
+        db.add(admin_baru)
+        db.commit()
+        db.refresh(admin_baru)
+
+        return {
+            "status": "success",
+            "message": "Pendaftaran akun Admin Dinas berhasil! Silakan masuk.",
+            "data": {
+                "id": admin_baru.id,
+                "nip": admin_baru.nik,
+                "nama": admin_baru.nama_lengkap,
+                "email": admin_baru.email
+            }
         }
-    }
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Gagal menyimpan akun admin ke database: {str(e)}"
+        )
 
 
 @app.post("/api/v1/auth/admin/login", tags=["Admin Dinas"], summary="Login Admin Dinas")
