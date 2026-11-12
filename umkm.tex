@@ -38,7 +38,7 @@ Email: \textsuperscript{1}vania07@it.student.pens.ac.id, \textsuperscript{2}reva
 \maketitle
 
 \begin{abstract}
-Sektor Usaha Mikro, Kecil, dan Menengah (UMKM) memegang peranan krusial dalam pertumbuhan ekonomi Jawa Barat. Namun, publikasi data UMKM saat ini masih terfragmentasi dan disajikan dalam format tabular statis, sementara alur pelayanan pengajuan program bantuan, perizinan, dan pelatihan masih berjalan secara terpisah tanpa mekanisme pelacakan yang terpadu. Penelitian ini bertujuan merancang dan mengimplementasikan SI-UMKM Jabar, sebuah platform e-governance terpadu berbasis web yang memadukan visualisasi geografis interaktif dan layanan mandiri pelaku usaha. Sistem dibangun dengan arsitektur RESTful API menggunakan framework FastAPI dan basis data MySQL, yang mendukung digitalisasi verifikasi berkas secara langsung oleh administrator. Evaluasi performa sistem melalui uji beban multi-skala dari 50 hingga 500 Virtual Users (VUs) menunjukkan backend mampu beroperasi optimal pada rentang 50--300 VUs dengan rata-rata latensi rendah antara 192 ms hingga 271 ms, throughput mencapai 616,96 req/s, serta tingkat kegagalan respon 0,00\%. Namun, titik jenuh tercapai pada beban puncak 500 VUs dengan peningkatan latensi rata-rata menjadi 407 ms dan error rate mencapai 60,25\%. Selain keandalan arsitektur, evaluasi penerimaan sistem diuji menggunakan pendekatan Technology Acceptance Model (TAM) pada variabel persepsi kebermanfaatan dan kemudahan penggunaan dengan tingkat penerimaan sebesar [XX,XX]\%. Platform ini diharapkan dapat mempercepat alur birokrasi layanan serta mempermudah pemetaan potensi sebaran UMKM secara transparan dan terukur.
+Sektor Usaha Mikro, Kecil, dan Menengah (UMKM) memegang peranan krusial dalam pertumbuhan ekonomi Jawa Barat. Namun, publikasi data UMKM saat ini masih terfragmentasi dan disajikan dalam format tabular statis, sementara alur pelayanan pengajuan program bantuan, perizinan, dan pelatihan masih berjalan secara terpisah tanpa mekanisme pelacakan yang terpadu. Penelitian ini bertujuan merancang dan mengimplementasikan SI-UMKM Jabar, sebuah platform e-governance terpadu berbasis web yang memadukan visualisasi geografis interaktif dan layanan mandiri pelaku usaha. Sistem dibangun dengan arsitektur RESTful API menggunakan framework FastAPI dan basis data MySQL, yang mendukung digitalisasi verifikasi berkas secara langsung oleh administrator. Evaluasi performa sistem melalui uji beban multi-skala dari 50 hingga 500 Virtual Users (VUs) menunjukkan backend mampu beroperasi optimal pada rentang 50--300 VUs dengan rata-rata latensi rendah antara 192 ms hingga 271 ms, throughput mencapai 616,96 req/s, serta tingkat kegagalan respon 0,00\%. Namun, titik jenuh tercapai pada beban puncak 500 VUs dengan peningkatan latensi rata-rata menjadi 407 ms dan error rate mencapai 60,25\%. Selain keandalan arsitektur, evaluasi penerimaan sistem diuji menggunakan pendekatan Technology Acceptance Model (TAM) pada variabel persepsi kebermanfaatan dan kemudahan penggunaan dengan tingkat penerimaan sebesar XX,XX\%. Platform ini diharapkan dapat mempercepat alur birokrasi layanan serta mempermudah pemetaan potensi sebaran UMKM secara transparan dan terukur.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -145,7 +145,37 @@ Alur operasional sistem terbagi menjadi dua proses bisnis utama: alur mandiri ol
 \end{table*}
 
 \section{Results and Discussion}
+\subsection{Pengujian Beban Kinerja Backend (Load Testing)}
 Pengujian kinerja dilakukan terhadap endpoint direktori UMKM (\texttt{GET /api/v1/umkm}) menggunakan simulasi konkurensi bertingkat pada rentang 50 hingga 500 \textit{Virtual Users} (VUs). Rincian kuantitatif pengujian beban pada Table I menunjukkan bahwa backend beroperasi secara stabil hingga skala 300 VUs dengan throughput puncak mencapai 616,96 req/s serta tingkat kegagalan respon 0,00\%. Pada beban ekstrem 500 VUs, sistem mulai mencapai titik jenuh konkurensi I/O yang ditandai dengan peningkatan rata-rata waktu respon menjadi 407 ms dan lonjakan tingkat kegagalan respons (\textit{error rate}) hingga 60,25\%.
+
+\subsection{Evaluasi Technology Acceptance Model (TAM)}
+Evaluasi penerimaan sistem dilakukan terhadap calon pengguna dan masyarakat menggunakan instrumen kuesioner \textit{Technology Acceptance Model} (TAM) berbasis skala Likert 5 poin (1 = Sangat Tidak Setuju hingga 5 = Sangat Setuju). Kuesioner disebarkan kepada XXX responden yang mencakup pelaku UMKM, mahasiswa, dan masyarakat umum guna mengukur persepsi terhadap platform SI-UMKM Jabar yang dikembangkan dibandingkan portal eksisting DISKUK Jawa Barat. Dimensi evaluasi mencakup empat konstruk utama:
+\begin{enumerate}
+    \item \textit{Perceived Usefulness} (PU): Mengukur persepsi kegunaan sistem dalam menyediakan informasi yang relevan, mempercepat pencarian direktori, serta meningkatkan efisiensi waktu layanan.
+    \item \textit{Perceived Ease of Use} (PEOU): Mengukur kemudahan navigasi antarmuka, kejelasan menu, keterbacaan teks, serta kepraktisan operasional fitur.
+    \item \textit{Attitude Toward Using} (ATU): Mengukur kenyamanan interaksi pengguna dan apresiasi terhadap digitalisasi terpadu layanan UMKM.
+    \item \textit{Behavioral Intention} (BI): Mengukur intensi dan minat pengguna untuk kembali menggunakan serta merekomendasikan platform di masa mendatang.
+\end{enumerate}
+
+\begin{table}[htbp]
+\caption{Rekapitulasi Hasil Evaluasi Penerimaan Pengguna Berdasarkan Variabel TAM ($N=25$)}
+\label{tab:tam}
+\centering
+\begin{tabular}{lccc}
+\toprule
+\textbf{Konstruk / Dimensi TAM} & \textbf{Jumlah Item} & \textbf{Skor Rata-rata} & \textbf{Persentase (\%)} \\
+\midrule
+Perceived Usefulness (PU)         & 0 & 0,00 / 5,00 & 00,11\% \\
+Perceived Ease of Use (PEOU)     & 0 & 0,00 / 5,00 & 00,11\% \\
+Attitude Toward Using (ATU)       & 0 & 0,00 / 5,00 & 00,11\% \\
+Behavioral Intention (BI)         & 0 & 0,00 / 5,00 & 00,11\% \\
+\midrule
+\textbf{Rata-rata Keseluruhan}    & \textbf{12} & \textbf{0,00 / 5,00} & \textbf{00,11\%} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Berdasarkan rekapitulasi pada Table II, SI-UMKM Jabar memperoleh persentase penerimaan keseluruhan sebesar 00,11\% (kategori ``Sangat Buruk / Tidak Layak''). Variabel \textit{Perceived Usefulness} memperoleh skor tertinggi sebesar XX,XX\%, didukung oleh keberadaan visualisasi peta sebaran interaktif dan modul pendaftaran mandiri yang langsung menghubungkan pengguna ke instansi. Pada umpan balik komparatif antarmuka, mayoritas responden menyatakan bahwa struktur tata letak SI-UMKM Jabar lebih intuitif dan ringkas dibandingkan portal eksisting yang masih menyajikan data secara tabular terpisah.
 
 \section*{References}
 \begin{thebibliography}{00}

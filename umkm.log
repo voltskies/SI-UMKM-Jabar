@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.9.30)  11 NOV 2026 13:25
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.9.30)  12 NOV 2026 09:22
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -428,12 +428,32 @@ LaTeX Font Info:    Trying to load font information for OT1+pcr on input line 12
  (D:\MikTEX\tex/latex/psnfss\ot1pcr.fd
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
 )
-Underfull \hbox (badness 3260) in paragraph at lines 148--149
+Underfull \hbox (badness 3260) in paragraph at lines 149--150
 []\OT1/ptm/m/n/10 Pengujian kin-erja di-lakukan ter-hadap end-point di-rek-
  []
 
 
-Underfull \hbox (badness 4096) in paragraph at lines 158--159
+Underfull \hbox (badness 4954) in paragraph at lines 157--158
+[]\OT1/ptm/m/it/10 Behavioral In-ten-tion \OT1/ptm/m/n/10 (BI): Men-gukur in-tensi dan
+ []
+
+
+Underfull \hbox (badness 1527) in paragraph at lines 157--158
+\OT1/ptm/m/n/10 mi-nat peng-guna un-tuk kem-bali meng-gu-nakan serta
+ []
+
+
+Overfull \hbox (48.75052pt too wide) in paragraph at lines 164--176
+ [][] 
+ []
+
+
+Underfull \hbox (badness 4967) in paragraph at lines 178--179
+\OT1/ptm/m/n/10 mem-per-oleh persen-tase pener-i-maan ke-selu-ruhan sebe-sar
+ []
+
+[3 <./image_tex/gambar 3.png> <./image_tex/gambar 4.jpg> <./image_tex/gambar 5.jpg>]
+Underfull \hbox (badness 4096) in paragraph at lines 188--189
 \OT1/ptm/m/n/8 Masyarakat Berba-sis Web Meng-gu-nakan REST-ful API,'' \OT1/ptm/m/it/8 Ju-r-nal
  []
 
@@ -448,24 +468,26 @@ Before submitting the final camera ready copy, remember to:
  uses only Type 1 fonts and that every step in the generation
  process uses the appropriate paper size.
 
-[3 <./image_tex/gambar 3.png> <./image_tex/gambar 4.jpg> <./image_tex/gambar 5.jpg>] [4] (umkm.aux)
+[4
+
+] (umkm.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-12-24>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 6306 strings out of 467871
- 101659 string characters out of 5435208
- 523684 words of memory out of 5000000
- 35102 multiletter control sequences out of 15000+600000
+ 6309 strings out of 467871
+ 101722 string characters out of 5435208
+ 526706 words of memory out of 5000000
+ 35105 multiletter control sequences out of 15000+600000
  671221 words of font info for 128 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 67i,15n,77p,1578b,471s stack positions out of 10000i,1000n,20000p,200000b,200000s
-<D:/MikTEX/fonts/type1/urw/courier/ucrr8a.pfb><D:/MikTEX/fonts/type1/urw/times/utmb8a.pfb><D:/MikTEX/fonts/type1/urw/times/utmbi8a.pfb><D:/MikTEX/fonts/type1/urw/times/utmr8a.pfb><D:/MikTEX/fonts/type1/urw/times/utmri8a.pfb>
-Output written on umkm.pdf (4 pages, 679310 bytes).
+ 67i,15n,77p,1576b,471s stack positions out of 10000i,1000n,20000p,200000b,200000s
+<D:/MikTEX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><D:/MikTEX/fonts/type1/public/amsfonts/cm/cmr10.pfb><D:/MikTEX/fonts/type1/urw/courier/ucrr8a.pfb><D:/MikTEX/fonts/type1/urw/times/utmb8a.pfb><D:/MikTEX/fonts/type1/urw/times/utmbi8a.pfb><D:/MikTEX/fonts/type1/urw/times/utmr8a.pfb><D:/MikTEX/fonts/type1/urw/times/utmri8a.pfb>
+Output written on umkm.pdf (4 pages, 699793 bytes).
 PDF statistics:
- 51 PDF objects out of 1000 (max. 8388607)
+ 61 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  26 words of extra memory for PDF output out of 10000 (max. 10000000)
 
