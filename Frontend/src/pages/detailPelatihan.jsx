@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { 
-  ArrowLeft, Users, GraduationCap, RefreshCw, Share2, 
+  Users, GraduationCap, RefreshCw, Share2,
   Upload, CheckCircle2, AlertCircle, X, Copy, Check,
   MessageCircle, Send, Globe
 } from 'lucide-react';
 import Navbar from '../component/navbar';
 import Footer from '../component/footer';
+import PageHero from '../component/pageHero';
 
 export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user, onArahkanLogin }) {
   const [loading, setLoading] = useState(false);
@@ -132,117 +133,52 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
   };
 
   return (
-    <div style={{ backgroundColor: '#F8FAFC', minHeight: '100svh', display: 'flex', flexDirection: 'column', fontFamily: 'Inter, system-ui, sans-serif' }}>
+    <div className="page-detail-root" style={{ backgroundColor: '#F8FAFC', minHeight: '100svh', display: 'flex', flexDirection: 'column', fontFamily: 'Inter, system-ui, sans-serif', isolation: 'isolate' }}>
       <Navbar setHalaman={setHalaman} user={user} mode="solid-sticky" />
 
-      {/* Hero Header Bagian Atas */}
-      <div style={{
-        background: 'linear-gradient(135deg, #255456 0%, #1E4648 100%)',
-        color: '#FFFFFF',
-        padding: '36px 20px 64px 20px',
-        boxShadow: '0 4px 20px rgba(37, 84, 86, 0.25)',
-        textAlign: 'left'
-      }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', textAlign: 'left' }}>
-          
-          {/* Tombol Kembali & Badge */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap', marginBottom: '16px', textAlign: 'left' }}>
-            <button
-              type="button"
-              onClick={handleKembali}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: 'rgba(255,255,255,0.85)',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                cursor: 'pointer',
-                fontWeight: '700',
-                fontSize: '0.88rem',
-                padding: 0,
-                transition: 'color 0.15s ease'
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = '#FFFFFF')}
-              onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255,255,255,0.85)')}
-            >
-              <ArrowLeft size={18} /> Kembali ke Katalog
-            </button>
-
-            <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.8rem' }}>•</span>
-
-            <div style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '6px',
-              backgroundColor: 'rgba(255,255,255,0.15)',
-              backdropFilter: 'blur(6px)',
-              padding: '4px 12px',
-              borderRadius: '999px',
-              fontSize: '11px',
-              fontWeight: '600',
-              border: '1px solid rgba(255,255,255,0.2)'
-            }}>
-              Program Resmi Dinas KUK Jawa Barat
+      <PageHero
+        variant="detail"
+        label="Kembali ke Katalog"
+        onBack={handleKembali}
+        badge="Program Resmi Dinas KUK Jawa Barat"
+        title={pelatihan.judul || pelatihan.title}
+        subtitle={`Pelatihan & Standardisasi (${pelatihan.kategori})`}
+      >
+        <div className="detail-pelatihan-meta">
+          <div className="detail-pelatihan-meta-card">
+            <span className="detail-pelatihan-meta-card__icon-wrap">
+              <GraduationCap className="detail-pelatihan-meta-card__icon" size={16} />
+            </span>
+            <div>
+              <div className="detail-pelatihan-meta-card__label">Kategori</div>
+              <div className="detail-pelatihan-meta-card__value">{pelatihan.kategori}</div>
             </div>
           </div>
 
-          {/* Judul & Kategori Pelatihan */}
-          <h1 style={{ 
-            fontSize: 'clamp(24px, 3.2vw, 32px)', 
-            fontWeight: '800', 
-            margin: '0 0 8px 0', 
-            maxWidth: '900px', 
-            lineHeight: 1.3,
-            textAlign: 'left'
-          }}>
-            {pelatihan.judul || pelatihan.title}
-          </h1>
-          <p style={{ 
-            color: 'rgba(255,255,255,0.85)', 
-            fontSize: '0.9rem', 
-            margin: '0 0 24px 0',
-            textAlign: 'left' 
-          }}>
-            Pelatihan & Standardisasi ({pelatihan.kategori})
-          </p>
-
-          {/* Metadata Bar */}
-          <div style={{ 
-            display: 'flex', 
-            gap: '32px', 
-            flexWrap: 'wrap', 
-            borderTop: '1px solid rgba(255,255,255,0.15)', 
-            paddingTop: '20px',
-            textAlign: 'left'
-          }}>
-            <div style={{ textAlign: 'left' }}>
-              <div style={{ fontSize: '0.74rem', color: 'rgba(255,255,255,0.75)' }}>Kategori</div>
-              <div style={{ fontWeight: '700', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
-                <GraduationCap size={16} color="#a6c6c7" /> {pelatihan.kategori}
-              </div>
-            </div>
-
-            <div style={{ textAlign: 'left' }}>
-              <div style={{ fontSize: '0.74rem', color: 'rgba(255,255,255,0.75)' }}>Kapasitas Kuota</div>
-              <div style={{ fontWeight: '700', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
-                <Users size={16} color="#a6c6c7" /> {pelatihan.kuota || pelatihan.peserta || 150} Peserta
-              </div>
-            </div>
-
-            <div style={{ textAlign: 'left' }}>
-              <div style={{ fontSize: '0.74rem', color: 'rgba(255,255,255,0.75)' }}>Alur Pendaftaran</div>
-              <div style={{ fontWeight: '700', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
-                <RefreshCw size={16} color="#a6c6c7" /> Pendaftaran Terbuka (Mandiri)
-              </div>
+          <div className="detail-pelatihan-meta-card">
+            <span className="detail-pelatihan-meta-card__icon-wrap">
+              <Users className="detail-pelatihan-meta-card__icon" size={16} />
+            </span>
+            <div>
+              <div className="detail-pelatihan-meta-card__label">Kapasitas Kuota</div>
+              <div className="detail-pelatihan-meta-card__value">{pelatihan.kuota || pelatihan.peserta || 150} Peserta</div>
             </div>
           </div>
 
+          <div className="detail-pelatihan-meta-card">
+            <span className="detail-pelatihan-meta-card__icon-wrap">
+              <RefreshCw className="detail-pelatihan-meta-card__icon" size={16} />
+            </span>
+            <div>
+              <div className="detail-pelatihan-meta-card__label">Alur Pendaftaran</div>
+              <div className="detail-pelatihan-meta-card__value">Terbuka Mandiri</div>
+            </div>
+          </div>
         </div>
-      </div>
+      </PageHero>
 
       {/* Konten Utama Detail & Formulir Pendaftaran */}
-      <main className="responsive-page-content" style={{ flex: 1, maxWidth: '1200px', width: '100%', margin: '-36px auto 50px auto', padding: '0 20px', boxSizing: 'border-box', textAlign: 'left' }}>
+      <main className="page-font-scope responsive-page-content" style={{ position: 'relative', zIndex: 1, flex: 1, maxWidth: '1200px', width: '100%', margin: '28px auto 50px auto', padding: '0 20px', boxSizing: 'border-box', textAlign: 'left' }}>
         <div className="responsive-detail-grid" style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: '28px', alignItems: 'start' }}>
           
           {/* Kolom Kiri: Foto Banner & Rincian */}
@@ -360,8 +296,13 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
                 }}
               >
                 {loading 
+<<<<<<< HEAD
                   ? 'MEMPROSES PENDAFTARAN...' 
                   : (!berkasSyarat ? 'UNGGAH DOKUMEN UNTUK DAFTAR' : 'DAFTAR SEKARANG')}
+=======
+                  ? 'Sedang di proses' 
+                  : (!berkasSyarat ? 'Unggah dokumen untuk mendaftar' : 'DAFTAR SEKARANG')}
+>>>>>>> 6d6a9947e929c03222468b5569687cca369df543
               </button>
 
               <button
@@ -405,7 +346,7 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
 
       {/* MODAL BAGIKAN KE SOSMED & SALIN LINK */}
       {bukaModalShare && (
-        <div style={{
+        <div className="page-font-scope" style={{
           position: 'fixed',
           inset: 0,
           backgroundColor: 'rgba(15, 23, 42, 0.65)',

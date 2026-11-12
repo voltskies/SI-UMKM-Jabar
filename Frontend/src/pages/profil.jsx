@@ -87,7 +87,7 @@ export default function Profil({ user, setHalaman, onKembali, onPilihNotif }) {
               width: '64px',
               height: '64px',
               borderRadius: '50%',
-              backgroundColor: '#1B4143',
+              backgroundColor: '#0b2b36',
               color: '#FFFFFF',
               display: 'flex',
               alignItems: 'center',

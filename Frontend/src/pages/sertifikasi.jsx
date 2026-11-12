@@ -273,7 +273,7 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
       <Navbar setHalaman={setHalaman} user={user} mode="solid-sticky" />
 
       {/* 2. Konten Utama (Spacing Rapi & Selaras) */}
-      <main style={{ flex: 1, width: '100%', maxWidth: '860px', margin: '0 auto', padding: '32px 20px 60px 20px', boxSizing: 'border-box', textAlign: 'left' }}>
+      <main className="page-font-scope" style={{ flex: 1, width: '100%', maxWidth: '860px', margin: '0 auto', padding: '32px 20px 60px 20px', boxSizing: 'border-box', textAlign: 'left' }}>
         
         {/* Tombol Navigasi Kembali */}
         <button
@@ -293,7 +293,7 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
             padding: 0,
             transition: 'color 0.15s ease'
           }}
-          onMouseEnter={(e) => (e.currentTarget.style.color = '#1B4143')}
+          onMouseEnter={(e) => (e.currentTarget.style.color = '#0b2b36')}
           onMouseLeave={(e) => (e.currentTarget.style.color = '#255456')}
         >
           <ArrowLeft size={18} /> {view === 'form' ? 'Kembali ke Panel Legalitas' : 'Kembali ke Halaman Utama'}
@@ -633,7 +633,7 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
 
       {/* MODAL SUKSES */}
       {nomorSukses && (
-        <div style={{
+        <div className="page-font-scope" style={{
           position: 'fixed',
           inset: 0,
           backgroundColor: 'rgba(0,0,0,0.6)',
