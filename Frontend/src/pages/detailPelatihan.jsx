@@ -296,13 +296,11 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
                 }}
               >
                 {loading 
-<<<<<<< HEAD
                   ? 'MEMPROSES PENDAFTARAN...' 
                   : (!berkasSyarat ? 'UNGGAH DOKUMEN UNTUK DAFTAR' : 'DAFTAR SEKARANG')}
 =======
                   ? 'Sedang di proses' 
-                  : (!berkasSyarat ? 'Unggah dokumen untuk mendaftar' : 'DAFTAR SEKARANG')}
->>>>>>> 6d6a9947e929c03222468b5569687cca369df543
+                  : (!berkasSyarat ? 'Unggah dokumen untuk mendaftar' : 'DAFTAR SEKARANG');
               </button>
 
               <button
