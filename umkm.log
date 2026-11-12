@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.9.30)  5 NOV 2026 00:43
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.9.30)  11 NOV 2026 13:25
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -315,41 +315,48 @@ Package: array 2025/09/25 v2.6n Tabular extension package (FMi)
 \rotheadsize=\dimen262
 \c@nlinenum=\count316
 \TeXr@lab=\toks25
+) (D:\MikTEX\tex/latex/float\float.sty
+Package: float 2001/11/08 v1.3d Float enhancements (AL)
+\c@float@type=\count317
+\float@exts=\toks26
+\float@box=\box59
+\@float@everytoks=\toks27
+\@floatcapt=\box60
 ) (D:\MikTEX\tex/latex/l3backend\l3backend-pdftex.def
 File: l3backend-pdftex.def 2025-10-09 L3 backend support: PDF output (pdfTeX)
-\l__color_backend_stack_int=\count317
+\l__color_backend_stack_int=\count318
 ) (umkm.aux)
 \openout1 = `umkm.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 27.
-LaTeX Font Info:    ... okay on input line 27.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 27.
-LaTeX Font Info:    ... okay on input line 27.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 27.
-LaTeX Font Info:    ... okay on input line 27.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 27.
-LaTeX Font Info:    ... okay on input line 27.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 27.
-LaTeX Font Info:    ... okay on input line 27.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 27.
-LaTeX Font Info:    ... okay on input line 27.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 27.
-LaTeX Font Info:    ... okay on input line 27.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 28.
+LaTeX Font Info:    ... okay on input line 28.
 
 -- Lines per column: 56 (exact).
 (D:\MikTEX\tex/context/base/mkii\supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count318
+\scratchcounter=\count319
 \scratchdimen=\dimen263
-\scratchbox=\box59
-\nofMPsegments=\count319
-\nofMParguments=\count320
-\everyMPshowfont=\toks26
-\MPscratchCnt=\count321
+\scratchbox=\box61
+\nofMPsegments=\count320
+\nofMParguments=\count321
+\everyMPshowfont=\toks28
+\MPscratchCnt=\count322
 \MPscratchDim=\dimen264
-\MPnumerator=\count322
-\makeMPintoPDFobject=\count323
-\everyMPtoPDFconversion=\toks27
+\MPnumerator=\count323
+\makeMPintoPDFobject=\count324
+\everyMPtoPDFconversion=\toks29
 ) (D:\MikTEX\tex/latex/epstopdf-pkg\epstopdf-base.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
 Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 485.
@@ -357,27 +364,28 @@ Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 48
 File: epstopdf-sys.cfg 2021/03/18 v2.0 Configuration of epstopdf for MiKTeX
 ))
 Package caption Info: Begin \AtBeginDocument code.
+Package caption Info: float package is loaded.
 Package caption Info: End \AtBeginDocument code.
-LaTeX Font Info:    Calculating math sizes for size <11> on input line 37.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 37.
+LaTeX Font Info:    Calculating math sizes for size <11> on input line 38.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 38.
  (D:\MikTEX\tex/latex/amsfonts\umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 37.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 38.
  (D:\MikTEX\tex/latex/amsfonts\umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-Underfull \hbox (badness 6691) in paragraph at lines 39--41
+Underfull \hbox (badness 6691) in paragraph at lines 40--42
 []\OT1/ptm/b/it/9 Abstract\OT1/ptm/b/n/9 ---Sektor Us-aha Mikro, Ke-cil, dan Menen-gah
  []
 
 
-Underfull \hbox (badness 1975) in paragraph at lines 39--41
+Underfull \hbox (badness 1975) in paragraph at lines 40--42
 \OT1/ptm/b/n/9 (UMKM) memegang per-anan kru-sial dalam per-tum-buhan
  []
 
 
-Underfull \hbox (badness 2368) in paragraph at lines 43--45
+Underfull \hbox (badness 2368) in paragraph at lines 44--46
 []\OT1/ptm/b/it/9 Index Terms\OT1/ptm/b/n/9 ---SI-UMKM Jabar, E-Governance, FastAPI,
  []
 
@@ -388,44 +396,44 @@ Underfull \hbox (badness 2368) in paragraph at lines 43--45
 <image_tex/gambar 1.jpg, id=9, 1544.77126pt x 2412.01125pt>
 File: image_tex/gambar 1.jpg Graphic file (type jpg)
 <use image_tex/gambar 1.jpg>
-Package pdftex.def Info: image_tex/gambar 1.jpg  used on input line 70.
+Package pdftex.def Info: image_tex/gambar 1.jpg  used on input line 71.
 (pdftex.def)             Requested size: 252.0pt x 393.43776pt.
 
-Underfull \hbox (badness 1931) in paragraph at lines 75--76
+Underfull \hbox (badness 1931) in paragraph at lines 76--77
 \OT1/ptm/m/n/10 mekanisme penga-manan rute melalui oten-tikasi \OT1/ptm/m/it/10 state-less
  []
 
 <image_tex/gambar 2.jpg, id=11, 1027.84pt x 770.88pt>
 File: image_tex/gambar 2.jpg Graphic file (type jpg)
 <use image_tex/gambar 2.jpg>
-Package pdftex.def Info: image_tex/gambar 2.jpg  used on input line 79.
+Package pdftex.def Info: image_tex/gambar 2.jpg  used on input line 80.
 (pdftex.def)             Requested size: 252.0pt x 188.99075pt.
 [2 <./image_tex/gambar 1.jpg> <./image_tex/gambar 2.jpg>]
 <image_tex/gambar 3.png, id=16, 606.46574pt x 277.035pt>
 File: image_tex/gambar 3.png Graphic file (type png)
 <use image_tex/gambar 3.png>
-Package pdftex.def Info: image_tex/gambar 3.png  used on input line 91.
+Package pdftex.def Info: image_tex/gambar 3.png  used on input line 92.
 (pdftex.def)             Requested size: 252.0pt x 115.11533pt.
-<image_tex/gambar 4.jpg, id=17, 521.95pt x 1798.72pt>
+<image_tex/gambar 4.jpg, id=17, 652.4375pt x 232.87pt>
 File: image_tex/gambar 4.jpg Graphic file (type jpg)
 <use image_tex/gambar 4.jpg>
-Package pdftex.def Info: image_tex/gambar 4.jpg  used on input line 103.
-(pdftex.def)             Requested size: 42.9276pt x 147.93513pt.
-<image_tex/gambar 5.jpg, id=18, 722.7pt x 1734.48pt>
+Package pdftex.def Info: image_tex/gambar 4.jpg  used on input line 104.
+(pdftex.def)             Requested size: 187.33041pt x 66.86253pt.
+<image_tex/gambar 5.jpg, id=18, 554.07pt x 237.88875pt>
 File: image_tex/gambar 5.jpg Graphic file (type jpg)
 <use image_tex/gambar 5.jpg>
-Package pdftex.def Info: image_tex/gambar 5.jpg  used on input line 110.
-(pdftex.def)             Requested size: 61.64372pt x 147.94493pt.
-LaTeX Font Info:    Trying to load font information for OT1+pcr on input line 119.
+Package pdftex.def Info: image_tex/gambar 5.jpg  used on input line 113.
+(pdftex.def)             Requested size: 155.73035pt x 66.86247pt.
+LaTeX Font Info:    Trying to load font information for OT1+pcr on input line 122.
  (D:\MikTEX\tex/latex/psnfss\ot1pcr.fd
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
 )
-Underfull \hbox (badness 3260) in paragraph at lines 145--146
+Underfull \hbox (badness 3260) in paragraph at lines 148--149
 []\OT1/ptm/m/n/10 Pengujian kin-erja di-lakukan ter-hadap end-point di-rek-
  []
 
 
-Underfull \hbox (badness 4096) in paragraph at lines 155--156
+Underfull \hbox (badness 4096) in paragraph at lines 158--159
 \OT1/ptm/m/n/8 Masyarakat Berba-sis Web Meng-gu-nakan REST-ful API,'' \OT1/ptm/m/it/8 Ju-r-nal
  []
 
@@ -447,15 +455,15 @@ L3 programming layer <2025-12-24>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 6245 strings out of 467871
- 100762 string characters out of 5435208
- 522234 words of memory out of 5000000
- 35045 multiletter control sequences out of 15000+600000
+ 6306 strings out of 467871
+ 101659 string characters out of 5435208
+ 523684 words of memory out of 5000000
+ 35102 multiletter control sequences out of 15000+600000
  671221 words of font info for 128 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 67i,15n,77p,1578b,478s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 67i,15n,77p,1578b,471s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <D:/MikTEX/fonts/type1/urw/courier/ucrr8a.pfb><D:/MikTEX/fonts/type1/urw/times/utmb8a.pfb><D:/MikTEX/fonts/type1/urw/times/utmbi8a.pfb><D:/MikTEX/fonts/type1/urw/times/utmr8a.pfb><D:/MikTEX/fonts/type1/urw/times/utmri8a.pfb>
-Output written on umkm.pdf (4 pages, 712106 bytes).
+Output written on umkm.pdf (4 pages, 679310 bytes).
 PDF statistics:
  51 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)

@@ -360,7 +360,7 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
                 }}
               >
                 {loading 
-                  ? 'MEMPROSES & UPLOAD KE CLOUD...' 
+                  ? 'MEMPROSES PENDAFTARAN...' 
                   : (!berkasSyarat ? 'UNGGAH DOKUMEN UNTUK DAFTAR' : 'DAFTAR SEKARANG')}
               </button>
 

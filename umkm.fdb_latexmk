@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1793814200.81782 "d:/E-Governance/umkm.tex" "umkm.pdf" "umkm" 1793814202.02916 0
+["pdflatex"] 1794378336.87893 "d:/E-Governance/umkm.tex" "umkm.pdf" "umkm" 1794378337.96066 0
   "C:/Users/LENOVO/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1793813803 82507 a9eef8696c92627b87e9975edea03b2a ""
   "C:/Users/LENOVO/AppData/Local/MiKTeX/miktex/data/le/pdftex/pdflatex.fmt" 1790703788 13316655 b22ac5993fc6ca9f9f34420d96370ed6 ""
   "D:/MikTEX/fonts/enc/dvips/base/8r.enc" 1458473887 4993 80dc9bab7f31fb78a000ccfed0e27cab ""
@@ -65,6 +65,7 @@
   "D:/MikTEX/tex/latex/cite/cite.sty" 1425353482 26218 19edeff8cdc2bcb704e8051dc55eb5a7 ""
   "D:/MikTEX/tex/latex/dblfloatfix/dblfloatfix.sty" 1356946578 7429 c8f2321c9dcd3421eb76564b0d179fe3 ""
   "D:/MikTEX/tex/latex/epstopdf-pkg/epstopdf-base.sty" 1623003186 13886 d1306dcf79a944f6988e688c1785f9ce ""
+  "D:/MikTEX/tex/latex/float/float.sty" 1469023953 6916 16d2656a1984957e674b149555f1ea1d ""
   "D:/MikTEX/tex/latex/graphics-cfg/color.cfg" 1465894292 1213 620bba36b25224fa9b7e1ccb4ecb76fd ""
   "D:/MikTEX/tex/latex/graphics-cfg/graphics.cfg" 1465894292 1224 978390e9c2234eab29404bc21b268d1e ""
   "D:/MikTEX/tex/latex/graphics-def/pdftex.def" 1762694372 19626 23e2822b9b2b5005f4c549ca98b9334d ""
@@ -82,14 +83,14 @@
   "D:/MikTEX/tex/latex/tools/array.sty" 1761901070 15651 9d7c62df82cb29a555c00550babfe364 ""
   "D:/MikTEX/tex/latex/url/url.sty" 1388490452 12796 8edb7d69a20b857904dd0ea757c14ec9 ""
   "D:/MikTEX/tex/latex/xcolor/xcolor.sty" 1729265222 55384 b454dec21c2d9f45ec0b793f0995b992 ""
-  "d:/E-Governance/umkm.tex" 1793814200 15283 973cba519c8231ee795aaa5d94617eca ""
+  "d:/E-Governance/umkm.tex" 1794378335 15328 4e14ece8d58d6bff294a9f5c27698525 ""
   "image_tex/gambar 1.jpg" 1791292295 358944 264e623ad54e83fb691c610652418ec6 ""
-  "image_tex/gambar 2.jpg" 1790701782 108574 db6e6da18a02e6e26d66c015795e676d ""
+  "image_tex/gambar 2.jpg" 1794377285 166752 261c0341406709ba6291346878c7e126 ""
   "image_tex/gambar 3.png" 1790701853 218062 5fa1a32e39a67639d589422804ad198c ""
-  "image_tex/gambar 4.jpg" 1790707050 102394 e0d9b6d9dca7d1e2e269375cb36ef3fa ""
-  "image_tex/gambar 5.jpg" 1790707157 109529 586d470e37ee0c4bd428f705af3eeea0 ""
-  "umkm.aux" 1793814201 2314 b9c305bad272f1427be949244d6a7035 "pdflatex"
-  "umkm.tex" 1793814200 15283 973cba519c8231ee795aaa5d94617eca ""
+  "image_tex/gambar 4.jpg" 1794295691 29054 19f5a653f5f000428c6d8bd224c12afd ""
+  "image_tex/gambar 5.jpg" 1794296264 26862 6b8c9b3c46de9529ef1f72d69ee0b0ad ""
+  "umkm.aux" 1794378337 2328 578961c1715208cea54624a7879c6c6f "pdflatex"
+  "umkm.tex" 1794378335 15328 4e14ece8d58d6bff294a9f5c27698525 ""
   (generated)
   "umkm.aux"
   "umkm.log"
