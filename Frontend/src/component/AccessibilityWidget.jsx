@@ -95,7 +95,7 @@ export default function AccessibilityWidget() {
       <button
         type="button"
         onClick={() => setBukaMenu(true)}
-        title="Menu Aksesibilitas (CTRL+U)"
+        title="Menu Aksesibilitas"
         aria-label="Buka Menu Aksesibilitas"
         style={{
           position: 'fixed',
