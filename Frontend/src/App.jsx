@@ -8,6 +8,7 @@ import Bantuan from './pages/bantuan';
 import Sertifikasi from './pages/sertifikasi';
 import RiwayatDetail from './pages/riwayat';
 import Profil from './pages/profil';
+import AccessibilityWidget from './component/AccessibilityWidget';
 
 // Import Admin App dari folder adminpanel
 import AdminApp from './adminpanel/AdminApp';
@@ -17,13 +18,19 @@ export default function App() {
   const [pelatihanTerpilih, setPelatihanTerpilih] = useState(null);
   const [notifTerpilih, setNotifTerpilih] = useState(null);
   const [currentUser, setCurrentUser] = useState(() => {
-    const simpanan = localStorage.getItem('user_umkm');
-    return simpanan ? JSON.parse(simpanan) : null;
+    try {
+      const simpanan = localStorage.getItem('user_umkm');
+      return simpanan ? JSON.parse(simpanan) : null;
+    } catch {
+      return null;
+    }
   });
 
   const handleLogout = () => {
     localStorage.removeItem('user_umkm');
     localStorage.removeItem('token');
+    localStorage.removeItem('admin_umkm');
+    localStorage.removeItem('token_admin');
     sessionStorage.clear();
     setCurrentUser(null);
     setHalaman('dashboard');
@@ -62,11 +69,14 @@ export default function App() {
   // LOGIKA 1: Jika user yang login memiliki role 'admin'
   if (currentUser && currentUser.role === 'admin') {
     return (
-      <AdminApp 
-        user={currentUser} 
-        onKeluar={handleLogout}
-        setHalaman={navigasiHalaman} 
-      />
+      <>
+        <AdminApp 
+          user={currentUser} 
+          onKeluar={handleLogout}
+          setHalaman={navigasiHalaman} 
+        />
+        <AccessibilityWidget />
+      </>
     );
   }
 
@@ -196,6 +206,9 @@ export default function App() {
           onLoginSukses={handleLoginAdmin}
         />
       )}
+
+      {/* Widget Menu Aksesibilitas Melayang (CTRL + U) */}
+      <AccessibilityWidget />
     </div>
   );
 }
