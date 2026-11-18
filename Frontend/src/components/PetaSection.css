@@ -1,0 +1,263 @@
+.peta-section {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  height: 100vh;
+  height: 100svh;
+  min-height: 560px;
+  overflow: hidden;
+  color: #173a3e;
+  text-align: left;
+  background:
+    radial-gradient(ellipse at 50% 45%, rgba(244, 249, 235, 0.72), transparent 55%),
+    linear-gradient(145deg, #e8f1e7 0%, #d7e8e4 54%, #cbdcdd 100%);
+}
+
+.peta-section__canvas {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+}
+
+.peta-section__canvas canvas {
+  display: block;
+}
+
+.peta-section--compact {
+  height: clamp(320px, 38vw, 460px);
+  min-height: 0;
+  background: transparent;
+  overflow: visible;
+}
+
+.peta-section--compact .peta-section__canvas {
+  z-index: 0;
+}
+
+.peta-section--compact .peta-section__heading,
+.peta-section--compact .peta-section__hint {
+  display: none;
+}
+
+.peta-section.is-hovering-wilayah .peta-section__canvas canvas {
+  cursor: pointer;
+}
+
+.peta-section__heading {
+  position: absolute;
+  top: clamp(24px, 6vh, 60px);
+  left: clamp(20px, 7vw, 100px);
+  max-width: min(460px, calc(100% - 40px));
+  pointer-events: none;
+}
+
+.peta-section__eyebrow {
+  display: inline-block;
+  margin-bottom: 8px;
+  color: #587d70;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.peta-section__heading h2 {
+  margin: 0 0 10px;
+  color: #173a3e;
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: -0.04em;
+}
+
+.peta-section__heading p {
+  max-width: 360px;
+  color: #456468;
+  font-size: clamp(0.88rem, 1.4vw, 1rem);
+}
+
+.peta-section__hint {
+  position: absolute;
+  bottom: clamp(22px, 5vh, 48px);
+  left: clamp(20px, 7vw, 100px);
+  padding: 10px 15px;
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  border-radius: 999px;
+  color: #335b56;
+  background: rgba(255, 255, 255, 0.62);
+  box-shadow: 0 8px 24px rgba(27, 65, 67, 0.08);
+  font-size: 0.8rem;
+  font-weight: 600;
+  backdrop-filter: blur(12px);
+  pointer-events: none;
+}
+
+.peta-loading {
+  width: max-content;
+  padding: 12px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  border-radius: 999px;
+  color: #173a3e;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 8px 24px rgba(27, 65, 67, 0.12);
+  font: 600 0.85rem/1.2 var(--sans, sans-serif);
+}
+
+.peta-popup {
+  position: absolute;
+  right: clamp(20px, 7vw, 100px);
+  bottom: clamp(24px, 6vh, 60px);
+  z-index: 2;
+  width: min(360px, calc(100% - 40px));
+  padding: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 20px;
+  color: #25464a;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 20px 60px rgba(27, 65, 67, 0.2);
+  opacity: 0;
+  transform: translateY(14px);
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 240ms ease,
+    transform 240ms ease,
+    visibility 0s linear 260ms;
+  backdrop-filter: blur(16px);
+}
+
+.peta-popup.is-open {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+  pointer-events: auto;
+  transition:
+    opacity 240ms ease,
+    transform 240ms ease,
+    visibility 0s;
+}
+
+.peta-popup__topline {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.peta-popup__topline .peta-section__eyebrow {
+  margin: 0 0 8px;
+}
+
+.peta-popup__close {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  color: #335b56;
+  background: #edf4ef;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.peta-popup h3 {
+  margin: 0 0 18px;
+  color: #173a3e;
+  font-size: 1.45rem;
+  line-height: 1.2;
+}
+
+.peta-popup__stat {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.peta-popup__stat strong {
+  color: #28725f;
+  font-size: 1.5rem;
+}
+
+.peta-popup__stat span,
+.peta-popup p {
+  color: #597276;
+  font-size: 0.88rem;
+}
+
+.peta-popup p {
+  line-height: 1.6;
+}
+
+.peta-popup__button {
+  width: 100%;
+  margin-top: 20px;
+  padding: 11px 16px;
+  border: 0;
+  border-radius: 10px;
+  color: #fff;
+  background: #1d5b50;
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 160ms ease;
+}
+
+.peta-popup__button:hover {
+  background: #15473f;
+}
+
+@media (max-width: 640px) {
+  .peta-section {
+    min-height: 520px;
+  }
+
+  .peta-section--compact {
+    height: clamp(250px, 68vw, 340px);
+    min-height: 0;
+  }
+
+  .peta-section__heading {
+    top: 24px;
+    left: 20px;
+  }
+
+  .peta-section__heading p {
+    max-width: 280px;
+  }
+
+  .peta-section__hint {
+    bottom: auto;
+    top: 146px;
+    left: 20px;
+    padding: 8px 12px;
+    font-size: 0.7rem;
+  }
+
+  .peta-popup {
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: auto;
+    max-height: min(70svh, 440px);
+    overflow-y: auto;
+    padding: 22px 22px max(22px, env(safe-area-inset-bottom));
+    border-radius: 22px 22px 0 0;
+    transform: translateY(24px);
+  }
+
+  .peta-popup.is-open {
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .peta-popup,
+  .peta-popup.is-open,
+  .peta-popup__button {
+    transition-duration: 1ms;
+  }
+}
