@@ -1,0 +1,137 @@
+{
+  "Wilayah_01": {
+    "nama": "Kab. Bogor",
+    "umkm": 1200,
+    "deskripsi": "Data simulasi UMKM Kabupaten Bogor untuk contoh tampilan peta."
+  },
+  "Wilayah_02": {
+    "nama": "Kab. Sukabumi",
+    "umkm": 860,
+    "deskripsi": "Data simulasi UMKM Kabupaten Sukabumi untuk contoh tampilan peta."
+  },
+  "Wilayah_03": {
+    "nama": "Kab. Cianjur",
+    "umkm": 740,
+    "deskripsi": "Data simulasi UMKM Kabupaten Cianjur untuk contoh tampilan peta."
+  },
+  "Wilayah_04": {
+    "nama": "Kab. Bandung",
+    "umkm": 980,
+    "deskripsi": "Data simulasi UMKM Kabupaten Bandung untuk contoh tampilan peta."
+  },
+  "Wilayah_05": {
+    "nama": "Kab. Garut",
+    "umkm": 690,
+    "deskripsi": "Data simulasi UMKM Kabupaten Garut untuk contoh tampilan peta."
+  },
+  "Wilayah_06": {
+    "nama": "Kab. Tasikmalaya",
+    "umkm": 610,
+    "deskripsi": "Data simulasi UMKM Kabupaten Tasikmalaya untuk contoh tampilan peta."
+  },
+  "Wilayah_07": {
+    "nama": "Kab. Ciamis",
+    "umkm": 520,
+    "deskripsi": "Data simulasi UMKM Kabupaten Ciamis untuk contoh tampilan peta."
+  },
+  "Wilayah_08": {
+    "nama": "Kab. Kuningan",
+    "umkm": 480,
+    "deskripsi": "Data simulasi UMKM Kabupaten Kuningan untuk contoh tampilan peta."
+  },
+  "Wilayah_09": {
+    "nama": "Kab. Cirebon",
+    "umkm": 730,
+    "deskripsi": "Data simulasi UMKM Kabupaten Cirebon untuk contoh tampilan peta."
+  },
+  "Wilayah_10": {
+    "nama": "Kab. Majalengka",
+    "umkm": 570,
+    "deskripsi": "Data simulasi UMKM Kabupaten Majalengka untuk contoh tampilan peta."
+  },
+  "Wilayah_11": {
+    "nama": "Kab. Sumedang",
+    "umkm": 540,
+    "deskripsi": "Data simulasi UMKM Kabupaten Sumedang untuk contoh tampilan peta."
+  },
+  "Wilayah_12": {
+    "nama": "Kab. Indramayu",
+    "umkm": 810,
+    "deskripsi": "Data simulasi UMKM Kabupaten Indramayu untuk contoh tampilan peta."
+  },
+  "Wilayah_13": {
+    "nama": "Kab. Subang",
+    "umkm": 620,
+    "deskripsi": "Data simulasi UMKM Kabupaten Subang untuk contoh tampilan peta."
+  },
+  "Wilayah_14": {
+    "nama": "Kab. Purwakarta",
+    "umkm": 450,
+    "deskripsi": "Data simulasi UMKM Kabupaten Purwakarta untuk contoh tampilan peta."
+  },
+  "Wilayah_15": {
+    "nama": "Kab. Karawang",
+    "umkm": 920,
+    "deskripsi": "Data simulasi UMKM Kabupaten Karawang untuk contoh tampilan peta."
+  },
+  "Wilayah_16": {
+    "nama": "Kab. Bekasi",
+    "umkm": 1150,
+    "deskripsi": "Data simulasi UMKM Kabupaten Bekasi untuk contoh tampilan peta."
+  },
+  "Wilayah_17": {
+    "nama": "Kab. Bandung Barat",
+    "umkm": 670,
+    "deskripsi": "Data simulasi UMKM Kabupaten Bandung Barat untuk contoh tampilan peta."
+  },
+  "Wilayah_18": {
+    "nama": "Kab. Pangandaran",
+    "umkm": 390,
+    "deskripsi": "Data simulasi UMKM Kabupaten Pangandaran untuk contoh tampilan peta."
+  },
+  "Wilayah_19": {
+    "nama": "Kota Bogor",
+    "umkm": 560,
+    "deskripsi": "Data simulasi UMKM Kota Bogor untuk contoh tampilan peta."
+  },
+  "Wilayah_20": {
+    "nama": "Kota Sukabumi",
+    "umkm": 320,
+    "deskripsi": "Data simulasi UMKM Kota Sukabumi untuk contoh tampilan peta."
+  },
+  "Wilayah_21": {
+    "nama": "Kota Bandung",
+    "umkm": 1400,
+    "deskripsi": "Data simulasi UMKM Kota Bandung untuk contoh tampilan peta."
+  },
+  "Wilayah_22": {
+    "nama": "Kota Cirebon",
+    "umkm": 410,
+    "deskripsi": "Data simulasi UMKM Kota Cirebon untuk contoh tampilan peta."
+  },
+  "Wilayah_23": {
+    "nama": "Kota Bekasi",
+    "umkm": 1080,
+    "deskripsi": "Data simulasi UMKM Kota Bekasi untuk contoh tampilan peta."
+  },
+  "Wilayah_24": {
+    "nama": "Kota Depok",
+    "umkm": 960,
+    "deskripsi": "Data simulasi UMKM Kota Depok untuk contoh tampilan peta."
+  },
+  "Wilayah_25": {
+    "nama": "Kota Cimahi",
+    "umkm": 350,
+    "deskripsi": "Data simulasi UMKM Kota Cimahi untuk contoh tampilan peta."
+  },
+  "Wilayah_26": {
+    "nama": "Kota Tasikmalaya",
+    "umkm": 430,
+    "deskripsi": "Data simulasi UMKM Kota Tasikmalaya untuk contoh tampilan peta."
+  },
+  "Wilayah_27": {
+    "nama": "Kota Banjar",
+    "umkm": 210,
+    "deskripsi": "Data simulasi UMKM Kota Banjar untuk contoh tampilan peta."
+  }
+}
