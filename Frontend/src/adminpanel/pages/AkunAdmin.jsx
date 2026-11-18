@@ -5,7 +5,12 @@ import { Header, Card, Chips, SearchBox, DataTable, Badge, Btn, StatCard, C, gri
 
 const ROLES = ['Semua', 'Pelaku UMKM', 'Admin Dinas'];
 const TONE = { 'Pelaku UMKM': 'blue', 'Admin Dinas': 'green' };
-const API_BASE_URL = `http://${window.location.hostname || '127.0.0.1'}:8000`;
+
+// Konfigurasi URL Backend FastAPI yang valid di localhost maupun production Vercel
+const envUrl = import.meta.env.VITE_API_URL;
+const API_BASE_URL = (envUrl && !envUrl.includes('127.0.0.1') && !envUrl.includes('localhost'))
+  ? envUrl.replace(/\/+$/, '').replace(/^http:\/\//i, 'https://')
+  : 'https://si-umkm-jabar.vercel.app';
 
 export default function AkunAdmin() {
   const [dataAkun, setDataAkun] = useState([]);
@@ -14,20 +19,27 @@ export default function AkunAdmin() {
   const [q, setQ] = useState('');
   const [aktifId, setAktifId] = useState(null);
 
-  // Ambil daftar pengguna nyata dari MySQL melalui API FastAPI
+  // Ambil daftar pengguna nyata dari database TiDB/MySQL melalui API FastAPI
   const loadUsers = async () => {
     try {
       setLoading(true);
       const res = await axios.get(`${API_BASE_URL}/api/v1/admin/users`);
-      if (res.data && res.data.data) {
-        const mapped = res.data.data.map((u) => ({
-          ...u,
-          roleDisplay: u.role === 'admin' ? 'Admin Dinas' : 'Pelaku UMKM'
-        }));
-        setDataAkun(mapped);
-        if (mapped.length > 0) {
-          setAktifId(mapped[0].id);
-        }
+      
+      // Mengakomodasi format { status: 'success', data: [...] } maupun array langsung
+      const list = Array.isArray(res.data)
+        ? res.data
+        : (res.data && Array.isArray(res.data.data) ? res.data.data : []);
+
+      const mapped = list.map((u) => ({
+        ...u,
+        roleDisplay: u.role === 'admin' ? 'Admin Dinas' : 'Pelaku UMKM'
+      }));
+
+      setDataAkun(mapped);
+      if (mapped.length > 0) {
+        setAktifId((prev) => (prev && mapped.some((item) => item.id === prev) ? prev : mapped[0].id));
+      } else {
+        setAktifId(null);
       }
     } catch (err) {
       console.error('Gagal mengambil data akun:', err);
@@ -101,7 +113,7 @@ export default function AkunAdmin() {
                       </span>
                       <div>
                         <b>{r.nama}</b>
-                        {r.nik && <div style={{ fontSize: '0.72rem', color: C.mute }}>NIK: {r.nik}</div>}
+                        {r.nik && <div style={{ fontSize: '0.72rem', color: C.mute }}>{r.role === 'admin' ? 'NIP' : 'NIK'}: {r.nik}</div>}
                       </div>
                     </div>
                   )
@@ -139,7 +151,7 @@ export default function AkunAdmin() {
             <Badge tone={TONE[aktif.roleDisplay]}>{aktif.roleDisplay}</Badge>
             <div style={{ color: C.mute, fontSize: '0.8rem', margin: '12px 0', lineHeight: 1.5 }}>
               <div><b>WhatsApp:</b> {aktif.telp || '-'}</div>
-              <div><b>NIK:</b> {aktif.nik || '-'}</div>
+              <div><b>{aktif.role === 'admin' ? 'NIP' : 'NIK'}:</b> {aktif.nik || '-'}</div>
               <div><b>Instansi:</b> {aktif.instansi}</div>
             </div>
             <div style={{ display: 'grid', gap: 8 }}>
