@@ -9,7 +9,7 @@ import {
 
 import Navbar from '../component/navbar';
 import Footer from '../component/footer';
-import videoLanding from '../assets/landing.mp4';
+import PetaSection from '../components/PetaSection';
 
 const DAFTAR_PELATIHAN = [
   {
@@ -563,6 +563,13 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
             padding-bottom: 44px !important;
           }
 
+          .landing-hero-content--map {
+            min-height: 0 !important;
+            grid-template-columns: minmax(0, 1fr) !important;
+            gap: 18px !important;
+            padding-bottom: 36px !important;
+          }
+
           .landing-hero-title,
           .landing-hero-desc {
             margin-left: auto !important;
@@ -729,33 +736,27 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
 
       <Navbar setHalaman={setHalaman} user={user} />
 
-      {/* Hero Video */}
-      <section className="landing-hero" style={{ position: 'relative', width: '100%', minHeight: '100svh', margin: '-48px 0 35px', overflow: 'hidden', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)' }}>
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          aria-hidden="true"
-          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
-        >
-          <source src={videoLanding} type="video/mp4" />
-        </video>
-        <div className="landing-hero-overlay" style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, rgba(27, 65, 67, 0.88) 0%, rgba(15,23,42,0.65) 55%, rgba(0,0,0,0.4) 100%)' }} />
-        <div className="landing-hero-content" style={{ position: 'relative', zIndex: 2, maxWidth: '1200px', width: '100%', minHeight: '100svh', margin: '0 auto', padding: '48px 6% 0', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', color: '#FFFFFF', textAlign: 'left' }}>
-          <h1 className="landing-hero-title" style={{ fontSize: 'clamp(30px, 5vw, 48px)', fontWeight: '800', lineHeight: '1.2', margin: '0 0 16px', maxWidth: '620px', width: '100%' }}>
-            SI-UMKM Jawa Barat
-          </h1>
-          <p className="landing-hero-desc" style={{ fontSize: '16px', lineHeight: '1.6', maxWidth: '620px', width: '100%', margin: '0 0 26px', color: 'rgba(255,255,255,0.9)', textAlign: 'left' }}>
-            Sistem Informasi & Integrasi Layanan UMKM Jawa Barat. Menghubungkan potensi UMKM dengan fasilitasi legalitas dan investasi digital.
-          </p>
-          <button
-            onClick={handlePindahKePelatihan}
-            style={{ backgroundColor: '#D97706', color: '#FFFFFF', border: 'none', padding: '12px 24px', borderRadius: '10px', fontWeight: '700', fontSize: '14px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '8px', boxShadow: '0 4px 14px rgba(217,119,6,0.35)', width: 'fit-content' }}
-          >
-            Ajukan Layanan Mandiri
-            <ArrowRight size={17} />
-          </button>
+      {/* Hero with interactive 3D map */}
+      <section className="landing-hero landing-hero--map" style={{ position: 'relative', width: '100%', margin: '-48px 0 35px', overflow: 'hidden', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)' }}>
+        <div className="landing-hero-content landing-hero-content--map" style={{ position: 'relative', zIndex: 2, maxWidth: '1200px', width: '100%', margin: '0 auto', padding: '48px 6%', boxSizing: 'border-box', color: '#FFFFFF', textAlign: 'left' }}>
+          <div className="landing-hero-copy">
+            <h1 className="landing-hero-title" style={{ fontSize: 'clamp(30px, 5vw, 48px)', fontWeight: '800', lineHeight: '1.2', margin: '0 0 16px', maxWidth: '620px', width: '100%' }}>
+              SI-UMKM Jawa Barat
+            </h1>
+            <p className="landing-hero-desc" style={{ fontSize: '16px', lineHeight: '1.6', maxWidth: '620px', width: '100%', margin: '0 0 26px', color: 'rgba(255,255,255,0.9)', textAlign: 'left' }}>
+              Sistem Informasi & Integrasi Layanan UMKM Jawa Barat. Menghubungkan potensi UMKM dengan fasilitasi legalitas dan investasi digital.
+            </p>
+            <button
+              onClick={handlePindahKePelatihan}
+              style={{ backgroundColor: '#D97706', color: '#FFFFFF', border: 'none', padding: '12px 24px', borderRadius: '10px', fontWeight: '700', fontSize: '14px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '8px', boxShadow: '0 4px 14px rgba(217,119,6,0.35)', width: 'fit-content' }}
+            >
+              Ajukan Layanan Mandiri
+              <ArrowRight size={17} />
+            </button>
+          </div>
+          <div className="landing-hero-map">
+            <PetaSection compact />
+          </div>
         </div>
       </section>
 
