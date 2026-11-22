@@ -13,7 +13,6 @@ video {
 .responsive-card-grid,
 .responsive-detail-grid,
 .responsive-map-grid,
-.admin-layout,
 .admin-content-grid {
   grid-template-columns: minmax(0, 1fr) !important;
 }
@@ -55,12 +54,6 @@ video {
   height: auto !important;
   min-height: 0 !important;
   max-width: 500px;
-}
-
-.admin-sidebar {
-  height: auto !important;
-  min-height: 0;
-  position: static !important;
 }
 
 .admin-main {
@@ -134,16 +127,6 @@ video {
 
   .responsive-social-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-  }
-
-  .admin-layout {
-    grid-template-columns: 240px minmax(0, 1fr) !important;
-  }
-
-  .admin-sidebar {
-    position: sticky !important;
-    top: 0;
-    height: 100svh !important;
   }
 
   .admin-main {

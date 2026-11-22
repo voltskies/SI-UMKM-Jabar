@@ -12,10 +12,10 @@ export default function DashboardAdmin({ go, user }) {
   const [bantuanList, setBantuanList] = useState([]);
   const [sertifList, setSertifList] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [isMobile, setIsMobile] = useState(() => (typeof window !== 'undefined' ? window.innerWidth < 640 : false));
+  const [isMobile, setIsMobile] = useState(() => (typeof window !== 'undefined' ? window.innerWidth < 768 : false));
 
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 640);
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
@@ -56,7 +56,7 @@ export default function DashboardAdmin({ go, user }) {
         right={<Badge>{`Hari ini, ${hariIni}`}</Badge>}
       />
 
-      <div style={grid(isMobile ? 150 : 220)}>
+      <div style={grid(isMobile ? 240 : 220)}>
         <StatCard
           label="Pengajuan Bantuan"
           value={loading ? '...' : bantuanList.length}
