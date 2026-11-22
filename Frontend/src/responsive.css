@@ -46,6 +46,30 @@ video {
   min-height: inherit;
 }
 
+.landing-hero--map {
+  min-height: min(820px, 100svh);
+  background:
+    radial-gradient(ellipse at 78% 48%, rgba(46, 126, 111, 0.5), transparent 42%),
+    linear-gradient(125deg, #123f47 0%, #0b2b36 55%, #154c49 100%);
+}
+
+.landing-hero-content--map {
+  min-height: inherit;
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  align-items: center;
+  gap: clamp(16px, 3vw, 40px);
+}
+
+.landing-hero-copy,
+.landing-hero-map {
+  min-width: 0;
+}
+
+.landing-hero-map {
+  width: 100%;
+}
+
 .landing-hero-heading {
   font-size: clamp(28px, 8vw, 44px) !important;
 }
@@ -146,6 +170,27 @@ video {
 @media (max-width: 767px) {
   .landing-hero {
     min-height: max(100svh, 560px);
+  }
+
+  .landing-hero--map {
+    min-height: 0;
+  }
+
+  .landing-hero-content--map {
+    min-height: 0;
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    gap: 18px;
+    padding-top: 100px;
+    padding-bottom: 36px;
+  }
+
+  .landing-hero-copy {
+    width: 100%;
+  }
+
+  .landing-hero-map {
+    width: min(100%, 520px);
   }
 
   .responsive-page-content {
