@@ -1,29 +1,164 @@
 {
-  "Kab_Bandung": { "nama": "Kab. Bandung", "produk": "Opak Linggar", "unggulan": 0, "foto": "/foto.jpg" },
-  "Kab_Bandung_Barat": { "nama": "Kab. Bandung Barat", "produk": "Wajit Cililin", "unggulan": 0, "foto": "/foto.jpg" },
-  "Kab_Bekasi": { "nama": "Kab. Bekasi", "produk": "Batik Bekasi", "unggulan": 0, "foto": "/foto.jpg" },
-  "Kab_Bogor": { "nama": "Kab. Bogor", "produk": "Asinan Bogor", "unggulan": 0, "foto": "/foto.jpg" },
-  "Kab_Ciamis": { "nama": "Kab. Ciamis", "produk": "Galendo", "unggulan": 0, "foto": "/foto.jpg" },
-  "Kab_Cianjur": { "nama": "Kab. Cianjur", "produk": "Beras Pandan Wangi", "unggulan": 0, "foto": "/foto.jpg" },
-  "Kab_Cirebon": { "nama": "Kab. Cirebon", "produk": "Batik Mega Mendung", "unggulan": 1, "foto": "/foto.jpg" },
-  "Kab_Garut": { "nama": "Kab. Garut", "produk": "Dodol Garut", "unggulan": 0, "foto": "/foto.jpg" },
-  "Kab_Indramayu": { "nama": "Kab. Indramayu", "produk": "Batik Paoman", "unggulan": 0, "foto": "/foto.jpg" },
-  "Kab_Karawang": { "nama": "Kab. Karawang", "produk": "Beras Pandan Wangi Karawang", "unggulan": 0, "foto": "/foto.jpg" },
-  "Kab_Kuningan": { "nama": "Kab. Kuningan", "produk": "Tape Ketan Kuningan", "unggulan": 0, "foto": "/foto.jpg" },
-  "Kab_Majalengka": { "nama": "Kab. Majalengka", "produk": "Kecap Majalengka", "unggulan": 0, "foto": "/foto.jpg" },
-  "Kab_Pangandaran": { "nama": "Kab. Pangandaran", "produk": "Olahan Ikan Laut", "unggulan": 0, "foto": "/foto.jpg" },
-  "Kab_Purwakarta": { "nama": "Kab. Purwakarta", "produk": "Keramik Plered", "unggulan": 3, "foto": "/foto.jpg" },
-  "Kab_Subang": { "nama": "Kab. Subang", "produk": "Olahan Nanas Subang", "unggulan": 0, "foto": "/foto.jpg" },
-  "Kab_Sukabumi": { "nama": "Kab. Sukabumi", "produk": "Mochi Sukabumi", "unggulan": 0, "foto": "/foto.jpg" },
-  "Kab_Sumedang": { "nama": "Kab. Sumedang", "produk": "Tahu Sumedang", "unggulan": 0, "foto": "/foto.jpg" },
-  "Kab_Tasikmalaya": { "nama": "Kab. Tasikmalaya", "produk": "Kelom Geulis", "unggulan": 2, "foto": "/foto.jpg" },
-  "Bandung": { "nama": "Kota Bandung", "produk": "Sepatu Cibaduyut", "unggulan": 4, "foto": "/foto.jpg" },
-  "Banjar": { "nama": "Kota Banjar", "produk": "Sale Pisang", "unggulan": 0, "foto": "/foto.jpg" },
-  "Bekasi": { "nama": "Kota Bekasi", "produk": "Batik Bekasi", "unggulan": 0, "foto": "/foto.jpg" },
-  "Bogor": { "nama": "Kota Bogor", "produk": "Roti Unyil", "unggulan": 0, "foto": "/foto.jpg" },
-  "Cimahi": { "nama": "Kota Cimahi", "produk": "Batik Cimahi", "unggulan": 0, "foto": "/foto.jpg" },
-  "Cirebon": { "nama": "Kota Cirebon", "produk": "Kerajinan Rotan", "unggulan": 5, "foto": "/foto.jpg" },
-  "Depok": { "nama": "Kota Depok", "produk": "Olahan Belimbing Dewa", "unggulan": 0, "foto": "/foto.jpg" },
-  "Sukabumi": { "nama": "Kota Sukabumi", "produk": "Mochi Sukabumi", "unggulan": 0, "foto": "/foto.jpg" },
-  "Tasikmalaya": { "nama": "Kota Tasikmalaya", "produk": "Payung Geulis", "unggulan": 0, "foto": "/foto.jpg" }
+  "Kab_Bandung": {
+    "nama": "Kab. Bandung",
+    "produk": "Opak Linggar",
+    "unggulan": 0,
+    "foto": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Opak_ketan.jpg/640px-Opak_ketan.jpg"
+  },
+  "Kab_Bandung_Barat": {
+    "nama": "Kab. Bandung Barat",
+    "produk": "Wajit Cililin",
+    "unggulan": 0,
+    "foto": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Wajik_ketan.jpg/640px-Wajik_ketan.jpg"
+  },
+  "Kab_Bekasi": {
+    "nama": "Kab. Bekasi",
+    "produk": "Batik Bekasi",
+    "unggulan": 0,
+    "foto": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Batik_Indonesia.jpg/640px-Batik_Indonesia.jpg"
+  },
+  "Kab_Bogor": {
+    "nama": "Kab. Bogor",
+    "produk": "Asinan Bogor",
+    "unggulan": 0,
+    "foto": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Asinan_Bogor.jpg/640px-Asinan_Bogor.jpg"
+  },
+  "Kab_Ciamis": {
+    "nama": "Kab. Ciamis",
+    "produk": "Galendo",
+    "unggulan": 0,
+    "foto": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Galendo_Ciamis.jpg/640px-Galendo_Ciamis.jpg"
+  },
+  "Kab_Cianjur": {
+    "nama": "Kab. Cianjur",
+    "produk": "Beras Pandan Wangi",
+    "unggulan": 0,
+    "foto": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/White%2C_Brown%2C_Red_%26_Wild_prickly.jpg/640px-White%2C_Brown%2C_Red_%26_Wild_prickly.jpg"
+  },
+  "Kab_Cirebon": {
+    "nama": "Kab. Cirebon",
+    "produk": "Batik Mega Mendung",
+    "unggulan": 1,
+    "foto": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Batik_Megamendung_Cirebon.jpg/640px-Batik_Megamendung_Cirebon.jpg"
+  },
+  "Kab_Garut": {
+    "nama": "Kab. Garut",
+    "produk": "Dodol Garut",
+    "unggulan": 0,
+    "foto": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Dodol_Garut.jpg/640px-Dodol_Garut.jpg"
+  },
+  "Kab_Indramayu": {
+    "nama": "Kab. Indramayu",
+    "produk": "Batik Paoman",
+    "unggulan": 0,
+    "foto": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Batik_Indramayu.jpg/640px-Batik_Indramayu.jpg"
+  },
+  "Kab_Karawang": {
+    "nama": "Kab. Karawang",
+    "produk": "Beras Pandan Wangi Karawang",
+    "unggulan": 0,
+    "foto": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/White%2C_Brown%2C_Red_%26_Wild_prickly.jpg/640px-White%2C_Brown%2C_Red_%26_Wild_prickly.jpg"
+  },
+  "Kab_Kuningan": {
+    "nama": "Kab. Kuningan",
+    "produk": "Tape Ketan Kuningan",
+    "unggulan": 0,
+    "foto": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Tape_ketan_daun_jambu.jpg/640px-Tape_ketan_daun_jambu.jpg"
+  },
+  "Kab_Majalengka": {
+    "nama": "Kab. Majalengka",
+    "produk": "Kecap Majalengka",
+    "unggulan": 0,
+    "foto": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Kecap_manis_in_a_bowl.jpg/640px-Kecap_manis_in_a_bowl.jpg"
+  },
+  "Kab_Pangandaran": {
+    "nama": "Kab. Pangandaran",
+    "produk": "Olahan Ikan Laut",
+    "unggulan": 0,
+    "foto": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Ikan_asin_jambal_roti.jpg/640px-Ikan_asin_jambal_roti.jpg"
+  },
+  "Kab_Purwakarta": {
+    "nama": "Kab. Purwakarta",
+    "produk": "Keramik Plered",
+    "unggulan": 3,
+    "foto": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Keramik_Plered_Purwakarta.jpg/640px-Keramik_Plered_Purwakarta.jpg"
+  },
+  "Kab_Subang": {
+    "nama": "Kab. Subang",
+    "produk": "Olahan Nanas Subang",
+    "unggulan": 0,
+    "foto": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Pineapple_and_cross_section.jpg/640px-Pineapple_and_cross_section.jpg"
+  },
+  "Kab_Sukabumi": {
+    "nama": "Kab. Sukabumi",
+    "produk": "Mochi Sukabumi",
+    "unggulan": 0,
+    "foto": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Mochi_Sukabumi.jpg/640px-Mochi_Sukabumi.jpg"
+  },
+  "Kab_Sumedang": {
+    "nama": "Kab. Sumedang",
+    "produk": "Tahu Sumedang",
+    "unggulan": 0,
+    "foto": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Tahu_Sumedang.jpg/640px-Tahu_Sumedang.jpg"
+  },
+  "Kab_Tasikmalaya": {
+    "nama": "Kab. Tasikmalaya",
+    "produk": "Kelom Geulis",
+    "unggulan": 2,
+    "foto": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Kelom_Geulis_Tasikmalaya.jpg/640px-Kelom_Geulis_Tasikmalaya.jpg"
+  },
+  "Bandung": {
+    "nama": "Kota Bandung",
+    "produk": "Sepatu Cibaduyut",
+    "unggulan": 4,
+    "foto": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Mens_leather_shoes.jpg/640px-Mens_leather_shoes.jpg"
+  },
+  "Banjar": {
+    "nama": "Kota Banjar",
+    "produk": "Sale Pisang",
+    "unggulan": 0,
+    "foto": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/Sale_pisang.jpg/640px-Sale_pisang.jpg"
+  },
+  "Bekasi": {
+    "nama": "Kota Bekasi",
+    "produk": "Batik Bekasi",
+    "unggulan": 0,
+    "foto": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Batik_Indonesia.jpg/640px-Batik_Indonesia.jpg"
+  },
+  "Bogor": {
+    "nama": "Kota Bogor",
+    "produk": "Roti Unyil",
+    "unggulan": 0,
+    "foto": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Roti_Unyil_Bogor.jpg/640px-Roti_Unyil_Bogor.jpg"
+  },
+  "Cimahi": {
+    "nama": "Kota Cimahi",
+    "produk": "Batik Cimahi",
+    "unggulan": 0,
+    "foto": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Batik_Indonesia.jpg/640px-Batik_Indonesia.jpg"
+  },
+  "Cirebon": {
+    "nama": "Kota Cirebon",
+    "produk": "Kerajinan Rotan",
+    "unggulan": 5,
+    "foto": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Rattan_furniture.jpg/640px-Rattan_furniture.jpg"
+  },
+  "Depok": {
+    "nama": "Kota Depok",
+    "produk": "Olahan Belimbing Dewa",
+    "unggulan": 0,
+    "foto": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/Starfruit_whole_and_cross_section.jpg/640px-Starfruit_whole_and_cross_section.jpg"
+  },
+  "Sukabumi": {
+    "nama": "Kota Sukabumi",
+    "produk": "Mochi Sukabumi",
+    "unggulan": 0,
+    "foto": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Mochi_Sukabumi.jpg/640px-Mochi_Sukabumi.jpg"
+  },
+  "Tasikmalaya": {
+    "nama": "Kota Tasikmalaya",
+    "produk": "Payung Geulis",
+    "unggulan": 0,
+    "foto": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Payung_Geulis_Tasikmalaya.jpg/640px-Payung_Geulis_Tasikmalaya.jpg"
+  }
 }
