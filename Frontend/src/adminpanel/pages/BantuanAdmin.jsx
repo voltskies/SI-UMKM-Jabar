@@ -1,16 +1,27 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Header, Card, Chips, SearchBox, DataTable, Badge, Btn, C, rp } from '../components/common';
+import { Header, Card, Chips, SearchBox, DataTable, Badge, Btn, C } from '../components/common';
 import BantuanDetail from '../components/BantuanDetail';
 
 const FILTER = ['Semua', 'Menunggu Verifikasi', 'Diproses', 'Perlu Perbaikan', 'Disetujui', 'Ditolak'];
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://si-umkm-jabar.vercel.app';
+
+const envUrl = import.meta.env.VITE_API_URL;
+const API_BASE_URL = (envUrl && !envUrl.includes('127.0.0.1') && !envUrl.includes('localhost'))
+  ? envUrl.replace(/\/+$/, '').replace(/^http:\/\//i, 'https://')
+  : 'https://si-umkm-jabar.vercel.app';
 
 export default function BantuanAdmin({ selectedId, go }) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('Semua');
   const [q, setQ] = useState('');
+  const [isMobile, setIsMobile] = useState(() => (typeof window !== 'undefined' ? window.innerWidth < 640 : false));
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 640);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // 1. Ambil data asli dari endpoint FastAPI
   const loadData = async () => {
@@ -64,21 +75,94 @@ export default function BantuanAdmin({ selectedId, go }) {
     return cocokFilter && term.includes(q.toLowerCase());
   });
 
+  const formatDana = (nominal) =>
+    nominal ? `Rp ${Number(String(nominal).replace(/\D/g, '') || 0).toLocaleString('id-ID')}` : '-';
+
   return (
     <>
       <Header
         crumbs={['Portal Layanan', 'Layanan', 'Bantuan Modal']}
         title="Pengajuan Bantuan Modal"
         desc="Kelola dan verifikasi permohonan bantuan modal usaha UMKM yang tersimpan di database."
+        right={<Btn onClick={loadData}>Muat Ulang</Btn>}
       />
-      <Card>
-        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 14 }}>
+      <Card style={isMobile ? { padding: 14 } : {}}>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: isMobile ? 'column' : 'row',
+            gap: 12,
+            flexWrap: 'wrap',
+            marginBottom: 16,
+            alignItems: isMobile ? 'stretch' : 'center',
+          }}
+        >
           <Chips items={FILTER.map((s) => [s, n(s)])} value={filter} onChange={setFilter} />
           <SearchBox value={q} onChange={setQ} placeholder="Cari nomor pengajuan atau nama usaha" />
         </div>
 
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '40px', color: C.mute }}>Memuat data pengajuan dari database...</div>
+          <div style={{ textAlign: 'center', padding: '40px', color: C.mute }}>
+            Memuat data pengajuan dari database...
+          </div>
+        ) : isMobile ? (
+          rows.length === 0 ? (
+            <p style={{ textAlign: 'center', color: C.mute, padding: 24 }}>Tidak ada data yang cocok.</p>
+          ) : (
+            <div style={{ display: 'grid', gap: 12 }}>
+              {rows.map((r) => (
+                <div
+                  key={r.id}
+                  onClick={() => go('bantuan', r.id)}
+                  style={{
+                    border: `1px solid ${C.line}`,
+                    borderRadius: 12,
+                    padding: 14,
+                    background: '#fff',
+                    display: 'grid',
+                    gap: 8,
+                    cursor: 'pointer',
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                    <b style={{ color: C.ink, fontSize: '0.88rem' }}>{r.nomor_pengajuan}</b>
+                    <Badge>{r.status}</Badge>
+                  </div>
+
+                  <div>
+                    <div style={{ fontWeight: 700, color: C.ink, fontSize: '0.92rem' }}>{r.nama_usaha}</div>
+                    <div style={{ color: C.mute, fontSize: '0.78rem' }}>{r.kategori_usaha}</div>
+                  </div>
+
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      fontSize: '0.8rem',
+                      color: C.mute,
+                      paddingTop: 6,
+                      borderTop: `1px solid ${C.bg}`,
+                    }}
+                  >
+                    <span style={{ fontWeight: 700, color: C.dark }}>{formatDana(r.jumlah_dana)}</span>
+                    <span>{r.created_at ? new Date(r.created_at).toLocaleDateString('id-ID') : '-'}</span>
+                  </div>
+
+                  <Btn
+                    dark
+                    style={{ width: '100%', textAlign: 'center', marginTop: 4 }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      go('bantuan', r.id);
+                    }}
+                  >
+                    Periksa Dokumen →
+                  </Btn>
+                </div>
+              ))}
+            </div>
+          )
         ) : (
           <DataTable
             rows={rows}
@@ -94,7 +178,7 @@ export default function BantuanAdmin({ selectedId, go }) {
                   </>
                 )
               },
-              { h: 'Dana Diajukan', r: (r) => (r.jumlah_dana ? `Rp ${Number(String(r.jumlah_dana).replace(/\D/g, '') || 0).toLocaleString('id-ID')}` : '-') },
+              { h: 'Dana Diajukan', r: (r) => formatDana(r.jumlah_dana) },
               { h: 'Tanggal', r: (r) => (r.created_at ? new Date(r.created_at).toLocaleDateString('id-ID') : '-') },
               { h: 'Status', r: (r) => <Badge>{r.status}</Badge> },
               { h: '', r: () => <Btn style={{ padding: '5px 12px' }}>Periksa</Btn> }

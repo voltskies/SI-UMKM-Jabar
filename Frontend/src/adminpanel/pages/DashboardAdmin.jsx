@@ -3,13 +3,22 @@ import axios from 'axios';
 import { HandCoins, ShieldCheck, ClipboardList, BellRing } from 'lucide-react';
 import { Header, Card, Badge, Btn, StatCard, C, grid } from '../components/common';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://si-umkm-jabar.vercel.app';
-axios.get(`${API_BASE_URL}/api/v1/umkm`)
+const envUrl = import.meta.env.VITE_API_URL;
+const API_BASE_URL = (envUrl && !envUrl.includes('127.0.0.1') && !envUrl.includes('localhost'))
+  ? envUrl.replace(/\/+$/, '').replace(/^http:\/\//i, 'https://')
+  : 'https://si-umkm-jabar.vercel.app';
 
 export default function DashboardAdmin({ go, user }) {
   const [bantuanList, setBantuanList] = useState([]);
   const [sertifList, setSertifList] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isMobile, setIsMobile] = useState(() => (typeof window !== 'undefined' ? window.innerWidth < 768 : false));
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const hariIni = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
 
@@ -47,7 +56,7 @@ export default function DashboardAdmin({ go, user }) {
         right={<Badge>{`Hari ini, ${hariIni}`}</Badge>}
       />
 
-      <div style={grid(220)}>
+      <div style={grid(isMobile ? 240 : 220)}>
         <StatCard
           label="Pengajuan Bantuan"
           value={loading ? '...' : bantuanList.length}
@@ -74,8 +83,8 @@ export default function DashboardAdmin({ go, user }) {
       <Card
         style={{ marginTop: 20 }}
         title={
-          <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <BellRing size={18} /> Antrean Verifikasi Berkas Masuk
+          <span style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+            <BellRing size={18} style={{ flexShrink: 0 }} /> Antrean Verifikasi Berkas Masuk
           </span>
         }
         right={<Badge>{totalAntrean} Antrean Aktif</Badge>}
@@ -95,46 +104,76 @@ export default function DashboardAdmin({ go, user }) {
             {bantuanMenunggu.map((b) => (
               <div
                 key={`bantuan-${b.id}`}
-                style={{ background: C.soft, borderRadius: 12, padding: 16, display: 'flex', justifyContent: 'space-between', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}
+                style={{
+                  background: C.soft,
+                  borderRadius: 12,
+                  padding: isMobile ? 14 : 16,
+                  display: 'flex',
+                  flexDirection: isMobile ? 'column' : 'row',
+                  justifyContent: 'space-between',
+                  gap: isMobile ? 12 : 16,
+                  alignItems: isMobile ? 'stretch' : 'center',
+                }}
               >
-                <div style={{ flex: 1, minWidth: 240 }}>
-                  <div style={{ fontWeight: 700, color: C.ink, fontSize: '0.9rem' }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontWeight: 700, color: C.ink, fontSize: '0.9rem', wordBreak: 'break-word' }}>
                     Permohonan Bantuan Modal: {b.nomor_pengajuan}
-                    <span style={{ color: C.mute, fontWeight: 500, fontSize: '0.75rem', marginLeft: 8 }}>
+                    <span style={{ color: C.mute, fontWeight: 500, fontSize: '0.75rem', marginLeft: 8, display: 'inline-block' }}>
                       {b.created_at ? new Date(b.created_at).toLocaleDateString('id-ID') : '-'}
                     </span>
                   </div>
-                  <div style={{ color: C.link, fontWeight: 600, fontSize: '0.8rem', margin: '2px 0 4px' }}>
+                  <div style={{ color: C.link, fontWeight: 600, fontSize: '0.8rem', margin: '4px 0' }}>
                     {b.nama_usaha} ({b.kategori_usaha})
                   </div>
-                  <div style={{ color: C.mute, fontSize: '0.82rem' }}>
+                  <div style={{ color: C.mute, fontSize: '0.82rem', wordBreak: 'break-word' }}>
                     Nominal: Rp {Number(String(b.jumlah_dana).replace(/\D/g, '') || 0).toLocaleString('id-ID')} · {b.tujuan_penggunaan}
                   </div>
                 </div>
-                <Btn dark onClick={() => go('bantuan', b.id)}>Periksa Dokumen →</Btn>
+                <Btn
+                  dark
+                  style={isMobile ? { width: '100%', textAlign: 'center' } : {}}
+                  onClick={() => go('bantuan', b.id)}
+                >
+                  Periksa Dokumen →
+                </Btn>
               </div>
             ))}
 
             {sertifMenunggu.map((s) => (
               <div
                 key={`sertif-${s.id}`}
-                style={{ background: C.soft, borderRadius: 12, padding: 16, display: 'flex', justifyContent: 'space-between', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}
+                style={{
+                  background: C.soft,
+                  borderRadius: 12,
+                  padding: isMobile ? 14 : 16,
+                  display: 'flex',
+                  flexDirection: isMobile ? 'column' : 'row',
+                  justifyContent: 'space-between',
+                  gap: isMobile ? 12 : 16,
+                  alignItems: isMobile ? 'stretch' : 'center',
+                }}
               >
-                <div style={{ flex: 1, minWidth: 240 }}>
-                  <div style={{ fontWeight: 700, color: C.ink, fontSize: '0.9rem' }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontWeight: 700, color: C.ink, fontSize: '0.9rem', wordBreak: 'break-word' }}>
                     Sertifikasi Produk: {s.nomor_registrasi}
-                    <span style={{ color: C.mute, fontWeight: 500, fontSize: '0.75rem', marginLeft: 8 }}>
+                    <span style={{ color: C.mute, fontWeight: 500, fontSize: '0.75rem', marginLeft: 8, display: 'inline-block' }}>
                       {s.created_at ? new Date(s.created_at).toLocaleDateString('id-ID') : '-'}
                     </span>
                   </div>
-                  <div style={{ color: C.link, fontWeight: 600, fontSize: '0.8rem', margin: '2px 0 4px' }}>
+                  <div style={{ color: C.link, fontWeight: 600, fontSize: '0.8rem', margin: '4px 0' }}>
                     {s.nama_usaha} · {s.jenis_sertifikasi}
                   </div>
-                  <div style={{ color: C.mute, fontSize: '0.82rem' }}>
+                  <div style={{ color: C.mute, fontSize: '0.82rem', wordBreak: 'break-word' }}>
                     Produk: <b>{s.nama_produk}</b> — {s.deskripsi_produk}
                   </div>
                 </div>
-                <Btn dark onClick={() => go('legalitas', s.id)}>Periksa Berkas →</Btn>
+                <Btn
+                  dark
+                  style={isMobile ? { width: '100%', textAlign: 'center' } : {}}
+                  onClick={() => go('legalitas', s.id)}
+                >
+                  Periksa Berkas →
+                </Btn>
               </div>
             ))}
           </div>

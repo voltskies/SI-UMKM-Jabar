@@ -1,5 +1,11 @@
 import { Search } from 'lucide-react';
 
+// URL Backend Production Terpusat untuk seluruh halaman Admin Panel
+const envUrl = import.meta.env.VITE_API_URL;
+export const API_BASE_URL = (envUrl && !envUrl.includes('127.0.0.1') && !envUrl.includes('localhost'))
+  ? envUrl.replace(/\/+$/, '').replace(/^http:\/\//i, 'https://')
+  : 'https://si-umkm-jabar.vercel.app';
+
 export const C = { ink: '#0F172A', mute: '#64748B', line: '#E2E8F0', bg: '#F8FAFC', dark: '#255456', link: '#255456', soft: '#F1F5F9' };
 export const font = 'Inter, system-ui, sans-serif';
 export const rp = (n) => 'Rp ' + Number(n).toLocaleString('id-ID');
@@ -72,9 +78,24 @@ export const Chips = ({ items, value, onChange }) => (
 
 export const SearchBox = ({ value, onChange, placeholder }) => (
   <div style={{ position: 'relative', flex: 1, minWidth: 200 }}>
-    <Search size={15} color="#94A3B8" style={{ position: 'absolute', left: 12, top: 11 }} />
-    <input value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder}
-      style={{ width: '100%', boxSizing: 'border-box', padding: '9px 12px 9px 34px', border: `1px solid ${C.line}`, borderRadius: 8, fontFamily: 'inherit', fontSize: '0.85rem' }} />
+    <Search size={15} color="#94A3B8" style={{ position: 'absolute', left: 12, top: 11, pointerEvents: 'none' }} />
+    <input 
+      value={value} 
+      onChange={(e) => onChange(e.target.value)} 
+      placeholder={placeholder}
+      style={{ 
+        width: '100%', 
+        boxSizing: 'border-box', 
+        padding: '9px 12px 9px 34px', 
+        border: `1px solid ${C.line}`, 
+        borderRadius: 8, 
+        fontFamily: 'inherit', 
+        fontSize: '0.85rem',
+        backgroundColor: '#FFFFFF',
+        color: '#0F172A',
+        colorScheme: 'light'
+      }} 
+    />
   </div>
 );
 
