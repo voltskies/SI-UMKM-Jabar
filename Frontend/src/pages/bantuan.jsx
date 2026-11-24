@@ -181,6 +181,20 @@ export default function Bantuan({ onKembali, setHalaman, user, onPilihNotif }) {
     setFiles((prev) => ({ ...prev, [name]: file }));
   };
 
+  const unggahSatuBerkas = async (file) => {
+    const payload = new FormData();
+    payload.append('file', file);
+    const response = await axios.post(
+      `${API_BASE_URL}/api/v1/layanan/upload-berkas-bantuan`,
+      payload
+    );
+    const fileUrl = response.data?.data?.file_url || response.data?.url;
+    if (!fileUrl) {
+      throw new Error(`URL berkas ${file.name} tidak diterima dari server.`);
+    }
+    return fileUrl;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMsg('');
@@ -221,24 +235,11 @@ export default function Bantuan({ onKembali, setHalaman, user, onPilihNotif }) {
         return;
       }
 
-      const berkas = [
-        ['file_ktp', files.file_ktp],
-        ['file_kk', files.file_kk],
-        ['file_nib', files.file_nib],
-        ['file_proposal', files.file_proposal]
-      ];
-      const berkasTerunggah = await Promise.all(berkas.map(async ([nama, file]) => {
-        const payload = new FormData();
-        payload.append('file', file);
-        const response = await axios.post(
-          `${API_BASE_URL}/api/v1/layanan/upload-berkas-bantuan`,
-          payload
-        );
-        const fileUrl = response.data?.data?.file_url;
-        if (!fileUrl) throw new Error(`URL berkas ${file.name} tidak diterima dari server.`);
-        return [nama, fileUrl];
-      }));
-      const urlBerkas = Object.fromEntries(berkasTerunggah);
+      // Unggah satu per satu secara berurutan agar tidak membebani serverless Vercel bersamaan
+      const urlKtp = await unggahSatuBerkas(files.file_ktp);
+      const urlKk = await unggahSatuBerkas(files.file_kk);
+      const urlNib = await unggahSatuBerkas(files.file_nib);
+      const urlProposal = await unggahSatuBerkas(files.file_proposal);
 
       const dataPayload = new FormData();
       dataPayload.append('nik', cleanNik);
@@ -254,7 +255,10 @@ export default function Bantuan({ onKembali, setHalaman, user, onPilihNotif }) {
       if (formData.nib && formData.nib.trim()) {
         dataPayload.append('nib', formData.nib.trim());
       }
-      berkas.forEach(([nama]) => dataPayload.append(`${nama}_url`, urlBerkas[nama]));
+      dataPayload.append('file_ktp_url', urlKtp);
+      dataPayload.append('file_kk_url', urlKk);
+      dataPayload.append('file_nib_url', urlNib);
+      dataPayload.append('file_proposal_url', urlProposal);
 
       const targetUrl = `${API_BASE_URL}/api/v1/layanan/pengajuan-bantuan`;
       const res = await axios.post(targetUrl, dataPayload);
@@ -348,7 +352,8 @@ export default function Bantuan({ onKembali, setHalaman, user, onPilihNotif }) {
           onMouseEnter={(e) => (e.currentTarget.style.color = '#0b2b36')}
           onMouseLeave={(e) => (e.currentTarget.style.color = '#255456')}
         >
-          <ArrowLeft size={18} /> {view === 'form' ? 'Kembali ke Panel Bantuan' : 'Kembali ke Halaman Utama'}
+          <ArrowLeft size={18} />
+          <span>{view === 'form' ? 'Kembali ke Panel Bantuan' : 'Kembali ke Halaman Utama'}</span>
         </button>
 
         {/* VIEW 1: STATUS DASHBOARD */}
@@ -733,11 +738,13 @@ export default function Bantuan({ onKembali, setHalaman, user, onPilihNotif }) {
                   boxShadow: (loading || !semuaBerkasTerisi) ? 'none' : '0 4px 12px rgba(37, 84, 86, 0.2)'
                 }}
               >
-                {loading 
-                  ? 'Mengunggah berkas...' 
-                  : (!semuaBerkasTerisi 
-                      ? 'Lengkapi Semua 4 Berkas Persyaratan' 
-                      : 'Kirim Permohonan Bantuan Modal')}
+                <span>
+                  {loading 
+                    ? 'Mengunggah berkas...' 
+                    : (!semuaBerkasTerisi 
+                        ? 'Lengkapi Semua 4 Berkas Persyaratan' 
+                        : 'Kirim Permohonan Bantuan Modal')}
+                </span>
               </button>
             </form>
           </div>
