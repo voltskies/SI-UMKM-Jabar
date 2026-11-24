@@ -448,7 +448,6 @@ async def ajukan_bantuan(
             raise HTTPException(status_code=400, detail=f"URL {nama_berkas} bukan berkas bantuan yang valid.")
 
     try:
-        # 1. Cek atau buat user baru dengan ID manual
         user = db.query(models.User).filter(models.User.nik == nik).first()
         if not user:
             last_u = db.query(models.User).order_by(models.User.id.desc()).first()
@@ -483,7 +482,6 @@ async def ajukan_bantuan(
             url_berkas_bantuan("file_proposal"),
         )
 
-        # 3. Generate sequential ID manual untuk tabel pengajuan_bantuan di TiDB
         last_bantuan = db.query(models.PengajuanBantuan).order_by(models.PengajuanBantuan.id.desc()).first()
         next_bantuan_id = (last_bantuan.id + 1) if (last_bantuan and last_bantuan.id) else 1
 
@@ -521,6 +519,29 @@ async def ajukan_bantuan(
         raise HTTPException(status_code=400, detail=f"Gagal memproses permohonan bantuan: {str(e)}")
 
 
+@app.post("/api/v1/layanan/upload-berkas-sertifikasi", tags=["Pelaku UMKM"], summary="Unggah Satu Berkas Sertifikasi")
+async def upload_berkas_sertifikasi_v1(file: UploadFile = File(...)):
+    try:
+        file_url = await upload_file_to_supabase(
+            file,
+            folder="sertifikasi",
+            max_size=4 * 1024 * 1024,
+        )
+        return {
+            "status": "success",
+            "url": file_url,
+            "data": {"file_url": file_url},
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error Upload Berkas Sertifikasi: {str(e)}")
+        raise HTTPException(
+            status_code=400,
+            detail=f"Gagal mengunggah berkas sertifikasi: {str(e)}"
+        )
+
+
 @app.post("/api/v1/layanan/pengajuan-sertifikasi", tags=["Pelaku UMKM"], status_code=status.HTTP_201_CREATED, summary="Ajukan Sertifikasi")
 async def ajukan_sertifikasi(
     nik: str = Form(...),
@@ -532,13 +553,30 @@ async def ajukan_sertifikasi(
     jenis_sertifikasi: str = Form(...),
     deskripsi_produk: str = Form(...),
     nib: Optional[str] = Form(None),
-    file_ktp: UploadFile = File(...),
-    file_foto_produk: UploadFile = File(...),
+    file_ktp: Optional[UploadFile] = File(None),
+    file_foto_produk: Optional[UploadFile] = File(None),
     file_dokumen_pendukung: Optional[UploadFile] = File(None),
+    file_ktp_url: Optional[str] = Form(None),
+    file_foto_produk_url: Optional[str] = Form(None),
+    file_dokumen_pendukung_url: Optional[str] = Form(None),
     db: Session = Depends(get_db)
 ):
     if not re.fullmatch(r"^\d{16}$", nik):
         raise HTTPException(status_code=400, detail="NIK harus 16 digit angka.")
+
+    prefix_url_sertif = (
+        f"{SUPABASE_URL.rstrip('/')}/storage/v1/object/public/{BUCKET_NAME}/sertifikasi/"
+    )
+    berkas_masuk = {
+        "file_ktp": (file_ktp, file_ktp_url, True),
+        "file_foto_produk": (file_foto_produk, file_foto_produk_url, True),
+        "file_dokumen_pendukung": (file_dokumen_pendukung, file_dokumen_pendukung_url, False),
+    }
+    for nama_berkas, (file, file_url, wajib) in berkas_masuk.items():
+        if wajib and not file and not file_url:
+            raise HTTPException(status_code=400, detail=f"Berkas {nama_berkas} wajib diunggah.")
+        if file_url and not file_url.startswith(prefix_url_sertif):
+            raise HTTPException(status_code=400, detail=f"URL {nama_berkas} bukan berkas sertifikasi yang valid.")
 
     try:
         user = db.query(models.User).filter(models.User.nik == nik).first()
@@ -560,12 +598,19 @@ async def ajukan_sertifikasi(
             db.commit()
             db.refresh(user)
 
-        tugas_upload = [
-            upload_file_to_supabase(file_ktp, folder="sertifikasi"),
-            upload_file_to_supabase(file_foto_produk, folder="sertifikasi"),
-            upload_file_to_supabase(file_dokumen_pendukung, folder="sertifikasi") if file_dokumen_pendukung else asyncio.sleep(0, result=None)
-        ]
-        url_ktp, url_foto_produk, url_pendukung = await asyncio.gather(*tugas_upload)
+        async def url_berkas_sertif(nama_berkas):
+            file, file_url, wajib = berkas_masuk[nama_berkas]
+            if file_url:
+                return file_url
+            if file:
+                return await upload_file_to_supabase(file, folder="sertifikasi")
+            return "" if not wajib else None
+
+        url_ktp, url_foto_produk, url_pendukung = await asyncio.gather(
+            url_berkas_sertif("file_ktp"),
+            url_berkas_sertif("file_foto_produk"),
+            url_berkas_sertif("file_dokumen_pendukung"),
+        )
 
         last_sertif = db.query(models.PengajuanSertifikasi).order_by(models.PengajuanSertifikasi.id.desc()).first()
         next_sertif_id = (last_sertif.id + 1) if (last_sertif and last_sertif.id) else 1

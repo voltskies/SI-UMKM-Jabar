@@ -269,7 +269,7 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
                   </div>
                 ) : (
                   <div style={{ fontSize: '0.72rem', color: '#94A3B8', marginTop: '4px' }}>
-                    * Unggah berkas identitas/syarat untuk membuka tombol daftar
+                    * Unggah berkas identitas/syarat terlebih dahulu
                   </div>
                 )}
               </div>

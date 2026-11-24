@@ -83,7 +83,7 @@ export default function Sertifikasi({ onKembali, setHalaman, user, onPilihNotif 
     ? import.meta.env.VITE_API_URL.replace(/:8000$/, '').replace(/^http:\/\//i, 'https://')
     : 'https://si-umkm-jabar.vercel.app';
 
-  const MAX_FILE_SIZE = 7 * 1024 * 1024; // 7 MB
+  const MAX_FILE_SIZE = 4 * 1024 * 1024; // 4 MB (batas aman serverless Vercel)
 
   // Validasi seluruh berkas wajib diunggah
   const semuaBerkasTerisi = Boolean(
@@ -142,9 +142,9 @@ export default function Sertifikasi({ onKembali, setHalaman, user, onPilihNotif 
 
     const file = selectedFiles[0];
 
-    // Validasi batas ukuran file (7 MB)
+    // Validasi batas ukuran file (4 MB)
     if (file.size > MAX_FILE_SIZE) {
-      setErrorForm(`Ukuran file "${file.name}" melebihi batas maksimal 7 MB.`);
+      setErrorForm(`Ukuran file "${file.name}" melebihi batas maksimal 4 MB.`);
       e.target.value = '';
       setFiles((prev) => ({ ...prev, [name]: null }));
       return;
@@ -176,6 +176,21 @@ export default function Sertifikasi({ onKembali, setHalaman, user, onPilihNotif 
     setFiles((prev) => ({ ...prev, [name]: file }));
   };
 
+  const unggahSatuBerkas = async (fileObj) => {
+    const uploadData = new FormData();
+    uploadData.append('file', fileObj);
+    const uploadRes = await axios.post(
+      `${API_BASE_URL}/api/v1/layanan/upload-berkas-sertifikasi`,
+      uploadData,
+      { headers: { 'Content-Type': 'multipart/form-data' } }
+    );
+    const fileUrl = uploadRes.data?.data?.file_url || uploadRes.data?.url;
+    if (!fileUrl) {
+      throw new Error(`Gagal mendapatkan URL untuk berkas ${fileObj.name}`);
+    }
+    return fileUrl;
+  };
+
   const handleSubmitForm = async (e) => {
     e.preventDefault();
     setErrorForm('');
@@ -205,6 +220,12 @@ export default function Sertifikasi({ onKembali, setHalaman, user, onPilihNotif 
     setLoading(true);
 
     try {
+      // 1. Unggah berkas satu per satu agar terhindar dari limit ukuran payload Vercel
+      const urlKtp = await unggahSatuBerkas(files.file_ktp);
+      const urlFotoProduk = await unggahSatuBerkas(files.file_foto_produk);
+      const urlDokumenPendukung = await unggahSatuBerkas(files.file_dokumen_pendukung);
+
+      // 2. Kirim data form beserta URL berkas hasil unggahan
       const formData = new FormData();
       formData.append('nik', cleanNik);
       formData.append('nama_lengkap', dataPemohon.nama_lengkap.trim());
@@ -219,9 +240,9 @@ export default function Sertifikasi({ onKembali, setHalaman, user, onPilihNotif 
         formData.append('nib', dataPemohon.nib.trim());
       }
 
-      formData.append('file_ktp', files.file_ktp);
-      formData.append('file_foto_produk', files.file_foto_produk);
-      formData.append('file_dokumen_pendukung', files.file_dokumen_pendukung);
+      formData.append('file_ktp_url', urlKtp);
+      formData.append('file_foto_produk_url', urlFotoProduk);
+      formData.append('file_dokumen_pendukung_url', urlDokumenPendukung);
 
       const targetUrl = `${API_BASE_URL}/api/v1/layanan/pengajuan-sertifikasi`;
 
@@ -311,7 +332,8 @@ export default function Sertifikasi({ onKembali, setHalaman, user, onPilihNotif 
           onMouseEnter={(e) => (e.currentTarget.style.color = '#0b2b36')}
           onMouseLeave={(e) => (e.currentTarget.style.color = '#255456')}
         >
-          <ArrowLeft size={18} /> {view === 'form' ? 'Kembali ke Panel Legalitas' : 'Kembali ke Halaman Utama'}
+          <ArrowLeft size={18} />
+          <span>{view === 'form' ? 'Kembali ke Panel Legalitas' : 'Kembali ke Halaman Utama'}</span>
         </button>
 
         {/* VIEW 1: STATUS DASHBOARD */}
@@ -561,14 +583,14 @@ export default function Sertifikasi({ onKembali, setHalaman, user, onPilihNotif 
               {/* Bagian 3: Unggah Berkas (Semua Wajib) */}
               <div style={{ marginBottom: '28px', textAlign: 'left' }}>
                 <h3 style={{ fontSize: '0.98rem', fontWeight: '700', color: '#255456', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px', textAlign: 'left' }}>
-                  <Upload size={17} /> 3. Berkas Persyaratan Wajib (Semua Dokumen Wajib Diunggah, Maks. 7 MB)
+                  <Upload size={17} /> 3. Berkas Persyaratan Wajib (Semua Dokumen Wajib Diunggah, Maks. 4 MB)
                 </h3>
                 <div className="responsive-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', textAlign: 'left' }}>
                   
                   {/* Berkas 1: KTP */}
                   <div style={{ border: `1px dashed ${files.file_ktp ? '#255456' : '#CBD5E1'}`, borderRadius: '8px', padding: '12px', backgroundColor: '#F8FAFC', textAlign: 'left' }}>
                     <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', color: '#334155', marginBottom: '4px', textAlign: 'left' }}>
-                      Foto KTP Pemohon * <span style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: '400' }}>(PDF/JPG/PNG, Maks. 7MB)</span>
+                      Foto KTP Pemohon * <span style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: '400' }}>(PDF/JPG/PNG, Maks. 4MB)</span>
                     </label>
                     <input 
                       type="file" 
@@ -586,7 +608,7 @@ export default function Sertifikasi({ onKembali, setHalaman, user, onPilihNotif 
                   {/* Berkas 2: Foto Produk */}
                   <div style={{ border: `1px dashed ${files.file_foto_produk ? '#255456' : '#CBD5E1'}`, borderRadius: '8px', padding: '12px', backgroundColor: '#F8FAFC', textAlign: 'left' }}>
                     <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', color: '#334155', marginBottom: '4px', textAlign: 'left' }}>
-                      Foto Tempat / Kemasan Produk * <span style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: '400' }}>(PDF/JPG/PNG, Maks. 7MB)</span>
+                      Foto Tempat / Kemasan Produk * <span style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: '400' }}>(PDF/JPG/PNG, Maks. 4MB)</span>
                     </label>
                     <input 
                       type="file" 
@@ -604,7 +626,7 @@ export default function Sertifikasi({ onKembali, setHalaman, user, onPilihNotif 
                   {/* Berkas 3: Dokumen Pendukung */}
                   <div style={{ border: `1px dashed ${files.file_dokumen_pendukung ? '#255456' : '#CBD5E1'}`, borderRadius: '8px', padding: '12px', backgroundColor: '#F8FAFC', gridColumn: 'span 2', textAlign: 'left' }}>
                     <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', color: '#334155', marginBottom: '4px', textAlign: 'left' }}>
-                      Dokumen Pendukung / NIB / Surat Keterangan Usaha * <span style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: '400' }}>(Wajib PDF, Maks. 7MB)</span>
+                      Dokumen Pendukung / NIB / Surat Keterangan Usaha * <span style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: '400' }}>(Wajib PDF, Maks. 4MB)</span>
                     </label>
                     <input 
                       type="file" 
@@ -640,11 +662,13 @@ export default function Sertifikasi({ onKembali, setHalaman, user, onPilihNotif 
                   boxShadow: (loading || !semuaBerkasTerisi) ? 'none' : '0 4px 12px rgba(37, 84, 86, 0.2)'
                 }}
               >
-                {loading 
-                  ? 'Mengunggah Berkas...' 
-                  : (!semuaBerkasTerisi 
-                      ? 'Lengkapi Semua 3 Berkas Persyaratan untuk Mengirim' 
-                      : 'Kirim Permohonan Sertifikasi')}
+                <span>
+                  {loading 
+                    ? 'Mengunggah Berkas...' 
+                    : (!semuaBerkasTerisi 
+                        ? 'Lengkapi Semua 3 Berkas Persyaratan untuk Mengirim' 
+                        : 'Kirim Permohonan Sertifikasi')}
+                </span>
               </button>
             </form>
           </div>
