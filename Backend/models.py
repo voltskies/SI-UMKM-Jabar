@@ -96,3 +96,15 @@ class PengajuanSertifikasi(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
     pemohon = relationship("User", back_populates="sertifikasi")
+
+
+class RiwayatStatusPengajuan(Base):
+    __tablename__ = "riwayat_status_pengajuan"
+
+    id = Column(Integer, primary_key=True, index=True)
+    jenis_pengajuan = Column(String(30), nullable=False, index=True)
+    pengajuan_id = Column(Integer, nullable=False, index=True)
+    status_sebelumnya = Column(String(50), nullable=True)
+    status_baru = Column(String(50), nullable=False)
+    catatan_admin = Column(Text, nullable=True)
+    changed_at = Column(DateTime, default=datetime.utcnow, nullable=False)

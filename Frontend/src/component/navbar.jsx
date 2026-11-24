@@ -18,6 +18,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode,
   const [sidebarNotifOpen, setSidebarNotifOpen] = useState(false);
   const [daftarNotif, setDaftarNotif] = useState([]);
   const [loadingNotif, setLoadingNotif] = useState(false);
+  const [errorNotif, setErrorNotif] = useState('');
   const [toast, setToast] = useState({ show: false, message: '' });
   const [versiDibaca, setVersiDibaca] = useState(0);
   const [filterNotif, setFilterNotif] = useState('Semua'); // 'Semua' | 'pelatihan' | 'bantuan' | 'sertifikasi'
@@ -137,6 +138,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode,
   const fetchNotifikasiReal = useCallback(async (silent = false) => {
     if (!user) {
       setDaftarNotif([]);
+      setErrorNotif('');
       return;
     }
     if (sedangFetch.current) return;
@@ -146,20 +148,43 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode,
       if (!silent) setLoadingNotif(true);
       const items = [];
 
-      const ambil = (path) =>
-        axios.get(`${API_BASE_URL}${path}`).then((r) => r.data?.data || []).catch(() => null);
+      const ambil = async (path) => {
+        const response = await axios.get(`${API_BASE_URL}${path}`);
+        if (!Array.isArray(response.data?.data)) {
+          throw new Error(`Respons notifikasi tidak valid dari ${path}.`);
+        }
+        return response.data.data;
+      };
+      const requests = [
+        { label: 'bantuan', promise: ambil('/api/v1/admin/pengajuan') },
+        { label: 'sertifikasi', promise: ambil('/api/v1/admin/sertifikasi') }
+      ];
+      if (user.role !== 'admin' && user.id) {
+        requests.push({
+          label: 'pelatihan',
+          promise: ambil(`/api/v1/layanan/pendaftaran-pelatihan/user/${user.id}`)
+        });
+      }
 
-      const [dataBantuan, dataSertifikasi, dataPelatihan] = await Promise.all([
-        ambil('/api/v1/admin/pengajuan'),
-        ambil('/api/v1/admin/sertifikasi'),
-        user.id ? ambil(`/api/v1/layanan/pendaftaran-pelatihan/user/${user.id}`) : Promise.resolve([])
-      ]);
+      const results = await Promise.allSettled(requests.map((request) => request.promise));
+      const failedRequests = results
+        .map((result, index) => ({ result, request: requests[index] }))
+        .filter(({ result }) => result.status === 'rejected');
+      failedRequests.forEach(({ result, request }) => {
+        console.error(`Gagal mengambil notifikasi ${request.label}:`, result.reason);
+      });
+      setErrorNotif(failedRequests.length
+        ? 'Sebagian status pengajuan belum berhasil dimuat. Coba muat ulang beberapa saat lagi.'
+        : '');
+      if (failedRequests.length === requests.length) return;
 
-      if (dataBantuan === null && dataSertifikasi === null && dataPelatihan === null) return;
-
-      const listBantuan = dataBantuan || [];
-      const listSertifikasi = dataSertifikasi || [];
-      const listPelatihan = dataPelatihan || [];
+      const dataByLabel = {};
+      results.forEach((result, index) => {
+        dataByLabel[requests[index].label] = result.status === 'fulfilled' ? result.value : [];
+      });
+      const listBantuan = dataByLabel.bantuan || [];
+      const listSertifikasi = dataByLabel.sertifikasi || [];
+      const listPelatihan = dataByLabel.pelatihan || [];
 
       if (user.role === 'admin') {
         listBantuan
@@ -203,6 +228,8 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode,
             items.push({
               id: `user-bantuan-${b.id}`,
               key: `user-bantuan-${b.id}|${b.status}|${b.catatan_admin || ''}`,
+              recordId: b.id,
+              recordType: 'bantuan',
               tipe: 'bantuan',
               judul: `Permohonan Bantuan (${b.nomor_pengajuan})`,
               pesan,
@@ -222,13 +249,15 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode,
             items.push({
               id: `user-sertif-${s.id}`,
               key: `user-sertif-${s.id}|${s.status}|${s.catatan_admin || ''}`,
+              recordId: s.id,
+              recordType: 'sertifikasi',
               tipe: 'sertifikasi',
               judul: `Legalitas & Sertifikasi (${s.nomor_registrasi})`,
               pesan,
               waktu: s.created_at ? new Date(s.created_at).toLocaleDateString('id-ID') : 'Terkini',
               status: s.status,
               targetHalaman: 'sertifikasi',
-              perluPerhatian: b => b.status !== 'Menunggu Verifikasi'
+              perluPerhatian: s.status !== 'Menunggu Verifikasi'
             });
           });
 
@@ -236,6 +265,8 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode,
           items.push({
             id: `user-pelatihan-${p.id}`,
             key: `user-pelatihan-${p.id}|${p.status}`,
+            recordId: p.id,
+            recordType: 'pelatihan',
             tipe: 'pelatihan',
             judul: `Pelatihan: ${p.judul_pelatihan}`,
             pesan: `Pendaftaran terkirim. Penyelenggara: ${p.penyelenggara || 'Dinas KUK Jabar'}. Status: ${p.status}.`,
@@ -261,6 +292,7 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode,
       setDaftarNotif(items);
     } catch (err) {
       console.error('Gagal mengambil data notifikasi:', err);
+      setErrorNotif('Notifikasi gagal diperbarui dari server. Coba muat ulang beberapa saat lagi.');
     } finally {
       sedangFetch.current = false;
       setLoadingNotif(false);
@@ -823,7 +855,14 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode,
                   <FileText size={36} color="#CBD5E1" style={{ margin: '0 auto 12px' }} />
                   <p style={{ margin: 0, fontSize: '0.86rem', fontWeight: '600' }}>Silakan masuk ke akun Anda</p>
                 </div>
-              ) : loadingNotif ? (
+              ) : (
+                <>
+                  {errorNotif && (
+                    <div role="alert" style={{ margin: '12px 16px', padding: '12px', borderRadius: '8px', backgroundColor: '#FEF2F2', color: '#991B1B', fontSize: '0.8rem' }}>
+                      {errorNotif}
+                    </div>
+                  )}
+                  {loadingNotif ? (
                 <p style={{ textAlign: 'center', color: '#94A3B8', fontSize: '0.85rem', marginTop: '40px' }}>Memeriksa notifikasi...</p>
               ) : notifTerfilter.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '50px 20px', color: '#64748B' }}>
@@ -896,6 +935,8 @@ export default function Navbar({ halamanAktif, setHalaman, user, onLogout, mode,
                     </button>
                   </div>
                 ))
+              )}
+                </>
               )}
             </div>
           </div>

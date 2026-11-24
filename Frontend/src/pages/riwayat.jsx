@@ -1,13 +1,84 @@
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 import { 
   ArrowLeft, Clock, CheckCircle2, AlertCircle, Calendar, 
-  Tag, ShieldCheck, Building2, FileText, Check, AlertTriangle, 
-  HelpCircle, ExternalLink, ChevronRight
+  ShieldCheck, Building2, FileText, Check, HelpCircle
 } from 'lucide-react';
 import Navbar from '../component/navbar';
 import Footer from '../component/footer';
 
+const formatTanggal = (value) => {
+  if (!value) return '—';
+  const normalizedValue = typeof value === 'string'
+    && value.includes('T')
+    && !/[zZ]|[+-]\d{2}:?\d{2}$/.test(value)
+    ? `${value}Z`
+    : value;
+  const date = new Date(normalizedValue);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
+};
+
 export default function RiwayatDetail({ data, onKembali, setHalaman, user, onPilihNotif }) {
-  const statusStr = (data?.status || 'Menunggu Verifikasi').trim();
+  const [detailBackend, setDetailBackend] = useState(null);
+  const [errorBackend, setErrorBackend] = useState(null);
+  const isLocalHost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+  const API_BASE_URL = import.meta.env.VITE_API_URL
+    || (isLocalHost ? `http://${window.location.hostname}:8000` : 'https://si-umkm-jabar.vercel.app');
+  const recordKey = data?.recordType && data?.recordId && user?.id
+    ? `${data.recordType}:${data.recordId}:${user.id}`
+    : null;
+
+  useEffect(() => {
+    if (!recordKey) return undefined;
+
+    let active = true;
+    let fetching = false;
+    const fetchDetail = async () => {
+      if (fetching) return;
+      fetching = true;
+      try {
+        const response = await axios.get(
+          `${API_BASE_URL}/api/v1/layanan/riwayat/${data.recordType}/${data.recordId}`,
+          { params: { user_id: user.id } }
+        );
+        if (!response.data?.data?.pengajuan) {
+          throw new Error('Respons detail pengajuan tidak lengkap.');
+        }
+        if (active) {
+          setDetailBackend({ key: recordKey, data: response.data.data });
+          setErrorBackend(null);
+        }
+      } catch (error) {
+        console.error('Gagal memperbarui detail pengajuan:', error);
+        if (active) setErrorBackend({ key: recordKey, message: 'Status terbaru belum dapat dimuat dari server.' });
+      } finally {
+        fetching = false;
+      }
+    };
+
+    fetchDetail();
+    const timer = window.setInterval(() => {
+      if (!document.hidden) fetchDetail();
+    }, 10000);
+    const handleVisibility = () => {
+      if (!document.hidden) fetchDetail();
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    return () => {
+      active = false;
+      window.clearInterval(timer);
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
+  }, [API_BASE_URL, data?.recordId, data?.recordType, recordKey, user?.id]);
+
+  const snapshot = detailBackend?.key === recordKey ? detailBackend.data : null;
+  const errorMessage = errorBackend?.key === recordKey ? errorBackend.message : null;
+  const isLoadingDetail = Boolean(recordKey && !snapshot && !errorMessage);
+  const pengajuan = snapshot?.pengajuan;
+  const riwayatStatus = snapshot?.riwayat || [];
+  const statusStr = String(pengajuan?.status || data?.status || 'Status belum tersedia').trim();
   const isApproved = statusStr === 'Disetujui' || statusStr === 'Selesai' || statusStr === 'Terdaftar';
   const isRejected = statusStr === 'Ditolak' || statusStr === 'Perlu Perbaikan';
   const isPending = !isApproved && !isRejected;
@@ -28,36 +99,38 @@ export default function RiwayatDetail({ data, onKembali, setHalaman, user, onPil
   // Ekstraksi info nomor registrasi / judul bersih
   const judulAsli = data?.judul || 'Pengajuan Layanan UMKM';
   const noRegMatch = judulAsli.match(/\(([^)]+)\)/);
-  const nomorRegistrasi = noRegMatch ? noRegMatch[1] : (data?.id || 'REG-UMKM-JBR');
-
-  // Langkah timeline tracking alur birokrasi
+  const nomorRegistrasi = pengajuan?.nomor_pengajuan
+    || pengajuan?.nomor_registrasi
+    || (noRegMatch ? noRegMatch[1] : (data?.recordId || 'REG-UMKM-JBR'));
+  const waktuPengajuan = pengajuan?.created_at || pengajuan?.tanggal_daftar || data?.waktu;
   const steps = [
     {
-      title: 'Berkas Dikirim',
-      desc: 'Pemohon telah mengunggah dokumen persyaratan',
+      title: 'Pengajuan diterima',
+      desc: 'Data pengajuan tercatat di sistem.',
       completed: true,
       current: false,
-      date: data?.waktu || 'Terkirim'
+      date: formatTanggal(pengajuan?.created_at || pengajuan?.tanggal_daftar || data?.waktu)
     },
-    {
-      title: 'Verifikasi Administrator',
-      desc: isPending ? 'Sedang ditinjau oleh tim teknis dinas' : 'Pemeriksaan kelengkapan dokumen selesai',
+    ...riwayatStatus.map((event, index) => {
+      const statusBerubah = event.status_sebelumnya !== event.status_baru;
+      return {
+        title: statusBerubah ? `Status diperbarui: ${event.status_baru}` : 'Catatan verifikator diperbarui',
+        desc: event.catatan_admin || `Status pengajuan: ${event.status_baru}.`,
+        completed: true,
+        current: index === riwayatStatus.length - 1 && event.status_baru === statusStr,
+        date: formatTanggal(event.changed_at),
+        isError: event.status_baru === 'Ditolak' || event.status_baru === 'Perlu Perbaikan'
+      };
+    }),
+    ...(!riwayatStatus.length || riwayatStatus[riwayatStatus.length - 1]?.status_baru !== statusStr ? [{
+      title: `Status terkini: ${statusStr}`,
+      desc: pengajuan?.catatan_admin
+        || (isPending ? 'Pengajuan sedang menunggu atau menjalani verifikasi admin.' : 'Status ini tercatat di backend; riwayat perubahan sebelumnya belum tersedia.'),
       completed: isApproved || isRejected,
-      current: isPending,
-      date: isPending ? 'Dalam Proses' : 'Selesai diverifikasi'
-    },
-    {
-      title: isRejected ? 'Permohonan Ditolak / Revisi' : 'Keputusan & Validasi Akhir',
-      desc: isApproved 
-        ? 'Layanan disetujui, surat keputusan/sertifikat diterbitkan' 
-        : isRejected 
-        ? 'Dokumen perlu diperbaiki sesuai catatan verifikator' 
-        : 'Menunggu hasil evaluasi berkas',
-      completed: isApproved || isRejected,
-      current: isApproved || isRejected,
-      date: isApproved ? 'Terbit' : isRejected ? 'Perlu Tindakan' : 'Tahap Akhir',
+      current: true,
+      date: snapshot ? 'Status terkini dari backend' : 'Status pada notifikasi',
       isError: isRejected
-    }
+    }] : [])
   ];
 
   return (
@@ -104,7 +177,7 @@ export default function RiwayatDetail({ data, onKembali, setHalaman, user, onPil
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '14px', borderBottom: '1px solid #F1F5F9', paddingBottom: '22px', marginBottom: '28px' }}>
             <div style={{ textAlign: 'left' }}>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', backgroundColor: '#eaf1f1', color: '#255456', padding: '4px 12px', borderRadius: '999px', fontSize: '0.74rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '10px' }}>
-                <ShieldCheck size={14} /> Pelacakan Dokumen Real-Time
+                <ShieldCheck size={14} /> Status tersinkron dari backend
               </div>
               <h1 style={{ margin: '0 0 6px', fontSize: 'clamp(20px, 3.2vw, 24px)', fontWeight: '800', color: '#0F172A', textAlign: 'left', lineHeight: 1.3 }}>
                 {data?.judul || 'Rincian Pengajuan Layanan'}
@@ -132,6 +205,17 @@ export default function RiwayatDetail({ data, onKembali, setHalaman, user, onPil
               <span>{statusStr}</span>
             </div>
           </div>
+
+          {isLoadingDetail && (
+            <div role="status" style={{ marginBottom: '20px', padding: '12px 14px', borderRadius: '10px', backgroundColor: '#EFF6FF', color: '#1E40AF', fontSize: '0.82rem' }}>
+              Mengambil status terbaru dari server...
+            </div>
+          )}
+          {errorMessage && (
+            <div role="alert" style={{ marginBottom: '20px', padding: '12px 14px', borderRadius: '10px', backgroundColor: '#FEF2F2', color: '#991B1B', fontSize: '0.82rem' }}>
+              {errorMessage} Informasi yang terlihat mungkin belum mencerminkan pembaruan terakhir admin.
+            </div>
+          )}
 
           {/* Stepper Tracking Visual (Alur Birokrasi) */}
           <div style={{ marginBottom: '32px' }}>
@@ -200,7 +284,7 @@ export default function RiwayatDetail({ data, onKembali, setHalaman, user, onPil
                 <Calendar size={14} /> Tanggal Registrasi
               </div>
               <div style={{ fontSize: '0.92rem', fontWeight: '700', color: '#0F172A' }}>
-                {data?.waktu || 'Terkini'}
+                {formatTanggal(waktuPengajuan)}
               </div>
             </div>
 
@@ -228,7 +312,9 @@ export default function RiwayatDetail({ data, onKembali, setHalaman, user, onPil
               color: isRejected ? '#991B1B' : (isApproved ? '#166534' : '#334155'),
               lineHeight: '1.65'
             }}>
-              {data?.pesan || 'Tidak ada catatan tambahan untuk berkas ini.'}
+              {snapshot
+                ? (pengajuan?.catatan_admin || 'Belum ada catatan dari verifikator.')
+                : (data?.pesan || 'Belum ada catatan tambahan untuk berkas ini.')}
             </div>
           </div>
 
@@ -249,9 +335,9 @@ export default function RiwayatDetail({ data, onKembali, setHalaman, user, onPil
                 Informasi Penting
               </div>
               <div style={{ fontSize: '0.78rem', color: '#1E3A8A', lineHeight: 1.5 }}>
-                {isApproved && 'Selamat! Pengajuan Anda telah disetujui secara resmi. Anda dapat mencetak berkas sertifikasi atau menghadiri pelatihan sesuai jadwal tertera.'}
+                {isApproved && 'Pengajuan Anda telah disetujui oleh admin. Ikuti petunjuk pada catatan verifikator jika ada.'}
                 {isRejected && 'Berkas ditolak atau memerlukan revisi. Silakan periksa kembali catatan evaluator di atas dan ajukan perbaikan berkas melalui halaman layanan terkait.'}
-                {isPending && 'Dokumen pengajuan Anda saat ini berada dalam antrean pemeriksaan oleh tim verifikator Dinas KUK. Notifikasi akan diperbarui secara otomatis ketika status berubah.'}
+                {isPending && 'Pengajuan Anda masih menunggu atau sedang diproses verifikator. Status diperbarui dari backend secara berkala.'}
               </div>
             </div>
           </div>

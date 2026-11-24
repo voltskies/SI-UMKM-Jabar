@@ -96,6 +96,23 @@ class VerifikasiRequest(BaseModel):
     catatan_admin: Optional[str] = None
 
 
+def catat_riwayat_status(
+    db: Session,
+    jenis_pengajuan: str,
+    pengajuan_id: int,
+    status_sebelumnya: Optional[str],
+    status_baru: str,
+    catatan_admin: Optional[str],
+):
+    db.add(models.RiwayatStatusPengajuan(
+        jenis_pengajuan=jenis_pengajuan,
+        pengajuan_id=pengajuan_id,
+        status_sebelumnya=status_sebelumnya,
+        status_baru=status_baru,
+        catatan_admin=catatan_admin,
+    ))
+
+
 # 1. UMUM & AUTENTIKASI PENGGUNA
 
 @app.get("/", tags=["Umum"], summary="Cek Kesiapan Server API")
@@ -682,8 +699,14 @@ def verifikasi_pengajuan(pengajuan_id: int, payload: VerifikasiRequest, db: Sess
     pengajuan = db.query(models.PengajuanBantuan).filter(models.PengajuanBantuan.id == pengajuan_id).first()
     if not pengajuan:
         raise HTTPException(status_code=404, detail="Data tidak ditemukan.")
+    status_sebelumnya = pengajuan.status
+    catatan_sebelumnya = pengajuan.catatan_admin
     pengajuan.status = payload.status
     pengajuan.catatan_admin = payload.catatan_admin
+    if status_sebelumnya != payload.status or catatan_sebelumnya != payload.catatan_admin:
+        catat_riwayat_status(
+            db, "bantuan", pengajuan.id, status_sebelumnya, payload.status, payload.catatan_admin
+        )
     db.commit()
     return {"status": "success", "message": "Status berhasil diperbarui."}
 
@@ -701,10 +724,65 @@ def verifikasi_sertifikasi(sertifikasi_id: int, payload: VerifikasiRequest, db: 
     sertifikasi = db.query(models.PengajuanSertifikasi).filter(models.PengajuanSertifikasi.id == sertifikasi_id).first()
     if not sertifikasi:
         raise HTTPException(status_code=404, detail="Data tidak ditemukan.")
+    status_sebelumnya = sertifikasi.status
+    catatan_sebelumnya = sertifikasi.catatan_admin
     sertifikasi.status = payload.status
     sertifikasi.catatan_admin = payload.catatan_admin
+    if status_sebelumnya != payload.status or catatan_sebelumnya != payload.catatan_admin:
+        catat_riwayat_status(
+            db, "sertifikasi", sertifikasi.id, status_sebelumnya, payload.status, payload.catatan_admin
+        )
     db.commit()
     return {"status": "success", "message": "Status sertifikasi berhasil diperbarui."}
+
+
+@app.get("/api/v1/layanan/riwayat/{jenis_pengajuan}/{pengajuan_id}", tags=["Pelaku UMKM"], summary="Ambil Status dan Riwayat Pengajuan")
+def get_riwayat_pengajuan(
+    jenis_pengajuan: str,
+    pengajuan_id: int,
+    user_id: int = Query(...),
+    db: Session = Depends(get_db),
+):
+    model_by_type = {
+        "bantuan": models.PengajuanBantuan,
+        "sertifikasi": models.PengajuanSertifikasi,
+        "pelatihan": models.PendaftaranPelatihan,
+    }
+    model = model_by_type.get(jenis_pengajuan)
+    if model is None:
+        raise HTTPException(status_code=404, detail="Jenis pengajuan tidak ditemukan.")
+
+    pengajuan = db.query(model).filter(
+        model.id == pengajuan_id,
+        model.user_id == user_id,
+    ).first()
+    if pengajuan is None:
+        raise HTTPException(status_code=404, detail="Pengajuan tidak ditemukan.")
+
+    riwayat = []
+    if jenis_pengajuan in {"bantuan", "sertifikasi"}:
+        riwayat = db.query(models.RiwayatStatusPengajuan).filter(
+            models.RiwayatStatusPengajuan.jenis_pengajuan == jenis_pengajuan,
+            models.RiwayatStatusPengajuan.pengajuan_id == pengajuan_id,
+        ).order_by(models.RiwayatStatusPengajuan.changed_at.asc()).all()
+
+    data_pengajuan = {
+        "id": pengajuan.id,
+        "status": pengajuan.status,
+        "catatan_admin": getattr(pengajuan, "catatan_admin", None),
+        "created_at": getattr(pengajuan, "created_at", None),
+        "tanggal_daftar": getattr(pengajuan, "tanggal_daftar", None),
+        "nomor_pengajuan": getattr(pengajuan, "nomor_pengajuan", None),
+        "nomor_registrasi": getattr(pengajuan, "nomor_registrasi", None),
+    }
+
+    return {
+        "status": "success",
+        "data": {
+            "pengajuan": data_pengajuan,
+            "riwayat": riwayat,
+        },
+    }
 
 
 @app.get("/api/v1/admin/users", tags=["Admin Dinas"], summary="Get Semua Akun Pengguna")
