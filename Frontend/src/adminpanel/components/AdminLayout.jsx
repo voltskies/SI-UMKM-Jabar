@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import { LayoutDashboard, HandCoins, ShieldCheck, Users, LogOut, ChevronDown, Menu, X } from 'lucide-react';
-import { C, font } from './common';
+import axios from 'axios';
+import { LayoutDashboard, HandCoins, ShieldCheck, Users, LogOut, ChevronDown, Menu, X, Bell } from 'lucide-react';
+import { API_BASE_URL, C, font } from './common';
 
 const MENU = [
   [null, [['dashboard', 'Dashboard', LayoutDashboard]]],
@@ -12,8 +13,37 @@ export default function AdminLayout({ page, go, user, onKeluar, children }) {
   const [isMobile, setIsMobile] = useState(() => (typeof window !== 'undefined' ? window.innerWidth < 768 : false));
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [notificationOpen, setNotificationOpen] = useState(false);
+  const [notificationCounts, setNotificationCounts] = useState({ pelatihan: 0, bantuan: 0, sertifikasi: 0, total: 0 });
   const profileRef = useRef(null);
   const namaAdmin = user?.nama?.trim() || 'Administrator Dinas';
+
+  useEffect(() => {
+    let active = true;
+
+    const loadNotifications = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/api/v1/admin/notifikasi`);
+        if (active) {
+          const counts = response.data?.data;
+          if (!counts || !['pelatihan', 'bantuan', 'sertifikasi', 'total'].every((key) => Number.isInteger(counts[key]))) {
+            throw new Error('Format jumlah notifikasi dari API tidak valid.');
+          }
+          setNotificationCounts(counts);
+        }
+      } catch (error) {
+        console.error('Gagal memuat jumlah notifikasi admin:', error);
+      }
+    };
+
+    loadNotifications();
+    const interval = window.setInterval(loadNotifications, 15000);
+
+    return () => {
+      active = false;
+      window.clearInterval(interval);
+    };
+  }, []);
 
   useEffect(() => {
     const handleResize = () => {
@@ -197,73 +227,169 @@ export default function AdminLayout({ page, go, user, onKeluar, children }) {
           )}
 
           {/* Dropdown Profil Admin */}
-          <div ref={profileRef} style={{ position: 'relative', marginLeft: 'auto' }}>
-            <button
-              type="button"
-              onClick={() => setProfileOpen((open) => !open)}
-              aria-expanded={profileOpen}
-              aria-haspopup="menu"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-                border: `1px solid ${C.line}`,
-                borderRadius: 999,
-                padding: '4px 12px 4px 4px',
-                fontSize: '0.82rem',
-                fontWeight: 600,
-                color: C.ink,
-                background: '#fff',
-                cursor: 'pointer',
-                fontFamily: 'inherit',
-                maxWidth: isMobile ? '200px' : 'none',
-              }}
-            >
-              <span
+          <div style={{ position: 'relative', marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ position: 'relative' }}>
+              <button
+                type="button"
+                onClick={() => setNotificationOpen((open) => !open)}
+                aria-label={`Notifikasi, ${notificationCounts.total} pengajuan perlu ditindaklanjuti`}
+                aria-expanded={notificationOpen}
+                aria-haspopup="true"
                 style={{
-                  width: 28,
-                  height: 28,
-                  borderRadius: '50%',
-                  background: '#164E43',
-                  color: '#fff',
+                  position: 'relative',
                   display: 'grid',
                   placeItems: 'center',
-                  fontSize: '0.75rem',
-                  flexShrink: 0,
-                }}
-              >
-                {namaAdmin.charAt(0).toUpperCase()}
-              </span>
-              <span
-                style={{
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                {namaAdmin}
-              </span>
-              <ChevronDown size={15} color="#64748B" style={{ flexShrink: 0 }} />
-            </button>
-
-            {profileOpen && (
-              <div
-                role="menu"
-                style={{
-                  position: 'absolute',
-                  top: 'calc(100% + 10px)',
-                  right: 0,
-                  width: 260,
-                  maxWidth: 'calc(100vw - 32px)',
-                  background: '#fff',
+                  width: 40,
+                  height: 40,
                   border: `1px solid ${C.line}`,
-                  borderRadius: 14,
-                  boxShadow: '0 12px 28px rgba(15,23,42,0.16)',
-                  padding: 14,
-                  zIndex: 1000,
-                  boxSizing: 'border-box',
+                  borderRadius: '50%',
+                  background: '#fff',
+                  color: C.dark,
+                  cursor: 'pointer',
                 }}
               >
+                <Bell size={19} />
+                {notificationCounts.total > 0 && (
+                  <span
+                    aria-hidden="true"
+                    style={{
+                      position: 'absolute',
+                      top: -5,
+                      right: -5,
+                      minWidth: 18,
+                      height: 18,
+                      padding: '0 4px',
+                      borderRadius: 999,
+                      background: '#DC2626',
+                      color: '#fff',
+                      fontSize: '0.68rem',
+                      lineHeight: '18px',
+                      fontWeight: 700,
+                      textAlign: 'center',
+                      boxSizing: 'border-box',
+                    }}
+                  >
+                    {notificationCounts.total > 99 ? '99+' : notificationCounts.total}
+                  </span>
+                )}
+              </button>
+
+              {notificationOpen && (
+                <div
+                  role="status"
+                  style={{
+                    position: 'absolute',
+                    top: 'calc(100% + 10px)',
+                    right: 0,
+                    width: 280,
+                    maxWidth: 'calc(100vw - 32px)',
+                    padding: 16,
+                    background: '#fff',
+                    border: `1px solid ${C.line}`,
+                    borderRadius: 14,
+                    boxShadow: '0 12px 28px rgba(15,23,42,0.16)',
+                    zIndex: 1000,
+                    boxSizing: 'border-box',
+                  }}
+                >
+                  <div style={{ fontSize: '0.88rem', fontWeight: 700, color: C.ink, marginBottom: 10 }}>
+                    Pengajuan perlu ditindaklanjuti
+                  </div>
+                  {[
+                    ['Pendaftaran pelatihan', notificationCounts.pelatihan],
+                    ['Permohonan bantuan', notificationCounts.bantuan],
+                    ['Sertifikasi', notificationCounts.sertifikasi],
+                  ].map(([label, count]) => (
+                    <div
+                      key={label}
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        gap: 12,
+                        padding: '8px 0',
+                        borderTop: `1px solid ${C.line}`,
+                        color: C.mute,
+                        fontSize: '0.82rem',
+                      }}
+                    >
+                      <span>{label}</span>
+                      <b style={{ color: C.ink }}>{count}</b>
+                    </div>
+                  ))}
+                  <div style={{ marginTop: 8, color: C.mute, fontSize: '0.72rem' }}>
+                    Diperbarui otomatis setiap 15 detik.
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div ref={profileRef} style={{ position: 'relative' }}>
+              <button
+                type="button"
+                onClick={() => setProfileOpen((open) => !open)}
+                aria-expanded={profileOpen}
+                aria-haspopup="menu"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  border: `1px solid ${C.line}`,
+                  borderRadius: 999,
+                  padding: '4px 12px 4px 4px',
+                  fontSize: '0.82rem',
+                  fontWeight: 600,
+                  color: C.ink,
+                  background: '#fff',
+                  cursor: 'pointer',
+                  fontFamily: 'inherit',
+                  maxWidth: isMobile ? '200px' : 'none',
+                }}
+              >
+                <span
+                  style={{
+                    width: 28,
+                    height: 28,
+                    borderRadius: '50%',
+                    background: '#164E43',
+                    color: '#fff',
+                    display: 'grid',
+                    placeItems: 'center',
+                    fontSize: '0.75rem',
+                    flexShrink: 0,
+                  }}
+                >
+                  {namaAdmin.charAt(0).toUpperCase()}
+                </span>
+                <span
+                  style={{
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {namaAdmin}
+                </span>
+                <ChevronDown size={15} color="#64748B" style={{ flexShrink: 0 }} />
+              </button>
+
+              {profileOpen && (
+                <div
+                  role="menu"
+                  style={{
+                    position: 'absolute',
+                    top: 'calc(100% + 10px)',
+                    right: 0,
+                    width: 260,
+                    maxWidth: 'calc(100vw - 32px)',
+                    background: '#fff',
+                    border: `1px solid ${C.line}`,
+                    borderRadius: 14,
+                    boxShadow: '0 12px 28px rgba(15,23,42,0.16)',
+                    padding: 14,
+                    zIndex: 1000,
+                    boxSizing: 'border-box',
+                  }}
+                >
                 <div
                   style={{
                     display: 'inline-flex',
@@ -316,8 +442,9 @@ export default function AdminLayout({ page, go, user, onKeluar, children }) {
                 >
                   <LogOut size={16} /> Keluar Akun
                 </button>
-              </div>
-            )}
+                </div>
+              )}
+            </div>
           </div>
         </header>
 

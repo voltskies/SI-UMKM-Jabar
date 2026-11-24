@@ -783,6 +783,29 @@ def get_semua_pengajuan(status_filter: Optional[str] = Query(None), db: Session 
     return {"status": "success", "data": q.order_by(models.PengajuanBantuan.created_at.desc()).all()}
 
 
+@app.get("/api/v1/admin/notifikasi", tags=["Admin Dinas"], summary="Get Jumlah Notifikasi Pengajuan Baru")
+def get_notifikasi_admin(db: Session = Depends(get_db)):
+    pelatihan = db.query(models.PendaftaranPelatihan).filter(
+        models.PendaftaranPelatihan.status == "Terdaftar"
+    ).count()
+    bantuan = db.query(models.PengajuanBantuan).filter(
+        models.PengajuanBantuan.status == "Menunggu Verifikasi"
+    ).count()
+    sertifikasi = db.query(models.PengajuanSertifikasi).filter(
+        models.PengajuanSertifikasi.status == "Menunggu Verifikasi"
+    ).count()
+
+    return {
+        "status": "success",
+        "data": {
+            "pelatihan": pelatihan,
+            "bantuan": bantuan,
+            "sertifikasi": sertifikasi,
+            "total": pelatihan + bantuan + sertifikasi,
+        },
+    }
+
+
 @app.patch("/api/v1/admin/pengajuan/{pengajuan_id}", tags=["Admin Dinas"], summary="Verifikasi Pengajuan")
 def verifikasi_pengajuan(pengajuan_id: int, payload: VerifikasiRequest, db: Session = Depends(get_db)):
     pengajuan = db.query(models.PengajuanBantuan).filter(models.PengajuanBantuan.id == pengajuan_id).first()
