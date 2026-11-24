@@ -104,10 +104,10 @@
 }
 
 .peta-popup {
-  position: absolute;
+  position: fixed;
   right: clamp(20px, 7vw, 100px);
   bottom: clamp(24px, 6vh, 60px);
-  z-index: 2;
+  z-index: 1000;
   width: min(360px, calc(100% - 40px));
   max-height: min(80vh, 560px);
   overflow-y: auto;
