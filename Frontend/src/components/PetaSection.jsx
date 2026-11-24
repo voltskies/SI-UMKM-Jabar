@@ -313,7 +313,8 @@ export default function PetaSection({ compact = false }) {
       nama: selectedName,
       produk: 'Data belum diisi',
       unggulan: 0,
-      foto: ''
+      foto: '',
+      keterangan: ''
     }
     : null;
 
@@ -358,60 +359,61 @@ export default function PetaSection({ compact = false }) {
         Arahkan kursor, lalu klik wilayah pada peta
       </div>
 
-      <div
-        className={`peta-popup${popupOpen ? ' is-open' : ''}`}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="peta-popup-title"
-        aria-hidden={!popupOpen}
-      >
-        {wilayahTerpilih && (
-          <>
-            {wilayahTerpilih.foto && !fotoError ? (
-              <img
-                key={selectedName}
-                src={wilayahTerpilih.foto}
-                alt={`${wilayahTerpilih.produk || 'Produk'} - ${wilayahTerpilih.nama}`}
-                loading="lazy"
-                className="peta-popup__foto"
-                onError={() => setFotoError(true)}
-              />
-            ) : (
-              <div className="peta-popup__foto peta-popup__foto--placeholder" aria-label="Foto belum tersedia">
-                Foto belum tersedia
+      {createPortal(
+        <div
+          className={`peta-popup${popupOpen ? ' is-open' : ''}`}
+          ref={popupRef}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="peta-popup-title"
+          aria-hidden={!popupOpen}
+        >
+          {wilayahTerpilih && (
+            <>
+              {wilayahTerpilih.foto && !fotoError ? (
+                <img
+                  key={selectedName}
+                  src={wilayahTerpilih.foto}
+                  alt={`${wilayahTerpilih.produk || 'Produk'} - ${wilayahTerpilih.nama}`}
+                  loading="lazy"
+                  className="peta-popup__foto"
+                  onError={() => setFotoError(true)}
+                />
+              ) : (
+                <div className="peta-popup__foto peta-popup__foto--placeholder" aria-label="Foto belum tersedia">
+                  Foto belum tersedia
+                </div>
+              )}
+              <div className="peta-popup__topline">
+                <span className="peta-section__eyebrow">Informasi wilayah</span>
+                <button
+                  type="button"
+                  className="peta-popup__close"
+                  onClick={() => setPopupOpen(false)}
+                  aria-label="Tutup informasi wilayah"
+                >
+                  ×
+                </button>
               </div>
-            )}
-            <div className="peta-popup__topline">
-              <span className="peta-section__eyebrow">Informasi wilayah</span>
+              <h3 id="peta-popup-title">{wilayahTerpilih.nama}</h3>
+              <div className="peta-popup__stat">
+                <strong>{wilayahTerpilih.produk || '—'}</strong>
+              </div>
+              {wilayahTerpilih.keterangan ? (
+                <p>{wilayahTerpilih.keterangan}</p>
+              ) : null}
               <button
                 type="button"
-                className="peta-popup__close"
+                className="peta-popup__button"
                 onClick={() => setPopupOpen(false)}
-                aria-label="Tutup informasi wilayah"
               >
-                ×
+                Tutup
               </button>
-            </div>
-            <h3 id="peta-popup-title">{wilayahTerpilih.nama}</h3>
-            <div className="peta-popup__stat">
-              <strong>{wilayahTerpilih.produk || '—'}</strong>
-              <span>Produk unggulan</span>
-            </div>
-            <p>
-              {wilayahTerpilih.unggulan > 0
-                ? `Wilayah unggulan (Top ${wilayahTerpilih.unggulan})`
-                : 'Bukan wilayah unggulan'}
-            </p>
-            <button
-              type="button"
-              className="peta-popup__button"
-              onClick={() => setPopupOpen(false)}
-            >
-              Tutup
-            </button>
-          </>
-        )}
-      </div>
+            </>
+          )}
+        </div>,
+        document.body
+      )}
     </section>
   );
 }
