@@ -283,7 +283,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user, onPil
            <strong style="font-size:13px;color:#0F172A;">${nama}</strong><br/>
            <span style="font-size:11px;color:#64748B;">Belum ada UMKM terdaftar di database untuk wilayah ini.</span>
          </div>`,
-        { sticky: true, direction: 'top' }
+        { sticky: true, direction: 'top', opacity: 1, className: 'umkm-map-tooltip' }
       );
     } else {
       const rincianHtml = Object.entries(d.rincian)
@@ -304,7 +304,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user, onPil
            </div>
            <span style="font-size:10.5px;color:#64748B;font-style:italic;">${getKeunggulanText(d.dominan)}</span>
          </div>`,
-        { sticky: true, direction: 'top' }
+        { sticky: true, direction: 'top', opacity: 1, className: 'umkm-map-tooltip' }
       );
     }
 
@@ -365,6 +365,13 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user, onPil
         }
         .leaflet-control {
           z-index: 20 !important;
+        }
+
+        .leaflet-tooltip.umkm-map-tooltip {
+          background-color: #FFFFFF !important;
+          border: 1px solid #CBD5E1 !important;
+          box-shadow: 0 8px 20px rgba(15, 23, 42, 0.18) !important;
+          opacity: 1 !important;
         }
 
         /* 2. Styling Scrollbar Kustom Halus untuk List UMKM */
@@ -1004,7 +1011,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user, onPil
                       }}
                       radius={7}
                     >
-                      <Tooltip direction="top" offset={[0, -6]} opacity={1} sticky={true}>
+                      <Tooltip direction="top" offset={[0, -6]} opacity={1} sticky={true} className="umkm-map-tooltip">
                         <div style={{ fontSize: '0.78rem', maxWidth: '220px' }}>
                           <div style={{ fontWeight: '800', color: '#0F172A' }}>{item.nama_usaha}</div>
                           <div style={{ color: markerColor, fontWeight: '700' }}>● {item.kategori}</div>
