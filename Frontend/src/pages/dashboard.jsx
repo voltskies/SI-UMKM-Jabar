@@ -131,7 +131,7 @@ function MapZoomListener({ onZoomChanged }) {
   return null;
 }
 
-export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
+export default function Dashboard({ onNavigasiPelatihan, setHalaman, user, onPilihNotif }) {
   const [umkmList, setUmkmList] = useState([]);
   const [geoData, setGeoData] = useState(null);
   const [searchKeyword, setSearchKeyword] = useState('');
@@ -734,7 +734,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user }) {
         }
       `}</style>
 
-      <Navbar setHalaman={setHalaman} user={user} />
+      <Navbar setHalaman={setHalaman} user={user} onPilihNotif={onPilihNotif} />
 
       {/* Hero with interactive 3D map */}
       <section className="landing-hero landing-hero--map" style={{ position: 'relative', width: '100%', margin: '-48px 0 35px', overflow: 'hidden', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)' }}>

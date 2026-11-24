@@ -8,7 +8,7 @@ import PageHero from '../component/pageHero';
 import fotoPelatihan5 from '../assets/pelatihan5.jpg';
 import fotoPelatihan6 from '../assets/pelatihan6.jpg';
 
-export default function Pelatihan({ onKembali, onPilihPelatihan, setHalaman, user }) {
+export default function Pelatihan({ onKembali, onPilihPelatihan, setHalaman, user, onPilihNotif }) {
   const [keyword, setKeyword] = useState('');
   const [filterKategori, setFilterKategori] = useState('Semua');
 
@@ -128,7 +128,7 @@ export default function Pelatihan({ onKembali, onPilihPelatihan, setHalaman, use
     <div className="page-catalog-root" style={{ backgroundColor: '#F8FAFC', minHeight: '100svh', display: 'flex', flexDirection: 'column', fontFamily: 'Inter, system-ui, sans-serif', isolation: 'isolate' }}>
       
       {/* 1. Navbar Atas */}
-      <Navbar setHalaman={setHalaman} user={user} mode="solid-sticky" />
+      <Navbar setHalaman={setHalaman} user={user} mode="solid-sticky" onPilihNotif={onPilihNotif} />
 
       <PageHero
         variant="catalog"

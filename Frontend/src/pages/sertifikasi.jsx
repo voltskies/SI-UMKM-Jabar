@@ -9,7 +9,7 @@ import {
 import Navbar from '../component/navbar';
 import Footer from '../component/footer';
 
-export default function Sertifikasi({ onKembali, setHalaman, user }) {
+export default function Sertifikasi({ onKembali, setHalaman, user, onPilihNotif }) {
   const [view, setView] = useState('dashboard'); // 'dashboard' | 'form'
   const [dataLegalitas, setDataLegalitas] = useState({
     status: 'belum',
@@ -285,7 +285,7 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
     <div style={{ backgroundColor: '#F8FAFC', minHeight: '100svh', display: 'flex', flexDirection: 'column', fontFamily: 'Inter, system-ui, sans-serif' }}>
       
       {/* 1. Header Navbar */}
-      <Navbar setHalaman={setHalaman} user={user} mode="solid-sticky" />
+      <Navbar setHalaman={setHalaman} user={user} mode="solid-sticky" onPilihNotif={onPilihNotif} />
 
       {/* 2. Konten Utama */}
       <main className="page-font-scope" style={{ flex: 1, width: '100%', maxWidth: '860px', margin: '0 auto', padding: '32px 20px 60px 20px', boxSizing: 'border-box', textAlign: 'left' }}>

@@ -9,7 +9,7 @@ import Navbar from '../component/navbar';
 import Footer from '../component/footer';
 import PageHero from '../component/pageHero';
 
-export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user, onArahkanLogin }) {
+export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user, onArahkanLogin, onPilihNotif }) {
   const [loading, setLoading] = useState(false);
   const [berkasSyarat, setBerkasSyarat] = useState(null);
   const [errorMsg, setErrorMsg] = useState('');
@@ -134,7 +134,7 @@ export default function DetailPelatihan({ pelatihan, onKembali, setHalaman, user
 
   return (
     <div className="page-detail-root" style={{ backgroundColor: '#F8FAFC', minHeight: '100svh', display: 'flex', flexDirection: 'column', fontFamily: 'Inter, system-ui, sans-serif', isolation: 'isolate' }}>
-      <Navbar setHalaman={setHalaman} user={user} mode="solid-sticky" />
+      <Navbar setHalaman={setHalaman} user={user} mode="solid-sticky" onPilihNotif={onPilihNotif} />
 
       <PageHero
         variant="detail"
