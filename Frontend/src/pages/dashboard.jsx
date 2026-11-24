@@ -354,24 +354,39 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user, onPil
     <div style={{ backgroundColor: '#F8FAFC', minHeight: '100svh', display: 'flex', flexDirection: 'column', fontFamily: 'Inter, system-ui, sans-serif' }}>
       
       {/* Animasi, Stacking Map & Custom Scrollbar */}
+      {/* Animasi, Stacking Map & Custom Scrollbar */}
       <style>{`
-        /* 1. Pengendalian z-index Leaflet agar tidak tembus melewati Navbar */
+        /* 1. Pengendalian z-index Leaflet agar tidak tembus melewati Navbar & Tooltip selalu di paling depan */
         .leaflet-pane {
           z-index: 10 !important;
         }
-        .leaflet-top,
-        .leaflet-bottom {
-          z-index: 20 !important;
+        .leaflet-tooltip-pane {
+          z-index: 650 !important;
         }
+        .leaflet-popup-pane {
+          z-index: 700 !important;
+        }
+        .leaflet-top,
+        .leaflet-bottom,
         .leaflet-control {
           z-index: 20 !important;
         }
 
         .leaflet-tooltip.umkm-map-tooltip {
+          background: #FFFFFF !important;
           background-color: #FFFFFF !important;
           border: 1px solid #CBD5E1 !important;
-          box-shadow: 0 8px 20px rgba(15, 23, 42, 0.18) !important;
+          border-radius: 10px !important;
+          box-shadow: 0 10px 25px rgba(15, 23, 42, 0.22) !important;
           opacity: 1 !important;
+          padding: 0 !important;
+          color: #0F172A !important;
+        }
+        .leaflet-tooltip-top.umkm-map-tooltip::before {
+          border-top-color: #FFFFFF !important;
+        }
+        .leaflet-tooltip-bottom.umkm-map-tooltip::before {
+          border-bottom-color: #FFFFFF !important;
         }
 
         /* 2. Styling Scrollbar Kustom Halus untuk List UMKM */
@@ -552,6 +567,192 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user, onPil
           border-color: #008848 !important;
           box-shadow: 0 0 0 3px rgba(0, 136, 72, 0.14);
           outline: none;
+        }
+
+        @media (max-width: 768px) {
+          .landing-hero {
+            min-height: 0 !important;
+            margin-bottom: 24px !important;
+          }
+
+          .landing-hero-content {
+            align-items: center !important;
+            text-align: center !important;
+            min-height: 44svh !important;
+            justify-content: flex-start !important;
+            gap: 0 !important;
+            padding-top: 100px !important;
+            padding-bottom: 44px !important;
+          }
+
+          .landing-hero-content--map {
+            min-height: 0 !important;
+            grid-template-columns: minmax(0, 1fr) !important;
+            gap: 18px !important;
+            padding-bottom: 36px !important;
+          }
+
+          .landing-hero-title,
+          .landing-hero-desc {
+            margin-left: auto !important;
+            margin-right: auto !important;
+            text-align: center !important;
+          }
+
+          .landing-hero-title {
+            font-size: 22px !important;
+            margin-bottom: 14px !important;
+          }
+
+          .landing-hero-desc {
+            font-size: 12.5px !important;
+            line-height: 1.5 !important;
+            margin-bottom: 26px !important;
+            max-width: 300px !important;
+          }
+
+          .landing-hero-overlay {
+            background: linear-gradient(180deg, rgba(27, 65, 67, 0.88) 0%, rgba(15, 23, 42, 0.65) 55%, rgba(0, 0, 0, 0.4) 100%) !important;
+          }
+
+          .responsive-section {
+            margin-bottom: 32px !important;
+          }
+          .split-card-container {
+            flex-wrap: nowrap;
+            gap: 8px;
+          }
+          .split-card {
+            flex: 1 1 0;
+            min-width: 0;
+            height: auto;
+          }
+          .split-card .face {
+            height: auto;
+          }
+          .split-card .face.face1,
+          .split-card:hover .face.face1 {
+            transform: none;
+            min-height: 118px;
+            padding: 12px 4px;
+            border-radius: 14px;
+          }
+          .split-card .face.face2 {
+            display: none;
+          }
+          .split-card .face.face1 .icon-box {
+            width: 34px;
+            height: 34px;
+            margin-bottom: 6px;
+          }
+          .split-card .face.face1 .icon-box svg {
+            width: 18px;
+            height: 18px;
+          }
+          .split-card .face.face1 h3 {
+            font-size: 0.78rem;
+            line-height: 1.2;
+            margin: 2px 0;
+          }
+          .split-card .face.face1 span {
+            font-size: 0.62rem;
+            line-height: 1.25;
+          }
+
+          .map-head {
+            flex-direction: column !important;
+            align-items: center !important;
+            text-align: center !important;
+            gap: 4px !important;
+          }
+
+          .responsive-map {
+            height: 280px !important;
+          }
+
+          .map-legend {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr !important;
+            gap: 8px 10px !important;
+            padding: 10px !important;
+            font-size: 0.68rem !important;
+            text-align: left !important;
+            margin-bottom: 8px !important;
+          }
+
+          .map-legend > div {
+            align-items: flex-start !important;
+            text-align: left !important;
+            line-height: 1.3 !important;
+          }
+
+          .map-legend > div > span:first-child {
+            flex-shrink: 0 !important;
+            margin-top: 2px;
+          }
+
+          .community-card {
+            display: flex !important;
+            flex-direction: column !important;
+            background: #0b2b36 !important;
+            border-radius: 20px !important;
+            padding: 18px !important;
+            gap: 16px !important;
+          }
+
+          .community-card__image {
+            order: -1 !important;
+            width: 100% !important;
+            height: 170px !important;
+            border: 0 !important;
+            border-radius: 14px !important;
+            overflow: hidden !important;
+          }
+
+          .community-card__content h2 {
+            color: #FFFFFF !important;
+            font-size: 21px !important;
+            text-align: center !important;
+            margin-bottom: 14px !important;
+          }
+
+          .community-card__content p {
+            display: none !important;
+          }
+
+          .community-list {
+            gap: 12px !important;
+            margin-bottom: 20px !important;
+            font-size: 0.82rem !important;
+          }
+
+          .community-list > div {
+            align-items: flex-start !important;
+          }
+
+          .community-list svg {
+            flex-shrink: 0 !important;
+            color: #FBBF24 !important;
+            margin-top: 2px !important;
+          }
+
+          .community-card__button {
+            display: flex !important;
+            justify-content: center !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+            background: #D97706 !important;
+            color: #FFFFFF !important;
+            padding: 13px 20px !important;
+            border-radius: 10px !important;
+            font-weight: 700 !important;
+            text-decoration: none !important;
+            box-shadow: 0 4px 14px rgba(217,119,6,0.35) !important;
+          }
+
+          .community-card__button:hover {
+            background: #B45309 !important;
+          }
         }
 
         @media (max-width: 768px) {

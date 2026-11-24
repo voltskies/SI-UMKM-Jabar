@@ -205,17 +205,17 @@ def login_user(payload: LoginUserRequest, db: Session = Depends(get_db)):
         )
 
     return {
-    "status": "success",
-    "message": "Login berhasil",
-    "data": {
-        "id": user.id,
-        "nik": user.nik,
-        "nama": user.nama_lengkap,
-        "email": user.email,
-        "nomor_whatsapp": user.nomor_whatsapp,
-        "role": user.role,
-    },
-}
+        "status": "success",
+        "message": "Login berhasil",
+        "data": {
+            "id": user.id,
+            "nik": user.nik,
+            "nama": user.nama_lengkap,
+            "email": user.email,
+            "nomor_whatsapp": user.nomor_whatsapp,
+            "role": user.role,
+        },
+    }
 
 
 # 2. ALUR LUPA PASSWORD
@@ -311,7 +311,6 @@ def get_all_umkm(
     return {"status": "success", "total": len(data), "data": data}
 
 
-
 @app.post("/api/v1/layanan/pendaftaran-pelatihan", tags=["Pelaku UMKM"], status_code=status.HTTP_201_CREATED, summary="Daftar Pelatihan")
 async def daftar_pelatihan(
     user_id: int = Form(...),
@@ -353,11 +352,11 @@ async def daftar_pelatihan(
             status="Terdaftar",
             file_syarat=url_berkas or ""
         )
-        
+
         db.add(pendaftaran)
         db.commit()
         db.refresh(pendaftaran)
-        
+
         return {
             "status": "success",
             "message": "Pendaftaran pelatihan berhasil dikirim!",
@@ -369,11 +368,11 @@ async def daftar_pelatihan(
     except Exception as e:
         db.rollback()
         print(f"DEBUG DB ERROR: {str(e)}")
-        # Mengembalikan error database secara jelas ke frontend daripada crash 500
         raise HTTPException(
             status_code=400,
             detail=f"Gagal menyimpan pendaftaran ke database: {str(e)}"
         )
+
 
 @app.get("/api/v1/layanan/pendaftaran-pelatihan/user/{user_id}", tags=["Pelaku UMKM"], summary="Ambil Riwayat Pelatihan User")
 def get_riwayat_pelatihan(user_id: int, db: Session = Depends(get_db)):
@@ -388,15 +387,25 @@ def get_riwayat_pelatihan(user_id: int, db: Session = Depends(get_db)):
 
 @app.post("/api/v1/layanan/upload-berkas-bantuan", tags=["Pelaku UMKM"], summary="Unggah Satu Berkas Bantuan")
 async def upload_berkas_bantuan(file: UploadFile = File(...)):
-    file_url = await upload_file_to_supabase(
-        file,
-        folder="bantuan",
-        max_size=4 * 1024 * 1024,
-    )
-    return {
-        "status": "success",
-        "data": {"file_url": file_url},
-    }
+    try:
+        file_url = await upload_file_to_supabase(
+            file,
+            folder="bantuan",
+            max_size=4 * 1024 * 1024,
+        )
+        return {
+            "status": "success",
+            "url": file_url,
+            "data": {"file_url": file_url},
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error Upload Berkas Bantuan: {str(e)}")
+        raise HTTPException(
+            status_code=400,
+            detail=f"Gagal mengunggah berkas bantuan: {str(e)}"
+        )
 
 
 @app.post("/api/v1/layanan/pengajuan-bantuan", tags=["Pelaku UMKM"], status_code=status.HTTP_201_CREATED, summary="Ajukan Bantuan")
@@ -459,7 +468,6 @@ async def ajukan_bantuan(
             db.commit()
             db.refresh(user)
 
-        # Upload berkas lama tetap didukung; frontend baru mengirim URL hasil unggahan terpisah.
         async def url_berkas_bantuan(nama_berkas):
             file, file_url, wajib = berkas_masuk[nama_berkas]
             if file_url:
@@ -535,7 +543,6 @@ async def ajukan_sertifikasi(
     try:
         user = db.query(models.User).filter(models.User.nik == nik).first()
         if not user:
-            # Ambil ID terakhir user jika tabel users juga belum auto-increment
             last_u = db.query(models.User).order_by(models.User.id.desc()).first()
             next_user_id = (last_u.id + 1) if (last_u and last_u.id) else 1
 
@@ -553,7 +560,6 @@ async def ajukan_sertifikasi(
             db.commit()
             db.refresh(user)
 
-        # Upload berkas ke Supabase
         tugas_upload = [
             upload_file_to_supabase(file_ktp, folder="sertifikasi"),
             upload_file_to_supabase(file_foto_produk, folder="sertifikasi"),
@@ -561,7 +567,6 @@ async def ajukan_sertifikasi(
         ]
         url_ktp, url_foto_produk, url_pendukung = await asyncio.gather(*tugas_upload)
 
-        # Generate manual ID untuk mengatasi masalah default value kolom id pada TiDB
         last_sertif = db.query(models.PengajuanSertifikasi).order_by(models.PengajuanSertifikasi.id.desc()).first()
         next_sertif_id = (last_sertif.id + 1) if (last_sertif and last_sertif.id) else 1
 
@@ -592,6 +597,7 @@ async def ajukan_sertifikasi(
         db.rollback()
         print(f"Error Pengajuan Sertifikasi: {str(e)}")
         raise HTTPException(status_code=400, detail=f"Gagal memproses pendaftaran sertifikasi: {str(e)}")
+
 
 # 4. UPLOAD STANDALONE
 
@@ -651,7 +657,6 @@ def register_admin(payload: RegisterAdminRequest, db: Session = Depends(get_db))
         )
 
     try:
-        # Generate ID manual agar tidak error di TiDB
         last_u = db.query(models.User).order_by(models.User.id.desc()).first()
         next_user_id = (last_u.id + 1) if (last_u and last_u.id) else 1
 
@@ -840,5 +845,6 @@ def get_semua_user(db: Session = Depends(get_db)):
             "instansi": "Pelaku UMKM Jawa Barat" if u.role == "umum" else "Dinas"
         })
     return {"status": "success", "data": data}
+
 
 app = app
