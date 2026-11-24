@@ -83,15 +83,30 @@ export default function RiwayatDetail({ data, onKembali, setHalaman, user, onPil
   const isRejected = statusStr === 'Ditolak' || statusStr === 'Perlu Perbaikan';
   const isPending = !isApproved && !isRejected;
 
-  // Penentuan Lencana Status
+  // Penentuan Lencana Status (Nuansa Glass Abu Netral)
   const getStatusBadge = () => {
     if (isApproved) {
-      return { bg: '#DCFCE7', text: '#166534', border: '#86EFAC', icon: <CheckCircle2 size={16} /> };
+      return {
+        bg: 'rgba(241, 245, 249, 0.85)',
+        text: '#1E293B',
+        border: 'rgba(148, 163, 184, 0.45)',
+        icon: <CheckCircle2 size={16} color="#255456" />
+      };
     }
     if (isRejected) {
-      return { bg: '#FEE2E2', text: '#991B1B', border: '#FCA5A5', icon: <AlertCircle size={16} /> };
+      return {
+        bg: 'rgba(241, 245, 249, 0.85)',
+        text: '#334155',
+        border: 'rgba(148, 163, 184, 0.5)',
+        icon: <AlertCircle size={16} color="#991B1B" />
+      };
     }
-    return { bg: '#FEF3C7', text: '#92400E', border: '#FCD34D', icon: <Clock size={16} /> };
+    return {
+      bg: 'rgba(241, 245, 249, 0.85)',
+      text: '#334155',
+      border: 'rgba(148, 163, 184, 0.4)',
+      icon: <Clock size={16} color="#475569" />
+    };
   };
 
   const badge = getStatusBadge();
@@ -125,10 +140,10 @@ export default function RiwayatDetail({ data, onKembali, setHalaman, user, onPil
     ...(!riwayatStatus.length || riwayatStatus[riwayatStatus.length - 1]?.status_baru !== statusStr ? [{
       title: `Status terkini: ${statusStr}`,
       desc: pengajuan?.catatan_admin
-        || (isPending ? 'Pengajuan sedang menunggu atau menjalani verifikasi admin.' : 'Status ini tercatat di backend; riwayat perubahan sebelumnya belum tersedia.'),
+        || (isPending ? 'Pengajuan sedang menunggu atau menjalani verifikasi admin.' : 'Status ini tercatat; riwayat perubahan sebelumnya belum tersedia.'),
       completed: isApproved || isRejected,
       current: true,
-      date: snapshot ? 'Status terkini dari backend' : 'Status pada notifikasi',
+      date: snapshot ? 'Status terkini dari verifikator' : 'Status pada notifikasi',
       isError: isRejected
     }] : [])
   ];
@@ -176,9 +191,6 @@ export default function RiwayatDetail({ data, onKembali, setHalaman, user, onPil
           {/* Header Card Status */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '14px', borderBottom: '1px solid #F1F5F9', paddingBottom: '22px', marginBottom: '28px' }}>
             <div style={{ textAlign: 'left' }}>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', backgroundColor: '#eaf1f1', color: '#255456', padding: '4px 12px', borderRadius: '999px', fontSize: '0.74rem', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '10px' }}>
-                <ShieldCheck size={14} /> Status tersinkron dari backend
-              </div>
               <h1 style={{ margin: '0 0 6px', fontSize: 'clamp(20px, 3.2vw, 24px)', fontWeight: '800', color: '#0F172A', textAlign: 'left', lineHeight: 1.3 }}>
                 {data?.judul || 'Rincian Pengajuan Layanan'}
               </h1>
@@ -194,6 +206,8 @@ export default function RiwayatDetail({ data, onKembali, setHalaman, user, onPil
               alignItems: 'center',
               gap: '6px',
               backgroundColor: badge.bg,
+              backdropFilter: 'blur(8px)',
+              WebkitBackdropFilter: 'blur(8px)',
               color: badge.text,
               border: `1px solid ${badge.border}`,
               padding: '8px 16px',
@@ -207,12 +221,38 @@ export default function RiwayatDetail({ data, onKembali, setHalaman, user, onPil
           </div>
 
           {isLoadingDetail && (
-            <div role="status" style={{ marginBottom: '20px', padding: '12px 14px', borderRadius: '10px', backgroundColor: '#EFF6FF', color: '#1E40AF', fontSize: '0.82rem' }}>
+            <div
+              role="status"
+              style={{
+                marginBottom: '20px',
+                padding: '12px 14px',
+                borderRadius: '10px',
+                backgroundColor: 'rgba(241, 245, 249, 0.75)',
+                backdropFilter: 'blur(8px)',
+                WebkitBackdropFilter: 'blur(8px)',
+                border: '1px solid rgba(203, 213, 225, 0.6)',
+                color: '#334155',
+                fontSize: '0.82rem'
+              }}
+            >
               Mengambil status terbaru dari server...
             </div>
           )}
           {errorMessage && (
-            <div role="alert" style={{ marginBottom: '20px', padding: '12px 14px', borderRadius: '10px', backgroundColor: '#FEF2F2', color: '#991B1B', fontSize: '0.82rem' }}>
+            <div
+              role="alert"
+              style={{
+                marginBottom: '20px',
+                padding: '12px 14px',
+                borderRadius: '10px',
+                backgroundColor: 'rgba(241, 245, 249, 0.75)',
+                backdropFilter: 'blur(8px)',
+                WebkitBackdropFilter: 'blur(8px)',
+                border: '1px solid rgba(203, 213, 225, 0.7)',
+                color: '#334155',
+                fontSize: '0.82rem'
+              }}
+            >
               {errorMessage} Informasi yang terlihat mungkin belum mencerminkan pembaruan terakhir admin.
             </div>
           )}
@@ -234,7 +274,7 @@ export default function RiwayatDetail({ data, onKembali, setHalaman, user, onPil
                         width: '28px',
                         height: '28px',
                         borderRadius: '50%',
-                        backgroundColor: step.isError ? '#DC2626' : (step.completed ? '#255456' : (step.current ? '#D97706' : '#E2E8F0')),
+                        backgroundColor: step.isError ? '#475569' : (step.completed ? '#255456' : (step.current ? '#64748B' : '#E2E8F0')),
                         color: step.completed || step.current ? '#FFFFFF' : '#94A3B8',
                         display: 'flex',
                         alignItems: 'center',
@@ -260,7 +300,7 @@ export default function RiwayatDetail({ data, onKembali, setHalaman, user, onPil
                     {/* Kolom Teks Status */}
                     <div style={{ paddingBottom: isLast ? '0' : '24px', flex: 1, textAlign: 'left' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '6px' }}>
-                        <span style={{ fontSize: '0.88rem', fontWeight: '700', color: step.isError ? '#DC2626' : (step.completed || step.current ? '#0F172A' : '#94A3B8') }}>
+                        <span style={{ fontSize: '0.88rem', fontWeight: '700', color: step.completed || step.current ? '#0F172A' : '#94A3B8' }}>
                           {step.title}
                         </span>
                         <span style={{ fontSize: '0.72rem', color: '#94A3B8', fontWeight: '600' }}>
@@ -279,7 +319,7 @@ export default function RiwayatDetail({ data, onKembali, setHalaman, user, onPil
 
           {/* Kotak Ringkasan Rincian Berkas */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px', marginBottom: '24px', textAlign: 'left' }}>
-            <div style={{ backgroundColor: '#F8FAFC', padding: '16px', borderRadius: '12px', border: '1px solid #F1F5F9' }}>
+            <div style={{ backgroundColor: 'rgba(241, 245, 249, 0.65)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', padding: '16px', borderRadius: '12px', border: '1px solid rgba(203, 213, 225, 0.5)' }}>
               <div style={{ fontSize: '0.74rem', color: '#64748B', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
                 <Calendar size={14} /> Tanggal Registrasi
               </div>
@@ -288,7 +328,7 @@ export default function RiwayatDetail({ data, onKembali, setHalaman, user, onPil
               </div>
             </div>
 
-            <div style={{ backgroundColor: '#F8FAFC', padding: '16px', borderRadius: '12px', border: '1px solid #F1F5F9' }}>
+            <div style={{ backgroundColor: 'rgba(241, 245, 249, 0.65)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', padding: '16px', borderRadius: '12px', border: '1px solid rgba(203, 213, 225, 0.5)' }}>
               <div style={{ fontSize: '0.74rem', color: '#64748B', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
                 <Building2 size={14} /> Instansi Penyelenggara
               </div>
@@ -298,18 +338,20 @@ export default function RiwayatDetail({ data, onKembali, setHalaman, user, onPil
             </div>
           </div>
 
-          {/* Kotak Pesan Catatan Verifikator Dinas */}
+          {/* Kotak Pesan Catatan Verifikator Dinas (Transparan Glass Abu) */}
           <div style={{ textAlign: 'left', marginBottom: '24px' }}>
             <h4 style={{ margin: '0 0 10px', fontSize: '0.88rem', fontWeight: '700', color: '#1E293B', display: 'flex', alignItems: 'center', gap: '6px' }}>
               <FileText size={16} color="#255456" /> Catatan & Ulasan Verifikator:
             </h4>
             <div style={{
-              backgroundColor: isRejected ? '#FEF2F2' : (isApproved ? '#F0FDF4' : '#F8FAFC'),
-              border: `1px solid ${isRejected ? '#FCA5A5' : (isApproved ? '#BBF7D0' : '#E2E8F0')}`,
+              backgroundColor: 'rgba(241, 245, 249, 0.72)',
+              backdropFilter: 'blur(10px)',
+              WebkitBackdropFilter: 'blur(10px)',
+              border: '1px solid rgba(203, 213, 225, 0.65)',
               borderRadius: '12px',
               padding: '18px',
               fontSize: '0.86rem',
-              color: isRejected ? '#991B1B' : (isApproved ? '#166534' : '#334155'),
+              color: '#334155',
               lineHeight: '1.65'
             }}>
               {snapshot
@@ -318,10 +360,12 @@ export default function RiwayatDetail({ data, onKembali, setHalaman, user, onPil
             </div>
           </div>
 
-          {/* Petunjuk Tindak Lanjut Pengguna */}
+          {/* Petunjuk Tindak Lanjut Pengguna (Transparan Glass Abu) */}
           <div style={{
-            backgroundColor: '#EFF6FF',
-            border: '1px solid #BFDBFE',
+            backgroundColor: 'rgba(241, 245, 249, 0.72)',
+            backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)',
+            border: '1px solid rgba(203, 213, 225, 0.65)',
             borderRadius: '12px',
             padding: '16px 20px',
             display: 'flex',
@@ -329,12 +373,12 @@ export default function RiwayatDetail({ data, onKembali, setHalaman, user, onPil
             gap: '12px',
             textAlign: 'left'
           }}>
-            <HelpCircle size={18} color="#2563EB" style={{ flexShrink: 0, marginTop: '2px' }} />
+            <HelpCircle size={18} color="#475569" style={{ flexShrink: 0, marginTop: '2px' }} />
             <div>
-              <div style={{ fontSize: '0.82rem', fontWeight: '700', color: '#1E40AF', marginBottom: '2px' }}>
+              <div style={{ fontSize: '0.82rem', fontWeight: '700', color: '#1E293B', marginBottom: '2px' }}>
                 Informasi Penting
               </div>
-              <div style={{ fontSize: '0.78rem', color: '#1E3A8A', lineHeight: 1.5 }}>
+              <div style={{ fontSize: '0.78rem', color: '#475569', lineHeight: 1.5 }}>
                 {isApproved && 'Pengajuan Anda telah disetujui oleh admin. Ikuti petunjuk pada catatan verifikator jika ada.'}
                 {isRejected && 'Berkas ditolak atau memerlukan revisi. Silakan periksa kembali catatan evaluator di atas dan ajukan perbaikan berkas melalui halaman layanan terkait.'}
                 {isPending && 'Pengajuan Anda masih menunggu atau sedang diproses verifikator. Status diperbarui dari backend secara berkala.'}
