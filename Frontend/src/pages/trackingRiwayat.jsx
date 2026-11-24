@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { 
   ArrowLeft, Clock, CheckCircle2, AlertCircle, Calendar, 
-  ShieldCheck, Building2, FileText, Check, HelpCircle
+  Building2, FileText, Check, HelpCircle
 } from 'lucide-react';
 import Navbar from '../component/navbar';
 import Footer from '../component/footer';
@@ -19,7 +19,7 @@ const formatTanggal = (value) => {
   return date.toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
 };
 
-export default function RiwayatDetail({ data, onKembali, setHalaman, user, onPilihNotif }) {
+export default function TrackingRiwayat({ data, onKembali, setHalaman, user, onPilihNotif }) {
   const [detailBackend, setDetailBackend] = useState(null);
   const [errorBackend, setErrorBackend] = useState(null);
   const isLocalHost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
@@ -81,6 +81,8 @@ export default function RiwayatDetail({ data, onKembali, setHalaman, user, onPil
   const statusStr = String(pengajuan?.status || data?.status || 'Status belum tersedia').trim();
   const isApproved = statusStr === 'Disetujui' || statusStr === 'Selesai' || statusStr === 'Terdaftar';
   const isRejected = statusStr === 'Ditolak' || statusStr === 'Perlu Perbaikan';
+  const isInProgress = statusStr === 'Diproses' || statusStr === 'Perlu Perbaikan';
+  const isTerminalRejection = statusStr === 'Ditolak';
   const isPending = !isApproved && !isRejected;
 
   // Penentuan Lencana Status (Nuansa Glass Abu Netral)
@@ -118,35 +120,56 @@ export default function RiwayatDetail({ data, onKembali, setHalaman, user, onPil
     || pengajuan?.nomor_registrasi
     || (noRegMatch ? noRegMatch[1] : (data?.recordId || 'REG-UMKM-JBR'));
   const waktuPengajuan = pengajuan?.created_at || pengajuan?.tanggal_daftar || data?.waktu;
-  const steps = [
+  const tahapAktif = isApproved || isTerminalRejection ? 2 : isInProgress ? 1 : 0;
+  const waktuDiproses = [...riwayatStatus].reverse().find((event) =>
+    event.status_baru === 'Diproses' || event.status_baru === 'Perlu Perbaikan'
+  )?.changed_at;
+  const waktuSelesai = [...riwayatStatus].reverse().find((event) =>
+    event.status_baru === 'Disetujui' || event.status_baru === 'Selesai' || event.status_baru === 'Ditolak'
+  )?.changed_at;
+  const tahapanTracking = [
     {
-      title: 'Pengajuan diterima',
-      desc: 'Data pengajuan tercatat di sistem.',
-      completed: true,
-      current: false,
-      date: formatTanggal(pengajuan?.created_at || pengajuan?.tanggal_daftar || data?.waktu)
+      title: 'Baru diterima',
+      desc: tahapAktif === 0
+        ? 'Pengajuan sudah tercatat dan menunggu pemeriksaan admin.'
+        : 'Pengajuan tercatat di sistem.',
+      date: formatTanggal(waktuPengajuan)
     },
-    ...riwayatStatus.map((event, index) => {
-      const statusBerubah = event.status_sebelumnya !== event.status_baru;
-      return {
-        title: statusBerubah ? `Status diperbarui: ${event.status_baru}` : 'Catatan verifikator diperbarui',
-        desc: event.catatan_admin || `Status pengajuan: ${event.status_baru}.`,
-        completed: true,
-        current: index === riwayatStatus.length - 1 && event.status_baru === statusStr,
-        date: formatTanggal(event.changed_at),
-        isError: event.status_baru === 'Ditolak' || event.status_baru === 'Perlu Perbaikan'
-      };
-    }),
-    ...(!riwayatStatus.length || riwayatStatus[riwayatStatus.length - 1]?.status_baru !== statusStr ? [{
-      title: `Status terkini: ${statusStr}`,
-      desc: pengajuan?.catatan_admin
-        || (isPending ? 'Pengajuan sedang menunggu atau menjalani verifikasi admin.' : 'Status ini tercatat; riwayat perubahan sebelumnya belum tersedia.'),
-      completed: isApproved || isRejected,
-      current: true,
-      date: snapshot ? 'Status terkini dari verifikator' : 'Status pada notifikasi',
-      isError: isRejected
-    }] : [])
-  ];
+    {
+      title: 'Diproses',
+      desc: isInProgress
+        ? (statusStr === 'Perlu Perbaikan'
+          ? (pengajuan?.catatan_admin || 'Admin meminta perbaikan pada pengajuan.')
+          : 'Pengajuan sedang ditinjau oleh verifikator.')
+        : tahapAktif > 1
+          ? 'Tahap verifikasi telah dilalui.'
+          : 'Menunggu pengajuan mulai diproses.',
+      date: waktuDiproses ? formatTanggal(waktuDiproses) : (isInProgress ? 'Sedang berlangsung' : 'Belum dimulai')
+    },
+    {
+      title: isTerminalRejection
+        ? 'Ditolak'
+        : data?.recordType === 'pelatihan'
+          ? 'Pendaftaran tercatat'
+          : 'Selesai',
+      desc: isApproved
+        ? data?.recordType === 'pelatihan'
+          ? 'Pendaftaran pelatihan Anda sudah tercatat.'
+          : `Status akhir dari admin: ${statusStr}.`
+        : isTerminalRejection
+          ? (pengajuan?.catatan_admin || 'Pengajuan ditolak oleh admin.')
+          : 'Menunggu keputusan akhir dari admin.',
+      date: waktuSelesai
+        ? formatTanggal(waktuSelesai)
+        : (isApproved || isTerminalRejection ? 'Status terkini dari backend' : 'Belum selesai')
+    }
+  ].map((step, index) => ({
+    ...step,
+    completed: index < tahapAktif || (index === tahapAktif && (isApproved || isTerminalRejection)),
+    current: index === tahapAktif,
+    isError: index === 2 && isTerminalRejection
+  }));
+  const eventHistory = [...riwayatStatus].reverse();
 
   return (
     <div style={{ backgroundColor: '#F8FAFC', minHeight: '100svh', display: 'flex', flexDirection: 'column', fontFamily: 'Inter, system-ui, sans-serif' }}>
@@ -257,65 +280,91 @@ export default function RiwayatDetail({ data, onKembali, setHalaman, user, onPil
             </div>
           )}
 
-          {/* Stepper Tracking Visual (Alur Birokrasi) */}
-          <div style={{ marginBottom: '32px' }}>
-            <h3 style={{ fontSize: '0.92rem', fontWeight: '800', color: '#1E293B', marginBottom: '18px', textAlign: 'left' }}>
-              Tahapan Alur Pengajuan
-            </h3>
-            
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0px' }}>
-              {steps.map((step, idx) => {
-                const isLast = idx === steps.length - 1;
-                return (
-                  <div key={idx} style={{ display: 'flex', gap: '16px', position: 'relative' }}>
-                    {/* Kolom Ikon & Garis Vertikal */}
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '28px' }}>
-                      <div style={{
-                        width: '28px',
-                        height: '28px',
-                        borderRadius: '50%',
-                        backgroundColor: step.isError ? '#475569' : (step.completed ? '#255456' : (step.current ? '#64748B' : '#E2E8F0')),
-                        color: step.completed || step.current ? '#FFFFFF' : '#94A3B8',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: '0.78rem',
-                        fontWeight: '700',
-                        zIndex: 2
-                      }}>
-                        {step.isError ? <AlertCircle size={16} /> : (step.completed ? <Check size={16} /> : idx + 1)}
-                      </div>
-                      
-                      {!isLast && (
-                        <div style={{
-                          width: '2px',
-                          flex: 1,
-                          minHeight: '42px',
-                          backgroundColor: step.completed ? '#255456' : '#E2E8F0',
-                          margin: '4px 0'
-                        }} />
-                      )}
-                    </div>
-
-                    {/* Kolom Teks Status */}
-                    <div style={{ paddingBottom: isLast ? '0' : '24px', flex: 1, textAlign: 'left' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '6px' }}>
-                        <span style={{ fontSize: '0.88rem', fontWeight: '700', color: step.completed || step.current ? '#0F172A' : '#94A3B8' }}>
-                          {step.title}
-                        </span>
-                        <span style={{ fontSize: '0.72rem', color: '#94A3B8', fontWeight: '600' }}>
-                          {step.date}
-                        </span>
-                      </div>
-                      <p style={{ margin: '4px 0 0', fontSize: '0.8rem', color: '#64748B', lineHeight: 1.5 }}>
-                        {step.desc}
-                      </p>
-                    </div>
-                  </div>
-                );
-              })}
+          <section aria-label="Status tracking pengajuan" style={{ marginBottom: '28px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '14px' }}>
+              <h3 style={{ fontSize: '0.92rem', fontWeight: '800', color: '#1E293B', margin: 0 }}>
+                Tahapan Pengajuan
+              </h3>
+              <span style={{ fontSize: '0.72rem', color: '#64748B' }}>Status diperbarui otomatis setiap 10 detik</span>
             </div>
-          </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' }}>
+              {tahapanTracking.map((step, index) => (
+                <div
+                  key={step.title}
+                  aria-current={step.current ? 'step' : undefined}
+                  style={{
+                    minHeight: '146px',
+                    padding: '16px',
+                    borderRadius: '12px',
+                    border: `1px solid ${step.isError ? '#FCA5A5' : step.current ? '#255456' : 'rgba(203, 213, 225, 0.65)'}`,
+                    backgroundColor: step.isError ? 'rgba(254, 242, 242, 0.8)' : step.current ? 'rgba(234, 241, 241, 0.9)' : 'rgba(241, 245, 249, 0.65)'
+                  }}
+                >
+                  <div style={{
+                    width: '30px',
+                    height: '30px',
+                    display: 'grid',
+                    placeItems: 'center',
+                    borderRadius: '50%',
+                    marginBottom: '12px',
+                    backgroundColor: step.isError ? '#DC2626' : step.completed ? '#255456' : step.current ? '#64748B' : '#E2E8F0',
+                    color: step.completed || step.current || step.isError ? '#FFFFFF' : '#64748B'
+                  }}>
+                    {step.isError ? <AlertCircle size={16} /> : step.completed ? <Check size={16} /> : step.current ? <Clock size={16} /> : index + 1}
+                  </div>
+                  <div style={{ fontSize: '0.87rem', fontWeight: '800', color: '#0F172A', marginBottom: '5px' }}>
+                    {step.title}
+                  </div>
+                  <p style={{ fontSize: '0.77rem', lineHeight: 1.5, color: '#475569', margin: '0 0 8px' }}>
+                    {step.desc}
+                  </p>
+                  <span style={{ fontSize: '0.7rem', color: '#64748B' }}>{step.date}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section aria-label="Riwayat verifikasi admin" style={{ marginBottom: '28px' }}>
+            <h3 style={{ fontSize: '0.92rem', fontWeight: '800', color: '#1E293B', margin: '0 0 12px' }}>
+              Riwayat Pembaruan Admin
+            </h3>
+            {eventHistory.length > 0 ? (
+              <div style={{ display: 'grid', gap: '10px' }}>
+                {eventHistory.map((event) => (
+                  <article
+                    key={event.id}
+                    style={{
+                      padding: '14px 16px',
+                      borderRadius: '10px',
+                      border: '1px solid rgba(203, 213, 225, 0.65)',
+                      backgroundColor: 'rgba(241, 245, 249, 0.65)'
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: '8px', flexWrap: 'wrap' }}>
+                      <strong style={{ color: '#0F172A', fontSize: '0.82rem' }}>
+                        {event.status_sebelumnya
+                          ? `${event.status_sebelumnya} → ${event.status_baru}`
+                          : event.status_baru}
+                      </strong>
+                      <time dateTime={event.changed_at} style={{ color: '#64748B', fontSize: '0.72rem' }}>
+                        {formatTanggal(event.changed_at)}
+                      </time>
+                    </div>
+                    <p style={{ margin: '6px 0 0', color: '#475569', fontSize: '0.79rem', lineHeight: 1.5 }}>
+                      {event.catatan_admin || 'Admin memperbarui status pengajuan.'}
+                    </p>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <p style={{ margin: 0, padding: '14px 16px', borderRadius: '10px', backgroundColor: 'rgba(241, 245, 249, 0.65)', color: '#64748B', fontSize: '0.79rem', lineHeight: 1.5 }}>
+                {snapshot
+                  ? `Belum ada riwayat perubahan admin. Status terbaru: ${statusStr}.`
+                  : 'Riwayat perubahan status akan tampil setelah detail berhasil dimuat dari server.'}
+              </p>
+            )}
+          </section>
 
           {/* Kotak Ringkasan Rincian Berkas */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px', marginBottom: '24px', textAlign: 'left' }}>

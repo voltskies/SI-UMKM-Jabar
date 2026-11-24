@@ -325,7 +325,7 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
                 Legalitas & Sertifikasi UMKM
               </h1>
               <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748B', textAlign: 'left', lineHeight: '1.5' }}>
-                Pantau permohonan sertifikasi Halal, BPOM, NIB, dan izin edar resmi dari Dinas KUK Jawa Barat.
+                Pantau permohonan sertifikasi Halal, BPOM, NIB, dan izin edar resmi.
               </p>
             </div>
 
@@ -384,7 +384,7 @@ export default function Sertifikasi({ onKembali, setHalaman, user }) {
                 </div>
 
                 <div style={{ backgroundColor: '#F8FAFC', border: '1px solid #F1F5F9', borderRadius: '10px', padding: '14px', fontSize: '0.82rem', color: '#64748B' }}>
-                  Dokumen persyaratan Anda telah terunggah ke Storage dan masuk ke antrean audit legalitas.
+                  Dokumen persyaratan Anda telah terunggah dan masuk ke antrean audit legalitas.
                 </div>
               </div>
             )}

@@ -14,7 +14,7 @@ from sqlalchemy.orm import Session
 
 import models
 from database import engine, get_db
-from supabase_client import upload_file_to_supabase
+from supabase_client import BUCKET_NAME, SUPABASE_URL, upload_file_to_supabase
 from email_service import send_otp_email
 
 # 1. Hashing password
@@ -386,6 +386,19 @@ def get_riwayat_pelatihan(user_id: int, db: Session = Depends(get_db)):
         return {"status": "error", "message": str(e), "data": []}
 
 
+@app.post("/api/v1/layanan/upload-berkas-bantuan", tags=["Pelaku UMKM"], summary="Unggah Satu Berkas Bantuan")
+async def upload_berkas_bantuan(file: UploadFile = File(...)):
+    file_url = await upload_file_to_supabase(
+        file,
+        folder="bantuan",
+        max_size=4 * 1024 * 1024,
+    )
+    return {
+        "status": "success",
+        "data": {"file_url": file_url},
+    }
+
+
 @app.post("/api/v1/layanan/pengajuan-bantuan", tags=["Pelaku UMKM"], status_code=status.HTTP_201_CREATED, summary="Ajukan Bantuan")
 async def ajukan_bantuan(
     nik: str = Form(...),
@@ -397,14 +410,33 @@ async def ajukan_bantuan(
     jumlah_dana: str = Form(...),
     tujuan_penggunaan: str = Form(...),
     nib: Optional[str] = Form(None),
-    file_ktp: UploadFile = File(...),
+    file_ktp: Optional[UploadFile] = File(None),
     file_kk: Optional[UploadFile] = File(None),
     file_nib: Optional[UploadFile] = File(None),
     file_proposal: Optional[UploadFile] = File(None),
+    file_ktp_url: Optional[str] = Form(None),
+    file_kk_url: Optional[str] = Form(None),
+    file_nib_url: Optional[str] = Form(None),
+    file_proposal_url: Optional[str] = Form(None),
     db: Session = Depends(get_db)
 ):
     if not re.fullmatch(r"^\d{16}$", nik):
         raise HTTPException(status_code=400, detail="NIK harus 16 digit angka.")
+
+    prefix_url_bantuan = (
+        f"{SUPABASE_URL.rstrip('/')}/storage/v1/object/public/{BUCKET_NAME}/bantuan/"
+    )
+    berkas_masuk = {
+        "file_ktp": (file_ktp, file_ktp_url, True),
+        "file_kk": (file_kk, file_kk_url, False),
+        "file_nib": (file_nib, file_nib_url, False),
+        "file_proposal": (file_proposal, file_proposal_url, False),
+    }
+    for nama_berkas, (file, file_url, wajib) in berkas_masuk.items():
+        if wajib and not file and not file_url:
+            raise HTTPException(status_code=400, detail=f"Berkas {nama_berkas} wajib diunggah.")
+        if file_url and not file_url.startswith(prefix_url_bantuan):
+            raise HTTPException(status_code=400, detail=f"URL {nama_berkas} bukan berkas bantuan yang valid.")
 
     try:
         # 1. Cek atau buat user baru dengan ID manual
@@ -427,14 +459,21 @@ async def ajukan_bantuan(
             db.commit()
             db.refresh(user)
 
-        # 2. Upload berkas secara paralel menggunakan asyncio.gather agar cepat dan tidak timeout
-        tugas_upload = [
-            upload_file_to_supabase(file_ktp, folder="bantuan"),
-            upload_file_to_supabase(file_kk, folder="bantuan") if file_kk else asyncio.sleep(0, result=None),
-            upload_file_to_supabase(file_nib, folder="bantuan") if file_nib else asyncio.sleep(0, result=None),
-            upload_file_to_supabase(file_proposal, folder="bantuan") if file_proposal else asyncio.sleep(0, result=None)
-        ]
-        url_ktp, url_kk, url_nib, url_proposal = await asyncio.gather(*tugas_upload)
+        # Upload berkas lama tetap didukung; frontend baru mengirim URL hasil unggahan terpisah.
+        async def url_berkas_bantuan(nama_berkas):
+            file, file_url, wajib = berkas_masuk[nama_berkas]
+            if file_url:
+                return file_url
+            if file:
+                return await upload_file_to_supabase(file, folder="bantuan")
+            return "" if not wajib else None
+
+        url_ktp, url_kk, url_nib, url_proposal = await asyncio.gather(
+            url_berkas_bantuan("file_ktp"),
+            url_berkas_bantuan("file_kk"),
+            url_berkas_bantuan("file_nib"),
+            url_berkas_bantuan("file_proposal"),
+        )
 
         # 3. Generate sequential ID manual untuk tabel pengajuan_bantuan di TiDB
         last_bantuan = db.query(models.PengajuanBantuan).order_by(models.PengajuanBantuan.id.desc()).first()

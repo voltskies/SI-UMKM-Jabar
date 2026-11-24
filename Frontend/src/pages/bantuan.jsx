@@ -83,7 +83,7 @@ export default function Bantuan({ onKembali, setHalaman, user, onPilihNotif }) {
     ? import.meta.env.VITE_API_URL.replace(/:8000$/, '').replace(/^http:\/\//i, 'https://')
     : 'https://si-umkm-jabar.vercel.app';
 
-  const MAX_FILE_SIZE = 7 * 1024 * 1024; // 7 MB dalam satuan bytes
+  const MAX_FILE_SIZE = 4 * 1024 * 1024; // Keep each request below Vercel's payload limit
 
   // Cek apakah semua berkas wajib sudah dipilih
   const semuaBerkasTerisi = Boolean(
@@ -143,9 +143,9 @@ export default function Bantuan({ onKembali, setHalaman, user, onPilihNotif }) {
 
     const file = selectedFiles[0];
 
-    // Validasi batas ukuran file (7 MB)
+    // Setiap file dikirim terpisah agar tidak melewati batas payload Vercel.
     if (file.size > MAX_FILE_SIZE) {
-      setErrorMsg(`Ukuran file "${file.name}" melebihi batas maksimal 7 MB.`);
+      setErrorMsg(`Ukuran file "${file.name}" melebihi batas maksimal 4 MB.`);
       e.target.value = '';
       setFiles((prev) => ({ ...prev, [name]: null }));
       return;
@@ -221,37 +221,43 @@ export default function Bantuan({ onKembali, setHalaman, user, onPilihNotif }) {
         return;
       }
 
+      const berkas = [
+        ['file_ktp', files.file_ktp],
+        ['file_kk', files.file_kk],
+        ['file_nib', files.file_nib],
+        ['file_proposal', files.file_proposal]
+      ];
+      const berkasTerunggah = await Promise.all(berkas.map(async ([nama, file]) => {
+        const payload = new FormData();
+        payload.append('file', file);
+        const response = await axios.post(
+          `${API_BASE_URL}/api/v1/layanan/upload-berkas-bantuan`,
+          payload
+        );
+        const fileUrl = response.data?.data?.file_url;
+        if (!fileUrl) throw new Error(`URL berkas ${file.name} tidak diterima dari server.`);
+        return [nama, fileUrl];
+      }));
+      const urlBerkas = Object.fromEntries(berkasTerunggah);
+
       const dataPayload = new FormData();
       dataPayload.append('nik', cleanNik);
       dataPayload.append('nama_lengkap', formData.nama_lengkap.trim());
       dataPayload.append('email', formData.email.trim());
       dataPayload.append('nomor_whatsapp', formData.nomor_whatsapp.trim());
       dataPayload.append('nama_usaha', formData.nama_usaha.trim());
-      
-      // Mengirim kategori/sektor usaha agar cocok dengan backend
       dataPayload.append('kategori_usaha', formData.kategori_usaha);
       dataPayload.append('sektor_usaha', formData.kategori_usaha);
-
-      // Mengirim jumlah nominal dana
       dataPayload.append('jumlah_dana', nominalClean);
       dataPayload.append('nominal_bantuan', nominalClean);
-
       dataPayload.append('tujuan_penggunaan', formData.tujuan_penggunaan.trim());
-      
       if (formData.nib && formData.nib.trim()) {
         dataPayload.append('nib', formData.nib.trim());
       }
-
-      // Lampirkan SEMUA berkas wajib ke payload form
-      dataPayload.append('file_ktp', files.file_ktp);
-      dataPayload.append('file_kk', files.file_kk);
-      dataPayload.append('file_nib', files.file_nib);
-      dataPayload.append('file_proposal', files.file_proposal);
+      berkas.forEach(([nama]) => dataPayload.append(`${nama}_url`, urlBerkas[nama]));
 
       const targetUrl = `${API_BASE_URL}/api/v1/layanan/pengajuan-bantuan`;
-      const res = await axios.post(targetUrl, dataPayload, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+      const res = await axios.post(targetUrl, dataPayload);
 
       if (res.data?.status === 'success' || res.status === 200 || res.status === 201) {
         const noPengajuan = res.data.nomor_pengajuan || `BNT-${Date.now()}`;
@@ -280,10 +286,15 @@ export default function Bantuan({ onKembali, setHalaman, user, onPilihNotif }) {
         } else {
           pesan = JSON.stringify(errRes);
         }
+      } else if (err.code === 'ERR_NETWORK') {
+        pesan = 'Koneksi ke server unggah gagal. Periksa koneksi internet dan pastikan setiap berkas maksimal 4 MB.';
       } else if (err.message) {
         pesan = err.message;
       }
 
+      if (err.response?.status === 413) {
+        pesan = 'Berkas terlalu besar untuk dikirim. Maksimal ukuran setiap berkas adalah 4 MB.';
+      }
       setErrorMsg(pesan);
     } finally {
       setLoading(false);
@@ -351,7 +362,7 @@ export default function Bantuan({ onKembali, setHalaman, user, onPilihNotif }) {
                 Permohonan Bantuan Usaha
               </h1>
               <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748B', textAlign: 'left', lineHeight: '1.5' }}>
-                Pantau permohonan hibah modal usaha dan fasilitasi pemulihan bisnis resmi dari Dinas KUK Provinsi Jawa Barat.
+                Pantau permohonan hibah modal usaha dan fasilitasi pemulihan bisnis resmi.
               </p>
             </div>
 
@@ -618,14 +629,14 @@ export default function Bantuan({ onKembali, setHalaman, user, onPilihNotif }) {
               {/* Bagian 3: Dokumen Pendukung (Semua Wajib) */}
               <div style={{ marginBottom: '28px', textAlign: 'left' }}>
                 <h3 style={{ fontSize: '0.98rem', fontWeight: '700', color: '#255456', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px', textAlign: 'left' }}>
-                  <Upload size={17} /> 3. Berkas Persyaratan Wajib (Semua Dokumen Wajib Diunggah, Maks. 7 MB)
+                  <Upload size={17} /> 3. Berkas Persyaratan Wajib (Semua Dokumen Wajib Diunggah, Maks. 4 MB per berkas)
                 </h3>
 
                 <div className="responsive-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', textAlign: 'left' }}>
                   {/* 1. KTP */}
                   <div style={{ border: `1px dashed ${files.file_ktp ? '#255456' : '#CBD5E1'}`, borderRadius: '8px', padding: '12px', backgroundColor: '#F8FAFC', textAlign: 'left' }}>
                     <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', color: '#334155', marginBottom: '4px', textAlign: 'left' }}>
-                      Foto KTP Pemohon * <span style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: '400' }}>(PDF/JPG/PNG, Maks. 7MB)</span>
+                      Foto KTP Pemohon * <span style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: '400' }}>(PDF/JPG/PNG, Maks. 4 MB)</span>
                     </label>
                     <input 
                       type="file" 
@@ -645,7 +656,7 @@ export default function Bantuan({ onKembali, setHalaman, user, onPilihNotif }) {
                   {/* 2. KK */}
                   <div style={{ border: `1px dashed ${files.file_kk ? '#255456' : '#CBD5E1'}`, borderRadius: '8px', padding: '12px', backgroundColor: '#F8FAFC', textAlign: 'left' }}>
                     <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', color: '#334155', marginBottom: '4px', textAlign: 'left' }}>
-                      Kartu Keluarga (KK) * <span style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: '400' }}>(Wajib PDF, Maks. 7MB)</span>
+                      Kartu Keluarga (KK) * <span style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: '400' }}>(Wajib PDF, Maks. 4 MB)</span>
                     </label>
                     <input 
                       type="file" 
@@ -665,7 +676,7 @@ export default function Bantuan({ onKembali, setHalaman, user, onPilihNotif }) {
                   {/* 3. NIB */}
                   <div style={{ border: `1px dashed ${files.file_nib ? '#255456' : '#CBD5E1'}`, borderRadius: '8px', padding: '12px', backgroundColor: '#F8FAFC', textAlign: 'left' }}>
                     <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', color: '#334155', marginBottom: '4px', textAlign: 'left' }}>
-                      Dokumen NIB * <span style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: '400' }}>(Wajib PDF, Maks. 7MB)</span>
+                      Dokumen NIB * <span style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: '400' }}>(Wajib PDF, Maks. 4 MB)</span>
                     </label>
                     <input 
                       type="file" 
@@ -685,7 +696,7 @@ export default function Bantuan({ onKembali, setHalaman, user, onPilihNotif }) {
                   {/* 4. Proposal */}
                   <div style={{ border: `1px dashed ${files.file_proposal ? '#255456' : '#CBD5E1'}`, borderRadius: '8px', padding: '12px', backgroundColor: '#F8FAFC', textAlign: 'left' }}>
                     <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: '700', color: '#334155', marginBottom: '4px', textAlign: 'left' }}>
-                      Proposal Usaha / Rencana Anggaran * <span style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: '400' }}>(Wajib PDF, Maks. 7MB)</span>
+                      Proposal Usaha / Rencana Anggaran * <span style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: '400' }}>(Wajib PDF, Maks. 4 MB)</span>
                     </label>
                     <input 
                       type="file" 
@@ -725,7 +736,7 @@ export default function Bantuan({ onKembali, setHalaman, user, onPilihNotif }) {
                 {loading 
                   ? 'Mengunggah berkas...' 
                   : (!semuaBerkasTerisi 
-                      ? 'Lengkapi Semua 4 Berkas Persyaratan untuk Mengirim' 
+                      ? 'Lengkapi Semua 4 Berkas Persyaratan' 
                       : 'Kirim Permohonan Bantuan Modal')}
               </button>
             </form>
@@ -765,7 +776,7 @@ export default function Bantuan({ onKembali, setHalaman, user, onPilihNotif }) {
               Pengajuan Berhasil Dikirim!
             </h2>
             <p style={{ fontSize: '0.82rem', color: '#64748B', lineHeight: '1.5', margin: '0 0 18px' }}>
-              Berkas Anda telah tersimpan di cloud storage dan masuk ke sistem antrean verifikasi Dinas KUK Jawa Barat. Harap simpan nomor registrasi pengajuan ini:
+              Berkas Anda telah tersimpan dan masuk ke sistem antrean verifikasi. Harap simpan nomor registrasi pengajuan ini:
             </p>
 
             <div style={{

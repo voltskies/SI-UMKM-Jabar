@@ -1,5 +1,6 @@
 import os
 import time
+import uuid
 from fastapi import UploadFile, HTTPException
 from supabase import create_client, Client
 from dotenv import load_dotenv
@@ -18,7 +19,11 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 ALLOWED_MIME_TYPES = ["application/pdf", "image/jpeg", "image/png", "image/jpg"]
 
-async def upload_file_to_supabase(file: UploadFile, folder: str = "berkas") -> str:
+async def upload_file_to_supabase(
+    file: UploadFile,
+    folder: str = "berkas",
+    max_size: int = 5 * 1024 * 1024,
+) -> str:
     """
     Fungsi untuk memvalidasi dan mengunggah berkas ke Supabase Storage.
     - file: Objek UploadFile dari FastAPI
@@ -39,20 +44,19 @@ async def upload_file_to_supabase(file: UploadFile, folder: str = "berkas") -> s
             detail="Format file tidak didukung! Hanya diperbolehkan berkas PDF, PNG, atau JPG."
         )
 
-    # 2. Baca isi berkas & validasi batas ukuran (Maksimal 5 MB)
+    # 2. Baca isi berkas & validasi batas ukuran
     contents = await file.read()
-    max_size = 5 * 1024 * 1024  # 5 MB
     if len(contents) > max_size:
         raise HTTPException(
             status_code=400, 
-            detail="Ukuran file terlalu besar! Maksimal ukuran file adalah 5 MB."
+            detail=f"Ukuran file terlalu besar! Maksimal ukuran file adalah {max_size // (1024 * 1024)} MB."
         )
 
     # 3. Format penamaan berkas agar unik
     timestamp = int(time.time())
     file_ext = os.path.splitext(file.filename)[1].lower()
     clean_base_name = os.path.splitext(os.path.basename(file.filename))[0].replace(" ", "_")
-    file_path = f"{folder}/{timestamp}_{clean_base_name}{file_ext}"
+    file_path = f"{folder}/{timestamp}_{uuid.uuid4().hex[:8]}_{clean_base_name}{file_ext}"
 
     # 4. Upload berkas ke Supabase Storage
     try:

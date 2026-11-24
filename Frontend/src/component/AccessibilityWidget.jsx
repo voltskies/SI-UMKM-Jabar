@@ -152,7 +152,7 @@ export default function AccessibilityWidget() {
                 Menu Aksesibilitas
               </div>
               <div style={{ fontSize: '0.72rem', opacity: 0.85 }}>
-                SI-UMKM Provinsi Jawa Barat
+                SI-UMKM Jawa Barat
               </div>
             </div>
             <button

@@ -6,7 +6,7 @@ import Login from './pages/login';
 import LoginAdmin from './pages/LoginAdmin';
 import Bantuan from './pages/bantuan';
 import Sertifikasi from './pages/sertifikasi';
-import RiwayatDetail from './pages/riwayat';
+import TrackingRiwayat from './pages/trackingRiwayat';
 import Profil from './pages/profil';
 import AccessibilityWidget from './component/AccessibilityWidget';
 
@@ -62,7 +62,7 @@ export default function App() {
   // Handler saat notifikasi di drawer diklik "Lihat detail →"
   const handlePilihNotif = (notifItem) => {
     setNotifTerpilih(notifItem);
-    setHalaman('riwayatDetail');
+    setHalaman('trackingRiwayat');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -163,9 +163,9 @@ export default function App() {
         )
       )}
 
-      {/* 6. Halaman Detail Riwayat Pengajuan Notifikasi */}
-      {halaman === 'riwayatDetail' && (
-        <RiwayatDetail
+      {/* 6. Halaman pelacakan status pengajuan */}
+      {halaman === 'trackingRiwayat' && (
+        <TrackingRiwayat
           data={notifTerpilih}
           user={currentUser}
           setHalaman={navigasiHalaman}
