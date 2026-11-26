@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.11.19)  23 NOV 2026 01:10
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.11.19)  26 NOV 2026 04:51
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -395,23 +395,33 @@ Package pdftex.def Info: image_tex/gambar 2.jpg  used on input line 80.
 <image_tex/gambar 3.png, id=12, 606.46574pt x 277.035pt>
 File: image_tex/gambar 3.png Graphic file (type png)
 <use image_tex/gambar 3.png>
-Package pdftex.def Info: image_tex/gambar 3.png  used on input line 92.
+Package pdftex.def Info: image_tex/gambar 3.png  used on input line 94.
 (pdftex.def)             Requested size: 252.0pt x 115.11533pt.
  [2 <./image_tex/gambar 1.jpg> <./image_tex/gambar 2.jpg>]
 <image_tex/gambar 4.jpg, id=17, 652.4375pt x 232.87pt>
 File: image_tex/gambar 4.jpg Graphic file (type jpg)
 <use image_tex/gambar 4.jpg>
-Package pdftex.def Info: image_tex/gambar 4.jpg  used on input line 103.
+Package pdftex.def Info: image_tex/gambar 4.jpg  used on input line 105.
 (pdftex.def)             Requested size: 239.14818pt x 85.3575pt.
 <image_tex/gambar 5.jpg, id=18, 554.07pt x 237.88875pt>
 File: image_tex/gambar 5.jpg Graphic file (type jpg)
 <use image_tex/gambar 5.jpg>
-Package pdftex.def Info: image_tex/gambar 5.jpg  used on input line 106.
+Package pdftex.def Info: image_tex/gambar 5.jpg  used on input line 108.
 (pdftex.def)             Requested size: 198.8056pt x 85.35674pt.
-LaTeX Font Info:    Trying to load font information for OT1+pcr on input line 132.
+LaTeX Font Info:    Trying to load font information for OT1+pcr on input line 134.
  (C:\Users\LENOVO\AppData\Local\Programs\MiKTeX\tex/latex/psnfss\ot1pcr.fd
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
 )
+Underfull \hbox (badness 4765) in paragraph at lines 149--149
+[]\OT1/ptm/m/n/8 (+20) Perceived Ease of Use
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 150--150
+[]\OT1/ptm/m/n/8 (+20) Attitude To-ward Us-ing
+ []
+
+[3 <./image_tex/gambar 3.png> <./image_tex/gambar 4.jpg> <./image_tex/gambar 5.jpg>]
 
 ** Conference Paper **
 Before submitting the final camera ready copy, remember to:
@@ -423,24 +433,26 @@ Before submitting the final camera ready copy, remember to:
  uses only Type 1 fonts and that every step in the generation
  process uses the appropriate paper size.
 
-[3 <./image_tex/gambar 3.png> <./image_tex/gambar 4.jpg> <./image_tex/gambar 5.jpg>] (umkm.aux)
+[4
+
+] (umkm.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-12-24>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 7938 strings out of 467871
- 131100 string characters out of 5417891
- 579550 words of memory out of 5000000
- 36514 multiletter control sequences out of 15000+600000
- 680962 words of font info for 263 fonts, out of 8000000 for 9000
+ 7961 strings out of 467871
+ 131306 string characters out of 5417891
+ 580579 words of memory out of 5000000
+ 36518 multiletter control sequences out of 15000+600000
+ 681663 words of font info for 275 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  57i,11n,65p,1112b,388s stack positions out of 10000i,1000n,20000p,200000b,200000s
-<C:/Users/LENOVO/AppData/Local/Programs/MiKTeX/fonts/type1/urw/courier/ucrr8a.pfb><C:/Users/LENOVO/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmb8a.pfb><C:/Users/LENOVO/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmbi8a.pfb><C:/Users/LENOVO/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmr8a.pfb><C:/Users/LENOVO/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmri8a.pfb>
-Output written on umkm.pdf (3 pages, 679113 bytes).
+<C:/Users/LENOVO/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users/LENOVO/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Users/LENOVO/AppData/Local/Programs/MiKTeX/fonts/type1/urw/courier/ucrr8a.pfb><C:/Users/LENOVO/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmb8a.pfb><C:/Users/LENOVO/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmbi8a.pfb><C:/Users/LENOVO/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmr8a.pfb><C:/Users/LENOVO/AppData/Local/Programs/MiKTeX/fonts/type1/urw/times/utmri8a.pfb>
+Output written on umkm.pdf (4 pages, 703633 bytes).
 PDF statistics:
- 48 PDF objects out of 1000 (max. 8388607)
+ 61 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
- 56858 words of extra memory for PDF output out of 61914 (max. 10000000)
+ 58906 words of extra memory for PDF output out of 61914 (max. 10000000)
 

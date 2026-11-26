@@ -87,6 +87,8 @@ Implementasi frontend menggunakan komponen modular untuk menjaga konsistensi vis
 \subsection{Fitur Unggulan}
 Fitur utama sistem adalah visualisasi spasial interaktif 27 kabupaten/kota dengan kode warna dan pengelompokan komoditas UMKM \cite{b5}, seperti ditunjukkan pada Gambar~\ref{fig:map}. Peta menyajikan informasi geografis secara kontekstual sebagai pelengkap direktori usaha.
 
+Hero banner peta 3D animasi pada halaman utama dibuat dengan bantuan Blender dan Spline \cite{b10,b11}.
+
 \begin{figure}[!htbp]
 \centering
 \includegraphics[width=\columnwidth]{"gambar 3.png"}
@@ -131,8 +133,35 @@ Alur operasional sistem terdiri atas proses pengajuan mandiri oleh pemohon (Gamb
 \subsection{Pengujian Beban Backend}
 Pengujian kinerja dilakukan terhadap endpoint direktori UMKM (\texttt{GET /api/v1/umkm}) dengan beban 50 hingga 500 VUs. Hasil pengujian pada Tabel~\ref{tab:loadtest} menunjukkan throughput tertinggi sebesar 616,96 req/s pada 300 VUs. Tingkat kegagalan tercatat 0,00\% pada 50, 100, dan 300 VUs, serta 0,02\% pada 200 VUs. Pada 500 VUs, throughput turun menjadi 6,59 req/s, latensi rata-rata meningkat menjadi 407 ms, dan tingkat kegagalan mencapai 60,25\%. Hasil tersebut menunjukkan degradasi kinerja pada beban tertinggi yang diuji; pengujian ini terbatas pada satu endpoint dan belum mewakili seluruh pola penggunaan sistem.
 
+\subsection{Uji Penerimaan Pengguna (TAM)}
+Evaluasi penerimaan menggunakan kuesioner TAM terhadap 31 responden. Instrumen terdiri atas 12 pernyataan berskala Likert 1--5 yang terbagi ke dalam empat konstruk. Seluruh butir dinyatakan valid, dengan nilai korelasi Pearson berkisar 0,681--0,882, melampaui nilai kritis $r_{\text{tabel}}=0,355$ ($df=29$, $\alpha=0,05$). Nilai Cronbach's Alpha keseluruhan sebesar 0,942 menunjukkan konsistensi internal instrumen yang tinggi. Hasil reliabilitas dan skor penerimaan setiap konstruk disajikan pada Tabel~\ref{tab:tam}.
+
+\begin{table}[!b]
+\caption{Hasil Evaluasi Penerimaan Pengguna TAM}
+\label{tab:tam}
+\centering
+\footnotesize
+\begin{tabular}{@{}p{0.35\columnwidth}ccc@{}}
+\toprule
+\textbf{Konstruk} & \textbf{Alpha} & \textbf{Rata-rata} & \textbf{Penerimaan} \\
+\midrule
+Perceived Usefulness (PU) & 0,814 & 4,28 & 85,6\% \\
+Perceived Ease of Use (PEOU) & 0,845 & 4,37 & 87,4\% \\
+Attitude Toward Using (ATU) & 0,828 & 4,22 & 84,4\% \\
+Behavioral Intention to Use (BI) & 0,891 & 4,31 & 86,2\% \\
+Keseluruhan & 0,942 & 4,295 & 85,9\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Secara keseluruhan, penerimaan pengguna mencapai 85,9\% dan termasuk kategori sangat tinggi. PEOU memperoleh skor tertinggi (87,4\%), yang menunjukkan penilaian positif responden terhadap kemudahan penggunaan. BI mencapai 86,2\%, sedangkan PU dan ATU masing-masing memperoleh 85,6\% dan 84,4\%. Hasil ini menggambarkan persepsi positif dari responden yang diuji; ukuran sampel 31 orang perlu dipertimbangkan saat menafsirkan hasil di luar kelompok tersebut.
+
+Pada evaluasi komparatif, 83,9\% responden menilai antarmuka SI-UMKM Jabar lebih modern dan cepat dalam menyajikan pemetaan dibandingkan portal DISKUK Jabar. Sebanyak 77,4\% menilai tata letak, keterbacaan, dan responsivitas seluler SI-UMKM Jabar lebih baik dibandingkan portal Pemkab Mojokerto, sementara portal pembanding tersebut dinilai memiliki perangkat aksesibilitas yang lebih lengkap. Perbandingan ini merupakan penilaian responden, bukan pengukuran performa teknis langsung antarsitus.
+
+Uji ANOVA satu arah terhadap kelompok pengguna mobile, desktop, dan multi-perangkat menghasilkan $F_{\text{hitung}}=0,149$, lebih rendah daripada $F_{\text{tabel}}=3,340$ pada $\alpha=0,05$ ($p>0,05$). Dengan demikian, tidak ditemukan perbedaan rata-rata skor TAM yang signifikan secara statistik di antara kelompok perangkat pada sampel ini. Hasil tersebut konsisten dengan penerimaan pada berbagai perangkat, tetapi tidak dengan sendirinya membuktikan bahwa pengalaman seluruh pengguna selalu sama.
+
 \section{Kesimpulan}
-SI-UMKM Jabar mengintegrasikan direktori UMKM berbasis peta dengan layanan pengajuan dan verifikasi melalui satu platform web. Pada pengujian endpoint direktori, throughput mencapai 616,96 req/s pada 300 VUs, sedangkan beban 500 VUs menghasilkan tingkat kegagalan 60,25\%. Karena itu, kapasitas sistem pada skenario beban tinggi masih perlu ditingkatkan dan diuji kembali. Evaluasi penerimaan pengguna belum dilaporkan, sehingga tingkat penerimaan belum dapat disimpulkan.
+SI-UMKM Jabar mengintegrasikan direktori UMKM berbasis peta dengan layanan pengajuan dan verifikasi melalui satu platform web. Pada pengujian endpoint direktori, throughput mencapai 616,96 req/s pada 300 VUs, sedangkan beban 500 VUs menghasilkan tingkat kegagalan 60,25\%. Karena itu, kapasitas sistem pada skenario beban tinggi masih perlu ditingkatkan dan diuji kembali. Evaluasi TAM terhadap 31 responden memperoleh penerimaan keseluruhan 85,9\% dan Cronbach's Alpha 0,942; hasil ini menunjukkan penerimaan yang sangat tinggi pada sampel pengujian.
 
 \begin{thebibliography}{9}
 \bibitem{b1} A. S. R. Kurniawan, ``Rancang Bangun Sistem Informasi Pengelolaan dan Pemetaan Data UMKM Berbasis Web,'' \textit{Jurnal Inovasi Komputer (JIK)}, vol. 7, no. 2, hlm. 88--96, 2023.
@@ -143,6 +172,8 @@ SI-UMKM Jabar mengintegrasikan direktori UMKM berbasis peta dengan layanan penga
 \bibitem{b7} F. M. Al-Faruq dan S. Nurlela, ``Rancang Bangun Aplikasi Pelayanan Masyarakat Berbasis Web Menggunakan RESTful API,'' \textit{Jurnal Teknologi Terpadu (JTT)}, vol. 7, no. 1, hlm. 35--43, 2021.
 \bibitem{b8} Dinas Koperasi dan Usaha Kecil Provinsi Jawa Barat, ``Portal Resmi Dinas Koperasi dan Usaha Kecil Provinsi Jawa Barat,'' \textit{DISKUK Jabar}, 2024. [Daring]. Tersedia: \url{https://diskuk.jabarprov.go.id/}.
 \bibitem{b9} Pemerintah Kabupaten Mojokerto, ``Portal Resmi Pemerintah Kabupaten Mojokerto,'' \textit{Pemkab Mojokerto}, 2026. [Daring]. Tersedia: \url{https://mojokertokab.go.id/}.
+\bibitem{b10} Spline, ``Spline: 3D Design Tool,'' [Daring]. Tersedia: \url{https://spline.design/id}. Diakses: 26 Nov. 2026.
+\bibitem{b11} Blender Foundation, ``Blender,'' [Daring]. Tersedia: \url{https://www.blender.org/}. Diakses: 26 Nov. 2026.
 \end{thebibliography}
 
 \end{document}
