@@ -973,7 +973,7 @@ export default function Dashboard({ onNavigasiPelatihan, setHalaman, user, onPil
         
         <section className="responsive-section" style={{ marginBottom: '90px' }}>
           <div style={{ textAlign: 'center', marginBottom: '16px' }}>
-            <span style={{ fontSize: '13px', fontWeight: '600', color: '#64748B', display: 'block', marginBottom: '6px' }}>Data Terkini Database</span>
+            <span style={{ fontSize: '13px', fontWeight: '600', color: '#64748B', display: 'block', marginBottom: '6px' }}>Data Terkini</span>
             <h2 className="responsive-heading" style={{ margin: 0, fontSize: 'clamp(22px, 4vw, 26px)', fontWeight: '800', color: '#0F172A' }}>UMKM DI JAWA BARAT</h2>
           </div>
 
